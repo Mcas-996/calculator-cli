@@ -1,6 +1,6 @@
 # Calculator CLI
 
-A command-line calculator application that evaluates mathematical expressions with support for basic operations, parentheses, exponents, percentages, square roots, and mathematical constants.
+A command-line calculator application that evaluates mathematical expressions with support for basic operations, parentheses, exponents, percentages, square roots, mathematical constants, equation solving, and systems of linear equations.
 
 ## Features
 
@@ -10,6 +10,9 @@ A command-line calculator application that evaluates mathematical expressions wi
 - Percentage calculations (e.g., `50%` converts to `0.5`)
 - Square root function: `sqrt(x)`
 - Mathematical constants: `pi` (π) and `e`
+- Linear equation solving: `equation(x+1=0)`
+- Quadratic equation solving: `equation(x^2+2x+1=0)`
+- Systems of linear equations: `equation2(x+y=5,x-y=1)`
 - Error handling for invalid expressions
 
 ## Supported Operations
@@ -28,6 +31,19 @@ sqrt(16) + 3
 # Constants
 pi * 2
 e^2
+
+# Linear equations
+equation(x+1=0)
+equation(2x-3=7)
+
+# Quadratic equations
+equation(x^2+2x+1=0)
+equation(x^2-5x+6=0)
+
+# Systems of linear equations
+equation2(x+y=5,x-y=1)
+equation2(2x+3y=12,4x-y=5)
+equation2(x+y+z=6,x-y+z=2,2x+y-z=3)
 ```
 
 ## Building
