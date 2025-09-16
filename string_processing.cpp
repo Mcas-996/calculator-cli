@@ -201,6 +201,7 @@ namespace sp {
         if(values.empty()) throw std::runtime_error("Invalid expression");
         return values.top();
     }
+<<<<<<< HEAD
     
     // Function to solve simple linear equations
     double solveEquation(const std::string& equation) {
@@ -542,4 +543,6 @@ namespace sp {
             return "Error: " + std::string(e.what());
         }
     }
+=======
+>>>>>>> 1917b2042a898d6b3f12b11e39489442d7ccb87d
 }
