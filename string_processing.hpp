@@ -26,13 +26,20 @@ namespace sp {
     // 
     // Throws std::runtime_error for invalid expressions, division by zero, or sqrt of negative number
     double evaluateExpression(const std::string& expression);
-<<<<<<< HEAD
     
     // Function to solve simple linear equations
     // Supports format: equation(x+1=0) or equation(2x-3=7)
     // Returns the solution for x
     // Throws std::runtime_error for invalid equations or non-linear equations
     double solveEquation(const std::string& equation);
+    
+    // Function to solve systems of linear equations with multiple variables
+    // Supports format: equation2(x+y=5,x-y=1) for 2x2 system
+// or equation2(x+y+z=6,x-y+z=2,x+y-z=0) for 3x3 system
+    // Returns a string containing all solutions in format: "x = value1, y = value2, z = value3"
+    // Supports variables: x, y, z, w, etc.
+    // Throws std::runtime_error for invalid systems, singular matrices, or inconsistent systems
+    std::string solveLinearSystem(const std::string& system);
     
     // Function to solve quadratic equations
     // Supports format: equation(x^2+2x+1=0) or equation(2x^2-3x+1=0)
@@ -51,8 +58,6 @@ namespace sp {
     // - Quadratic equations: "equation(x^2+2x+1=0)"
     // Returns the result as a string that can be directly displayed
     std::string processInput(const std::string& input);
-=======
->>>>>>> 1917b2042a898d6b3f12b11e39489442d7ccb87d
 }
 
 #endif // STRING_PROCESSING_HPP

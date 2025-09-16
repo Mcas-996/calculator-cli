@@ -21,11 +21,9 @@ int main(int argc, char* argv[]) {
         cout << "  Percentages (e.g., 50% converts to 0.5)" << endl;
         cout << "  sqrt() function for square roots" << endl;
         cout << "  Constants: pi (3.14159...), e (2.71828...)" << endl;
-<<<<<<< HEAD
         cout << "  Equation solving: equation(x+1=0)" << endl;
         cout << "  Quadratic equations: equation(x^2+2x+1=0)" << endl;
-=======
->>>>>>> 1917b2042a898d6b3f12b11e39489442d7ccb87d
+        cout << "  System of linear equations: equation2(x+y=5,x-y=1)" << endl;
         cout << endl;
         cout << "Examples:" << endl;
         cout << "  3 + 5 * (2 - 8)^2" << endl;
@@ -34,11 +32,13 @@ int main(int argc, char* argv[]) {
         cout << "  sqrt(16) + 3" << endl;
         cout << "  pi * 2" << endl;
         cout << "  e^2" << endl;
-<<<<<<< HEAD
         cout << "  equation(x+1=0)" << endl;
         cout << "  equation(2x-3=7)" << endl;
         cout << "  equation(x^2+2x+1=0)" << endl;
         cout << "  equation(x^2-5x+6=0)" << endl;
+        cout << "  equation2(x+y=5,x-y=1)" << endl;
+        cout << "  equation2(2x+3y=12,4x-y=5)" << endl;
+        cout << "  equation2(x+y+z=6,x-y+z=2,2x+y-z=3)" << endl;
         return 0;
     }
     
@@ -47,16 +47,6 @@ int main(int argc, char* argv[]) {
     
     // Check if the result starts with "Error:" to determine exit code
     if (result.substr(0, 6) == "Error:") {
-=======
-        return 0;
-    }
-    
-    try {
-        double result = sp::evaluateExpression(argv[1]);
-        cout << result << endl;
-    } catch (const std::exception& e) {
-        cout << "Error: " << e.what() << endl;
->>>>>>> 1917b2042a898d6b3f12b11e39489442d7ccb87d
         return 1;
     }
     return 0;

@@ -4,6 +4,11 @@
 #include <stdexcept>
 #include <cmath>
 #include <string>
+#include <vector>
+#include <map>
+#include <set>
+#include <algorithm>
+#include <iostream>
 
 namespace sp {
     // Helper function to perform arithmetic operations
@@ -201,7 +206,6 @@ namespace sp {
         if(values.empty()) throw std::runtime_error("Invalid expression");
         return values.top();
     }
-<<<<<<< HEAD
     
     // Function to solve simple linear equations
     double solveEquation(const std::string& equation) {
@@ -521,9 +525,211 @@ namespace sp {
         }
     }
     
+    // Function to solve systems of linear equations with multiple variables
+    std::string solveLinearSystem(const std::string& input) {
+        
+        // Remove equation2() wrapper
+        if (input.length() < 12 || input.substr(0, 10) != "equation2(" || input.back() != ')') {
+            throw std::runtime_error("Invalid equation2 format. Use: equation2(x+y=5,x-y=1)");
+        }
+        
+        std::string content = input.substr(10, input.length() - 11);
+        if (content.empty()) {
+            throw std::runtime_error("No equations provided");
+        }
+        
+        // Split equations by comma
+        std::vector<std::string> equations;
+        size_t start = 0;
+        size_t commaPos = content.find(',');
+        
+        while (commaPos != std::string::npos) {
+            equations.push_back(content.substr(start, commaPos - start));
+            start = commaPos + 1;
+            commaPos = content.find(',', start);
+        }
+        equations.push_back(content.substr(start));
+        
+        
+        if (equations.size() < 2) {
+            throw std::runtime_error("System must contain at least 2 equations");
+        }
+        
+        // Detect variables in the system
+        std::set<char> variables;
+        for (const auto& eq : equations) {
+            for (char c : eq) {
+                if (c >= 'x' && c <= 'z') {  // Support x, y, z
+                    variables.insert(c);
+                }
+            }
+        }
+        
+        if (variables.size() != equations.size()) {
+            throw std::runtime_error("Number of variables must equal number of equations");
+        }
+        
+        if (variables.size() > 3) {
+            throw std::runtime_error("Currently supporting up to 3 variables (x, y, z)");
+        }
+        
+        // Parse each equation
+        std::vector<std::map<char, double>> coefficients;
+        std::vector<double> constants;
+        
+        for (const auto& eq : equations) {
+            size_t equalsPos = eq.find('=');
+            if (equalsPos == std::string::npos) {
+                throw std::runtime_error("Each equation must contain '=' sign");
+            }
+            
+            std::string leftSide = eq.substr(0, equalsPos);
+            std::string rightSide = eq.substr(equalsPos + 1);
+            
+            std::map<char, double> eqCoeff;
+            double eqConst = 0;
+            
+            // Parse left side
+            size_t i = 0;
+            while (i < leftSide.length()) {
+                if (leftSide[i] == ' ') {
+                    i++;
+                    continue;
+                }
+                
+                bool isNegative = false;
+                double coeff = 1.0;
+                
+                if (leftSide[i] == '-') {
+                    isNegative = true;
+                    i++;
+                } else if (leftSide[i] == '+') {
+                    i++;
+                }
+                
+                // Parse coefficient number
+                bool hasCoeff = false;
+                if (i < leftSide.length() && isdigit(leftSide[i])) {
+                    coeff = 0;
+                    hasCoeff = true;
+                    while (i < leftSide.length() && isdigit(leftSide[i])) {
+                        coeff = coeff * 10 + (leftSide[i] - '0');
+                        i++;
+                    }
+                    
+                    // Parse decimal part
+                    if (i < leftSide.length() && leftSide[i] == '.') {
+                        i++;
+                        double decimalMultiplier = 0.1;
+                        while (i < leftSide.length() && isdigit(leftSide[i])) {
+                            coeff += (leftSide[i] - '0') * decimalMultiplier;
+                            decimalMultiplier *= 0.1;
+                            i++;
+                        }
+                    }
+                }
+                
+                // Check for variable
+                if (i < leftSide.length() && variables.count(leftSide[i])) {
+                    char var = leftSide[i];
+                    if (!hasCoeff) coeff = 1.0;  // No coefficient means coefficient is 1
+                    eqCoeff[var] += isNegative ? -coeff : coeff;
+                    i++;
+                } else if (hasCoeff || isNegative) {
+                    // It's a constant term
+                    eqConst -= isNegative ? -coeff : coeff;
+                }
+            }
+            
+            // Parse right side
+            double rightValue = sp::evaluateExpression(rightSide);
+            eqConst += rightValue;
+            
+            coefficients.push_back(eqCoeff);
+            constants.push_back(eqConst);
+        }
+        
+        // Build matrix for Gaussian elimination
+        int n = variables.size();
+        std::vector<std::vector<double>> matrix(n, std::vector<double>(n + 1));
+        std::vector<char> varList(variables.begin(), variables.end());
+        std::sort(varList.begin(), varList.end());  // Sort for consistent ordering
+        
+        for (int i = 0; i < n; i++) {
+            for (int j = 0; j < n; j++) {
+                matrix[i][j] = coefficients[i][varList[j]];
+            }
+            matrix[i][n] = constants[i];
+        }
+        
+        // Gaussian elimination
+        for (int i = 0; i < n; i++) {
+            // Find pivot
+            int maxRow = i;
+            for (int k = i + 1; k < n; k++) {
+                if (std::abs(matrix[k][i]) > std::abs(matrix[maxRow][i])) {
+                    maxRow = k;
+                }
+            }
+            
+            // Swap rows
+            std::swap(matrix[i], matrix[maxRow]);
+            
+            // Check for singular matrix
+            if (std::abs(matrix[i][i]) < 1e-10) {
+                throw std::runtime_error("System has no unique solution (singular matrix)");
+            }
+            
+            // Eliminate column
+            for (int k = i + 1; k < n; k++) {
+                double factor = matrix[k][i] / matrix[i][i];
+                for (int j = i; j <= n; j++) {
+                    matrix[k][j] -= factor * matrix[i][j];
+                }
+            }
+        }
+        
+        // Back substitution
+        std::vector<double> solutions(n);
+        for (int i = n - 1; i >= 0; i--) {
+            solutions[i] = matrix[i][n];
+            for (int j = i + 1; j < n; j++) {
+                solutions[i] -= matrix[i][j] * solutions[j];
+            }
+            solutions[i] /= matrix[i][i];
+            
+            // Handle negative zero
+            if (std::abs(solutions[i]) < 1e-10) {
+                solutions[i] = 0.0;
+            }
+        }
+        
+        // Format result with x1, y1, z1 naming convention
+        std::string result;
+        for (int i = 0; i < n; i++) {
+            if (i > 0) result += ", ";
+            
+            std::string valueStr = std::to_string(solutions[i]);
+            // Remove trailing zeros and decimal point if not needed
+            valueStr = valueStr.substr(0, valueStr.find_last_not_of('0') + 1);
+            if (valueStr.back() == '.') valueStr.pop_back();
+            
+            // Use x1, y1, z1 convention instead of x, y, z
+            char varName = varList[i];
+            result += std::string(1, varName) + "1=" + valueStr;
+        }
+        
+        return result;
+    }
+    
     // Unified function to process any input string
     std::string processInput(const std::string& input) {
         try {
+            // Check if it's a system of equations solving request
+            if (input.length() >= 9 && input.substr(0, 9) == "equation2") {
+                return solveLinearSystem(input);
+            }
+            
             // Check if it's an equation solving request
             if (input.length() >= 9 && input.substr(0, 9) == "equation(") {
                 // Check if it's a quadratic equation (contains x^2)
@@ -532,7 +738,18 @@ namespace sp {
                 } else {
                     // Linear equation
                     double result = solveEquation(input);
-                    return "x = " + std::to_string(result);
+                    
+                    // Handle negative zero
+                    if (std::abs(result) < 1e-10) {
+                        result = 0.0;
+                    }
+                    
+                    // Format result nicely (remove trailing zeros)
+                    std::string resultStr = std::to_string(result);
+                    resultStr = resultStr.substr(0, resultStr.find_last_not_of('0') + 1);
+                    if (resultStr.back() == '.') resultStr.pop_back();
+                    
+                    return "x = " + resultStr;
                 }
             } else {
                 // Regular expression evaluation
@@ -543,6 +760,4 @@ namespace sp {
             return "Error: " + std::string(e.what());
         }
     }
-=======
->>>>>>> 1917b2042a898d6b3f12b11e39489442d7ccb87d
 }
