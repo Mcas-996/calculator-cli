@@ -2,7 +2,7 @@
 
 A command-line calculator application that evaluates mathematical expressions with support for basic operations, parentheses, exponents, percentages, square roots, mathematical constants, equation solving, and systems of linear equations.
 
-[中文版说明文档 (Chinese README)](README_zh.md)
+[中文版说明文档 (Chinese README)](README_zh.md) | [WSL使用说明 (WSL Instructions)](README_WSL.md)
 
 ## Features
 

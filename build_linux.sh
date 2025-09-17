@@ -1,4 +1,4 @@
-#!/bin/bash
+﻿#!/bin/bash
 # Linux compilation script for calculator
 
 # Check if g++ is available
