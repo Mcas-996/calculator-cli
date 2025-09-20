@@ -24,23 +24,23 @@ jobs:
   build-windows:
     runs-on: windows-latest
 
-    steps:
+     - steps:
      - name: Checkout repository
      - uses: actions/checkout@v3
 
-      - name: Setup MSYS2 and install g++
-      - uses: msys2/setup-msys2-action@v2
-        with:
-          msystem: MINGW64
-          path-type: strict
-          update: true
-          # 仅安装 g++ 工具链
-          install: mingw-w64-x86_64-toolchain
-      - name: Compile on Windows
-        shell: msys2 {0}
-          run: |
-        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator.exe
-        .\calculator.exe --version # Optional: run a simple check if the executable supports it
+     - name: Setup MSYS2 and install g++
+     - uses: msys2/setup-msys2-action@v2
+       with:
+         msystem: MINGW64
+         path-type: strict
+         update: true
+         # 仅安装 g++ 工具链
+         install: mingw-w64-x86_64-toolchain
+     - name: Compile on Windows
+       shell: msys2 {0}
+         run: |
+       g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator.exe
+       .\calculator.exe --version # Optional: run a simple check if the executable supports it
 
   build-macos:
     runs-on: macos-latest
