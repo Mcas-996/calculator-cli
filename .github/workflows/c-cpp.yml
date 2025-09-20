@@ -1,0 +1,73 @@
+# .github/workflows/build.yml
+name: C++ CI
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+
+jobs:
+  build-ubuntu:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Compile on Ubuntu
+      run: |
+        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator
+        ./calculator --version # Optional: run a simple check if the executable supports it
+
+  build-debian:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Compile on Debian (using Ubuntu runner)
+      run: |
+        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator
+        ./calculator --version
+
+  build-kali:
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Compile on Kali (using Ubuntu runner)
+      run: |
+        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator
+        ./calculator --version
+
+  build-redhat:
+    runs-on: ubuntu-latest # A true Red Hat environment would require self-hosted runners or container actions. This uses a generic Linux environment.
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Compile on Red Hat (using Ubuntu runner)
+      run: |
+        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator
+        ./calculator --version
+
+  build-windows:
+    runs-on: windows-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Set up MinGW (g++)
+      uses: egor-timoshenko/setup-mingw@v1 # Add a step to set up MinGW which includes g++
+      with:
+        version: 'latest'
+    - name: Compile on Windows with g++
+      run: |
+        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator.exe
+        .\calculator.exe --version # Optional: run a simple check if the executable supports it
+
+  build-macos:
+    runs-on: macos-latest
+
+    steps:
+    - uses: actions/checkout@v4
+    - name: Compile on macOS
+      run: |
+        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator
+        ./calculator --version # Optional: run a simple check if the executable supports it
