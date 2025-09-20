@@ -33,7 +33,7 @@ jobs:
         install: >-
           mingw-w64-x86_64-toolchain
     - name: Compile on Windows
-      shell: msys2 {0}
+      shell: msys2
       run: |
         g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator.exe
         ./calculator.exe --version
