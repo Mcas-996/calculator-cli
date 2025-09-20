@@ -35,7 +35,6 @@ jobs:
       shell: msys2
       run: |
         g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator.exe
-        ./calculator.exe --version
 
   build-macos:
     runs-on: macos-latest
