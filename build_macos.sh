@@ -9,7 +9,7 @@ if ! command -v g++ &> /dev/null; then
 fi
 
 echo "Compiling calculator..."
-g++ -std=c++11 -Wall -Wextra -O2 main_cli.cpp string_processing.cpp -o calculator -lm
+g++ -std=c++2a -Wall -Wextra -O2 main_cli.cpp string_processing.cpp -o calculator -lm
 
 if [ $? -eq 0 ]; then
     echo "Compilation successful! Created calculator"

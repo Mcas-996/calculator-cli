@@ -11,7 +11,27 @@
 #include <iostream>
 
 namespace sp {
-    // Helper function to perform arithmetic operations
+    // Helper function to perform arithmetic operations for Fractions
+    Fraction applyOp(Fraction a, Fraction b, char op) {
+        switch(op) {
+            case '+': return a + b;
+            case '-': return a - b;
+            case '*': return a * b;
+            case '/': return a / b;
+            case '^': 
+                // Exponentiation for fractions, converting to double for now, then back to fraction.
+                // For integer exponents with Fraction objects, a more robust implementation would involve
+                // repeated multiplication or a custom power function without converting to double.
+                // Assuming base is not zero for now during conversion.
+                if (a.denominator == 0) throw std::runtime_error("Invalid base for exponentiation: 0/0");
+                if (b.denominator == 0 && b.numerator != 0) throw std::runtime_error("Division by zero in exponent");
+                return Fraction::fromDouble(std::pow(static_cast<double>(a.numerator) / a.denominator, 
+                                                     static_cast<double>(b.numerator) / b.denominator));
+        }
+        return Fraction(0); // Should not reach here
+    }
+
+    // Original applyOp for double (used by equation solvers for double calculations)
     double applyOp(double a, double b, char op) {
         switch(op) {
             case '+': return a + b;
@@ -22,10 +42,11 @@ namespace sp {
                 return a / b;
             case '^': return std::pow(a, b);
         }
-        return 0;
+        return 0; // Should not reach here
     }
 
     // Helper function to handle unary operations (like square root)
+    // Still uses double for internal sqrt calculation, then converts to Fraction if needed
     double applyUnaryOp(double a, const std::string& op) {
         if(op == "sqrt") {
             if(a < 0) throw std::runtime_error("Square root of negative number");
@@ -45,13 +66,13 @@ namespace sp {
     }
 
     // Helper function to parse numbers (including decimals and negative numbers)
-    double parseNumber(const std::string& expression, size_t& i) {
-        double result = 0;
+    // Now returns a Fraction
+    Fraction parseNumber(const std::string& expression, size_t& i) {
+        double result = 0; // Temporarily parse as double
         bool isNegative = false;
-        bool hasDecimal = false;
         double decimalMultiplier = 0.1;
         
-        // Check for negative sign
+        // Handle leading negative sign
         if (i < expression.length() && expression[i] == '-') {
             isNegative = true;
             i++;
@@ -65,7 +86,6 @@ namespace sp {
         
         // Parse decimal part
         if (i < expression.length() && expression[i] == '.') {
-            hasDecimal = true;
             i++;
             while (i < expression.length() && isdigit(expression[i])) {
                 result += (expression[i] - '0') * decimalMultiplier;
@@ -75,12 +95,13 @@ namespace sp {
         }
         
         i--; // Adjust for extra increment in the main loop
-        return isNegative ? -result : result;
+        return Fraction::fromDouble(isNegative ? -result : result);
     }
 
     // Function to evaluate middle school math expressions
-    double evaluateExpression(const std::string& expression) {
-        std::stack<double> values;  // Stack for numbers (changed to double)
+    // Now returns a Fraction
+    Fraction evaluateExpression(const std::string& expression) {
+        std::stack<Fraction> values;  // Stack for Fraction numbers
         std::stack<char> ops;    // Stack for operators
         
         for(size_t i = 0; i < expression.length(); i++) {
@@ -90,29 +111,31 @@ namespace sp {
             // Handle percentages
             if(expression[i] == '%') {
                 if(values.empty()) throw std::runtime_error("Invalid percentage syntax");
-                double val = values.top();
+                Fraction val = values.top();
                 values.pop();
-                values.push(val / 100.0);
+                values.push(val * Fraction(1, 100)); // Divide by 100
                 continue;
             }
             
             // Handle natural constants pi and e
             else if(i + 2 <= expression.length() && expression.substr(i, 2) == "pi") {
-                values.push(3.14159265359);
+                values.push(Fraction::fromDouble(3.14159265359));
                 i += 1; // Move past "pi"
                 continue;
             }
             else if(expression[i] == 'e' && (i == 0 || !isalpha(expression[i-1]))) {
                 // Check if it's 'e' constant (not part of another word)
                 if(i + 1 >= expression.length() || !isalpha(expression[i+1])) {
-                    values.push(2.71828182846);
+                    values.push(Fraction::fromDouble(2.71828182846));
                     continue;
                 }
             }
             // If number (including decimals and negatives), parse it
-            else if(isdigit(expression[i]) || (expression[i] == '-' && (i == 0 || !isdigit(expression[i-1])))) {
-                size_t startPos = i;
-                double val = parseNumber(expression, i);
+            else if(isdigit(expression[i]) || (expression[i] == '-' && (i == 0 || (!isdigit(expression[i-1]) && expression[i-1] != ')')))) { 
+                // A negative sign directly before a number or at start of expression is a unary minus.
+                // A negative sign after an operator or '(' is also unary minus.
+                // A negative sign after a number or ')' is a binary minus. This condition handles unary.
+                Fraction val = parseNumber(expression, i);
                 values.push(val);
                 continue; // parseNumber already advanced i
             }
@@ -131,7 +154,7 @@ namespace sp {
                 
                 // Find matching closing parenthesis
                 int parenCount = 1;
-                size_t startExpr = i + 1;
+                size_t startExpr = i; // Adjusted to be the start of the actual expression inside parenthesis
                 size_t endExpr = i;
                 
                 while(endExpr + 1 < expression.length() && parenCount > 0) {
@@ -144,10 +167,12 @@ namespace sp {
                 
                 // Extract expression inside sqrt
                 std::string sqrtExpr = expression.substr(startExpr, endExpr - startExpr);
-                double sqrtResult = evaluateExpression(sqrtExpr);
+                // Recursively call evaluateExpression which returns a Fraction, then convert to double for std::sqrt
+                Fraction innerResult = evaluateExpression(sqrtExpr);
+                double sqrtVal = static_cast<double>(innerResult.numerator) / innerResult.denominator;
                 
-                if(sqrtResult < 0) throw std::runtime_error("Square root of negative number");
-                values.push(std::sqrt(sqrtResult));
+                if(sqrtVal < 0) throw std::runtime_error("Square root of negative number");
+                values.push(Fraction::fromDouble(std::sqrt(sqrtVal)));
                 
                 i = endExpr; // Move to closing parenthesis
             }
@@ -158,10 +183,11 @@ namespace sp {
             // If closing parenthesis, solve entire brace
             else if(expression[i] == ')') {
                 while(!ops.empty() && ops.top() != '(') {
-                    double val2 = values.top();
+                    if (values.size() < 2) throw std::runtime_error("Too few operands for operator " + std::string(1, ops.top()));
+                    Fraction val2 = values.top();
                     values.pop();
                     
-                    double val1 = values.top();
+                    Fraction val1 = values.top();
                     values.pop();
                     
                     char op = ops.top();
@@ -170,14 +196,16 @@ namespace sp {
                     values.push(applyOp(val1, val2, op));
                 }
                 if(!ops.empty()) ops.pop(); // Pop opening parenthesis
+                else throw std::runtime_error("Unmatched closing parenthesis");
             }
             // If operator, process according to precedence
             else if(expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/' || expression[i] == '^') {
                 while(!ops.empty() && precedence(ops.top()) >= precedence(expression[i])) {
-                    double val2 = values.top();
+                    if (values.size() < 2) throw std::runtime_error("Too few operands for operator " + std::string(1, ops.top()));
+                    Fraction val2 = values.top();
                     values.pop();
                     
-                    double val1 = values.top();
+                    Fraction val1 = values.top();
                     values.pop();
                     
                     char op = ops.top();
@@ -186,15 +214,19 @@ namespace sp {
                     values.push(applyOp(val1, val2, op));
                 }
                 ops.push(expression[i]);
+            } else {
+                throw std::runtime_error("Invalid character in expression: " + std::string(1, expression[i]));
             }
         }
         
         // Process remaining operators
         while(!ops.empty()) {
-            double val2 = values.top();
+            if(ops.top() == '(') throw std::runtime_error("Unmatched opening parenthesis");
+            if (values.size() < 2) throw std::runtime_error("Too few operands for operator " + std::string(1, ops.top()));
+            Fraction val2 = values.top();
             values.pop();
             
-            double val1 = values.top();
+            Fraction val1 = values.top();
             values.pop();
             
             char op = ops.top();
@@ -204,6 +236,8 @@ namespace sp {
         }
         
         if(values.empty()) throw std::runtime_error("Invalid expression");
+        // Ensure only one value remains in the stack
+        if (values.size() != 1) throw std::runtime_error("Invalid expression format resulting in multiple values");
         return values.top();
     }
     
@@ -308,7 +342,8 @@ namespace sp {
         
         // Process right side (treat as constant)
         if (!rightSide.empty()) {
-            double rightValue = evaluateExpression(rightSide);
+            Fraction rightValueFrac = evaluateExpression(rightSide);
+            double rightValue = static_cast<double>(rightValueFrac.numerator) / rightValueFrac.denominator;
             b -= rightValue; // Move to left side: ax + b - rightValue = 0
         }
         
@@ -404,6 +439,7 @@ namespace sp {
             }
             else if (isdigit(leftSide[i]) || leftSide[i] == '-' || leftSide[i] == '+') {
                 // Parse number
+                size_t start = i;
                 bool isNegative = false;
                 bool hasDecimal = false;
                 double num = 0;
@@ -455,7 +491,8 @@ namespace sp {
         
         // Process right side (treat as constant)
         if (!rightSide.empty()) {
-            double rightValue = evaluateExpression(rightSide);
+            Fraction rightValueFrac = evaluateExpression(rightSide);
+            double rightValue = static_cast<double>(rightValueFrac.numerator) / rightValueFrac.denominator;
             c -= rightValue; // Move to left side: ax^2 + bx + c - rightValue = 0
         }
         
@@ -642,7 +679,8 @@ namespace sp {
             }
             
             // Parse right side
-            double rightValue = sp::evaluateExpression(rightSide);
+            Fraction rightValueFrac = evaluateExpression(rightSide);
+            double rightValue = static_cast<double>(rightValueFrac.numerator) / rightValueFrac.denominator;
             eqConst += rightValue;
             
             coefficients.push_back(eqCoeff);
@@ -753,8 +791,8 @@ namespace sp {
                 }
             } else {
                 // Regular expression evaluation
-                double result = evaluateExpression(input);
-                return std::to_string(result);
+                Fraction result = evaluateExpression(input);
+                return result.toString();
             }
         } catch (const std::exception& e) {
             return "Error: " + std::string(e.what());
