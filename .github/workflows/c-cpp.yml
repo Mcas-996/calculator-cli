@@ -20,7 +20,7 @@ jobs:
         sudo apt-get install -y g++
         g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: calculator-linux
         path: calculator
@@ -33,7 +33,7 @@ jobs:
     - name: Compile on Windows
       run: g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator.exe
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: calculator-windows
         path: calculator.exe
@@ -47,7 +47,7 @@ jobs:
       run: |
         g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator
     - name: Upload artifact
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: calculator-macos
         path: calculator
