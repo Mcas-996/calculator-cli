@@ -16,8 +16,9 @@ jobs:
     - name: Compile on Ubuntu
       run: |
         sudo apt-get update
-        sudo apt-get install -y mingw-w64
-        x86_64-w64-mingw32-g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator.exe
+        sudo apt-get install -y g++
+        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator
+        ./calculator --version
 
   build-windows:
     runs-on: windows-latest
@@ -45,4 +46,4 @@ jobs:
     - name: Compile on macOS
       run: |
         g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator
-        ./calculator --version # Optional: run a simple check if the executable supports it
+        ./calculator --version
