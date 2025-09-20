@@ -10,6 +10,10 @@ int main(int argc, char* argv[]) {
     }
     
     string arg = argv[1];
+    if (arg == "--version" || arg == "-v") {
+        cout << "1.0.0" << endl;
+        return 0;
+    }
     if (arg == "--help" || arg == "-h") {
         cout << "Math Expression Calculator" << endl;
         cout << "Usage: " << argv[0] << " \"expression\"" << endl;
