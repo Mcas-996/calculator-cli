@@ -1,4 +1,4 @@
-# .github/workflows/build.yml
+# .github/workflows/c-cpp.yml
 name: C++ CI
 
 on:
@@ -15,32 +15,28 @@ jobs:
     - uses: actions/checkout@v4
     - name: Compile on Ubuntu
       run: |
-        sudo apt update
-        sudo apt install -y MinGW64
+        sudo apt-get update
+        sudo apt-get install -y g++
         g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator
         ./calculator --version # Optional: run a simple check if the executable supports it
 
-  
   build-windows:
     runs-on: windows-latest
 
-     - steps:
-     - name: Checkout repository
-     - uses: actions/checkout@v3
-
-     - name: Setup MSYS2 and install g++
-     - uses: msys2/setup-msys2-action@v2
-       with:
-         msystem: MINGW64
-         path-type: strict
-         update: true
-         # 仅安装 g++ 工具链
-         install: mingw-w64-x86_64-toolchain
-     - name: Compile on Windows
-       shell: msys2 {0}
-         run: |
-       g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator.exe
-       .\calculator.exe --version # Optional: run a simple check if the executable supports it
+    steps:
+    - uses: actions/checkout@v4
+    - name: Setup MSYS2
+      uses: msys2/setup-msys2-action@v2
+      with:
+        msystem: MINGW64
+        update: true
+        install: >-
+          mingw-w64-x86_64-toolchain
+    - name: Compile on Windows
+      shell: msys2 {0}
+      run: |
+        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator.exe
+        ./calculator.exe --version
 
   build-macos:
     runs-on: macos-latest
