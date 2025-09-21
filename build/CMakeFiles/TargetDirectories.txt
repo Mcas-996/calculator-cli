@@ -1,0 +1,5 @@
+D:/allen's/code/traetest/calculator_pkg/calculator-cli/build/CMakeFiles/calculator.dir
+D:/allen's/code/traetest/calculator_pkg/calculator-cli/build/CMakeFiles/run_tests.dir
+D:/allen's/code/traetest/calculator_pkg/calculator-cli/build/CMakeFiles/test.dir
+D:/allen's/code/traetest/calculator_pkg/calculator-cli/build/CMakeFiles/edit_cache.dir
+D:/allen's/code/traetest/calculator_pkg/calculator-cli/build/CMakeFiles/rebuild_cache.dir

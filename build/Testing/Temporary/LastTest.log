@@ -1,0 +1,19 @@
+Start testing: Sep 21 20:44 澳大利亚东部标准时间
+----------------------------------------------------------
+1/1 Testing: BasicArithmeticTest
+1/1 Test: BasicArithmeticTest
+Command: "D:/allen's/code/traetest/calculator_pkg/calculator-cli/build/run_tests.exe"
+Directory: D:/allen's/code/traetest/calculator_pkg/calculator-cli/build
+"BasicArithmeticTest" start time: Sep 21 20:44 澳大利亚东部标准时间
+Output:
+----------------------------------------------------------
+Test '2.0 + 2.0 == 4.0' passed.
+<end of output>
+Test time =   0.03 sec
+----------------------------------------------------------
+Test Passed.
+"BasicArithmeticTest" end time: Sep 21 20:44 澳大利亚东部标准时间
+"BasicArithmeticTest" time elapsed: 00:00:00
+----------------------------------------------------------
+
+End testing: Sep 21 20:44 澳大利亚东部标准时间

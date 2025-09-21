@@ -1,0 +1,7 @@
+# ninja log v7
+34	748	7801545827760540	CMakeFiles/run_tests.dir/calculator_tests.cpp.obj	180297e033f3e5e9
+11	758	7801545827521800	CMakeFiles/calculator.dir/main_cli.cpp.obj	4310b267679e3c00
+24	1451	7801545827660917	CMakeFiles/calculator.dir/string_processing.cpp.obj	786b0bcd0d7ad4ca
+44	1513	7801545827846674	CMakeFiles/run_tests.dir/string_processing.cpp.obj	15292f597eca7a12
+1513	1732	7801545842551269	run_tests.exe	8c9fa96d183c0de8
+1452	1733	7801545841932751	calculator.exe	67ec678bd43d3472
