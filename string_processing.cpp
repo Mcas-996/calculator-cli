@@ -603,10 +603,6 @@ namespace sp {
             }
         }
         
-        if (variables.size() != equations.size()) {
-            throw runtime_error("Number of variables must equal number of equations");
-        }
-        
         if (variables.size() > 3) {
             throw runtime_error("Currently supporting up to 3 variables (x, y, z)");
         }
@@ -626,54 +622,49 @@ namespace sp {
             
             map<char, double> eqCoeff;
             double eqConst = 0;
-            
-            // --- Start of Fixed Parser ---
+
+            // --- Start of Refactored Parser ---
             size_t i = 0;
-            bool isTermNegative = false;
-            // Handle if the very first term is negative
-            while(i < leftSide.length() && leftSide[i] == ' ') { i++; }
-            if (i < leftSide.length() && leftSide[i] == '-') {
-                isTermNegative = true;
-                i++;
-            }
-
             while (i < leftSide.length()) {
-                if (leftSide[i] == ' ') { i++; continue; }
+                // 1. Skip leading whitespace for the term
+                while (i < leftSide.length() && leftSide[i] == ' ') { i++; }
+                if (i == leftSide.length()) break;
 
-                if (leftSide[i] == '+') {
-                    isTermNegative = false;
+                // 2. Determine the sign of the term
+                bool isNegative = false;
+                if (leftSide[i] == '-') {
+                    isNegative = true;
                     i++;
-                    continue;
-                } else if (leftSide[i] == '-') {
-                    isTermNegative = true;
+                } else if (leftSide[i] == '+') {
                     i++;
-                    continue;
                 }
 
+                // 3. Parse the coefficient (number part)
                 double coeff = 1.0;
-                bool hasCoeff = false;
-
-                if (isdigit(leftSide[i])) {
-                    coeff = 0;
-                    hasCoeff = true;
+                if (i < leftSide.length() && isdigit(leftSide[i])) {
                     string numStr;
                     while (i < leftSide.length() && (isdigit(leftSide[i]) || leftSide[i] == '.')) {
                         numStr += leftSide[i];
                         i++;
                     }
-                    coeff = std::stod(numStr);
+                    try {
+                        coeff = std::stod(numStr);
+                    } catch (const std::invalid_argument&) {
+                        throw runtime_error("Invalid number format in equation: " + numStr);
+                    }
                 }
 
+                // 4. Parse the variable part
+                while (i < leftSide.length() && leftSide[i] == ' ') { i++; } // Skip space between coeff and var
                 if (i < leftSide.length() && variables.count(leftSide[i])) {
                     char var = leftSide[i];
-                    eqCoeff[var] += isTermNegative ? -coeff : coeff;
+                    eqCoeff[var] += isNegative ? -coeff : coeff;
                     i++;
-                } else if (hasCoeff) {
-                    eqConst -= isTermNegative ? -coeff : coeff;
+                } else { // If there's no variable, it was a constant on the left side
+                    eqConst -= isNegative ? -coeff : coeff;
                 }
-                isTermNegative = false; // Reset sign for next term
             }
-            // --- End of Fixed Parser ---
+            // --- End of Refactored Parser ---
             
             // Parse right side
             Fraction rightValueFrac = evaluateExpression(rightSide);
