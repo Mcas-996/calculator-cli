@@ -13,11 +13,11 @@ namespace sp {
     // Supports format: equation(x+1=0) or equation(2x-3=7)
     // Returns the solution for x
     // Throws std::runtime_error for invalid equations or non-linear equations
-    double solveEquation(const std::string& equation);
+    std::string solveEquation(const std::string& equation);
     
     // Function to solve systems of linear equations with multiple variables
     // Supports format: equation2(x+y=5,x-y=1) for 2x2 system
-// or equation2(x+y+z=6,x-y+z=2,x+y-z=0) for 3x3 system
+// or equation2(x+y+z=6,x-y+z=2,2x+y-z=3) for 3x3 system
     // Returns a string containing all solutions in format: "x = value1, y = value2, z = value3"
     // Supports variables: x, y, z, w, etc.
     // Throws std::runtime_error for invalid systems, singular matrices, or inconsistent systems

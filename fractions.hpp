@@ -7,6 +7,7 @@
 #include <sstream>   // For std::ostringstream
 #include <cmath>     // For std::fabs, std::round
 #include <utility>   // For std::swap
+#include <iomanip>   // For std::fixed, std::setprecision
 
 class Fraction {
 public: // Make all members public, as they were in a struct
@@ -76,6 +77,14 @@ public: // Make all members public, as they were in a struct
         );
     }
 
+    // Returns the inverse of the fraction (b/a for a/b)
+    Fraction inverse() const {
+        if (numerator == 0) {
+            throw std::runtime_error("Cannot invert a zero fraction");
+        }
+        return Fraction(denominator, numerator);
+    }
+
     // Conversion from double to Fraction
     static Fraction fromDouble(double value, double epsilon = 1e-9) {
         if (std::fabs(value - std::round(value)) < epsilon) {
@@ -106,7 +115,8 @@ public: // Make all members public, as they were in a struct
         if (denominator == 1) {
             oss << numerator;
         } else {
-            oss << numerator << "/" << denominator;
+            // Convert to double for decimal representation
+            oss << std::fixed << std::setprecision(10) << static_cast<double>(numerator) / denominator;
         }
         return oss.str();
     }
