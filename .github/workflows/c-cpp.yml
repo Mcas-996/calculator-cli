@@ -18,7 +18,7 @@ jobs:
     - name: Compile on Ubuntu
       run: |
         sudo apt-get install -y g++
-        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator
+        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator -static
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -31,7 +31,7 @@ jobs:
     steps:
     - uses: actions/checkout@v4
     - name: Compile on Windows
-      run: g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator.exe
+      run: g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator.exe -static
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -45,7 +45,7 @@ jobs:
     - uses: actions/checkout@v4
     - name: Compile on macOS
       run: |
-        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator
+        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator -static
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
