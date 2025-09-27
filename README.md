@@ -1,6 +1,67 @@
 # Calculator CLI
 
-A command-line calculator application that evaluates mathematical expressions with support for basic operations, parentheses, exponents, percentages, square roots, mathematical constants, equation solving, and systems of linear equations.
+A command-line calculator that supports basic arithmetic operations, equation solving, and more.
+
+## Features
+
+### Basic Operations
+- Addition (+)
+- Subtraction (-)
+- Multiplication (*)
+- Division (/)
+- Exponentiation (^)
+- Parentheses for grouping
+- Percentage calculations (%)
+- Square root function (sqrt)
+- Absolute value function (abs)
+- Constants: pi, e
+
+### Equation Solving
+- Linear equations (e.g., `equation(2x+5=0)`)
+- Quadratic equations (e.g., `equation(x^2+5x+6=0)`)
+- Cubic equations (e.g., `equation(x^3-6x^2+11x-6=0)`)
+- System of linear equations (e.g., `equation2(x+y=5,x-y=1)`)
+
+### Number Format
+- Integer and decimal numbers
+- Fractions (automatic conversion)
+- Mixed numbers
+
+## Usage
+
+Run the calculator executable and enter expressions or equations to solve.
+
+### Examples
+
+Basic arithmetic:
+> 2 + 3 * 4
+> (1 + 2) * (3 + 4)
+> sqrt(16) + 2^3
+> 50%
+
+Equation solving:
+> equation(2x+5=0)
+> equation(x^2+5x+6=0)
+> equation(x^3-6x^2+11x-6=0)
+> equation2(x+y=5,x-y=1)
+
+## Implementation Details
+
+The calculator uses a stack-based algorithm to evaluate expressions with proper operator precedence. Fractions are used internally for precise calculations.
+
+For equation solving:
+- Linear equations are solved using basic algebra
+- Quadratic equations use the quadratic formula
+- Cubic equations are solved using Cardano's method
+- Systems of linear equations use Gaussian elimination
+
+## Building
+
+To build the calculator, compile the C++ source files with a C++11 compatible compiler.
+
+## License
+
+MIT
 
 [中文版说明文档 (Chinese README)](README_zh.md) | [WSL使用说明 (WSL Instructions)](README_WSL.md)
 

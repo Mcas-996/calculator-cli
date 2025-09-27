@@ -1,10 +1,10 @@
-Start testing: Sep 21 21:22 澳大利亚东部标准时间
+Start testing: Sep 27 11:03 澳大利亚东部标准时间
 ----------------------------------------------------------
 1/1 Testing: BasicArithmeticTest
 1/1 Test: BasicArithmeticTest
 Command: "D:/allen's/code/traetest/calculator_pkg/calculator-cli/build/run_tests.exe"
 Directory: D:/allen's/code/traetest/calculator_pkg/calculator-cli/build
-"BasicArithmeticTest" start time: Sep 21 21:22 澳大利亚东部标准时间
+"BasicArithmeticTest" start time: Sep 27 11:03 澳大利亚东部标准时间
 Output:
 ----------------------------------------------------------
 Running all calculator tests...
@@ -33,11 +33,11 @@ Actual result for '1 / 0': Error: Division by zero
 Error handling test passed.
 All tests completed successfully!
 <end of output>
-Test time =   0.09 sec
+Test time =   0.77 sec
 ----------------------------------------------------------
 Test Passed.
-"BasicArithmeticTest" end time: Sep 21 21:22 澳大利亚东部标准时间
+"BasicArithmeticTest" end time: Sep 27 11:03 澳大利亚东部标准时间
 "BasicArithmeticTest" time elapsed: 00:00:00
 ----------------------------------------------------------
 
-End testing: Sep 21 21:22 澳大利亚东部标准时间
+End testing: Sep 27 11:03 澳大利亚东部标准时间

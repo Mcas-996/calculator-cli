@@ -610,6 +610,305 @@ namespace sp {
         }
     }
     
+    // Function to solve cubic equations
+    string solveCubicEquation(const string& equation) {
+        // Check if equation starts with "equation(" and ends with ")"
+        if (equation.length() < 11 || equation.substr(0, 9) != "equation(") {
+            throw runtime_error("Invalid equation format. Use: equation(x^3-6x^2+11x-6=0)");
+        }
+        
+        size_t endPos = equation.find_last_of(')');
+        if (endPos == string::npos || endPos != equation.length() - 1) {
+            throw runtime_error("Invalid equation format. Use: equation(x^3-6x^2+11x-6=0)");
+        }
+        
+        // Extract the equation content
+        string eqContent = equation.substr(9, endPos - 9);
+        
+        // Find the equals sign
+        size_t equalsPos = eqContent.find('=');
+        if (equalsPos == string::npos) {
+            throw runtime_error("Equation must contain '=' sign");
+        }
+        
+        string leftSide = eqContent.substr(0, equalsPos);
+        string rightSide = eqContent.substr(equalsPos + 1);
+        
+        // Parse coefficients for cubic equation ax^3 + bx^2 + cx + d = 0
+        double a = 0, b = 0, c = 0, d = 0;
+        bool hasX3 = false;
+        
+        // Process left side
+        size_t i = 0;
+        while (i < leftSide.length()) {
+            // Skip whitespace
+            if (leftSide[i] == ' ') {
+                i++;
+                continue;
+            }
+            
+            // Look for x^3 terms
+            if (leftSide[i] == 'x' && i + 1 < leftSide.length() && leftSide[i + 1] == '^' && i + 2 < leftSide.length() && leftSide[i + 2] == '3') {
+                hasX3 = true;
+                a += 1.0; // coefficient is 1 if just 'x^3'
+                i += 3; // Skip x^3
+            }
+            else if (i + 3 < leftSide.length() && leftSide.substr(i, 3) == "x^3") {
+                hasX3 = true;
+                a += 1.0;
+                i += 3;
+            }
+            else if (i + 4 < leftSide.length() && leftSide.substr(i, 4) == "-x^3") {
+                hasX3 = true;
+                a += -1.0;
+                i += 4;
+            }
+            else if (i + 4 < leftSide.length() && leftSide.substr(i, 4) == "+x^3") {
+                hasX3 = true;
+                a += 1.0;
+                i += 4;
+            }
+            // Look for x^2 terms
+            else if (leftSide[i] == 'x' && i + 1 < leftSide.length() && leftSide[i + 1] == '^' && i + 2 < leftSide.length() && leftSide[i + 2] == '2') {
+                b += 1.0; // coefficient is 1 if just 'x^2'
+                i += 3; // Skip x^2
+            }
+            else if (i + 3 < leftSide.length() && leftSide.substr(i, 3) == "x^2") {
+                b += 1.0;
+                i += 3;
+            }
+            else if (i + 4 < leftSide.length() && leftSide.substr(i, 4) == "-x^2") {
+                b += -1.0;
+                i += 4;
+            }
+            else if (i + 4 < leftSide.length() && leftSide.substr(i, 4) == "+x^2") {
+                b += 1.0;
+                i += 4;
+            }
+            // Look for x terms
+            else if (leftSide[i] == 'x' && (i + 1 >= leftSide.length() || (leftSide[i + 1] != '^' && leftSide[i + 1] != '3' && leftSide[i + 1] != '2'))) {
+                c += 1.0; // coefficient is 1 if just 'x'
+                i++;
+            }
+            else if (i + 1 < leftSide.length() && leftSide.substr(i, 2) == "-x" && (i + 2 >= leftSide.length() || (leftSide[i + 2] != '^' && leftSide[i + 2] != '3' && leftSide[i + 2] != '2'))) {
+                c += -1.0;
+                i += 2;
+            }
+            else if (i + 1 < leftSide.length() && leftSide.substr(i, 2) == "+x" && (i + 2 >= leftSide.length() || (leftSide[i + 2] != '^' && leftSide[i + 2] != '3' && leftSide[i + 2] != '2'))) {
+                c += 1.0;
+                i += 2;
+            }
+            else if (isdigit(leftSide[i]) || leftSide[i] == '-' || leftSide[i] == '+') {
+                // Parse number
+                bool isNegative = false;
+                double num = 0;
+                double decimalMultiplier = 0.1;
+                
+                if (leftSide[i] == '-') {
+                    isNegative = true;
+                    i++;
+                } else if (leftSide[i] == '+') {
+                    i++;
+                }
+                
+                // Parse integer part
+                while (i < leftSide.length() && isdigit(leftSide[i])) {
+                    num = num * 10 + (leftSide[i] - '0');
+                    i++;
+                }
+                
+                // Parse decimal part
+                if (i < leftSide.length() && leftSide[i] == '.') {
+                    i++;
+                    while (i < leftSide.length() && isdigit(leftSide[i])) {
+                        num += (leftSide[i] - '0') * decimalMultiplier;
+                        decimalMultiplier *= 0.1;
+                        i++;
+                    }
+                }
+                
+                // Check if this number is multiplied by x^3
+                if (i + 2 < leftSide.length() && leftSide[i] == 'x' && leftSide[i + 1] == '^' && leftSide[i + 2] == '3') {
+                    hasX3 = true;
+                    a += isNegative ? -num : num;
+                    i += 3; // Skip x^3
+                }
+                // Check if this number is multiplied by x^2
+                else if (i + 2 < leftSide.length() && leftSide[i] == 'x' && leftSide[i + 1] == '^' && leftSide[i + 2] == '2') {
+                    b += isNegative ? -num : num;
+                    i += 3; // Skip x^2
+                }
+                // Check if this number is multiplied by x
+                else if (i < leftSide.length() && leftSide[i] == 'x' && (i + 1 >= leftSide.length() || (leftSide[i + 1] != '^' && leftSide[i + 1] != '3' && leftSide[i + 1] != '2'))) {
+                    c += isNegative ? -num : num;
+                    i++; // Skip x
+                } else {
+                    d += isNegative ? -num : num;
+                }
+            }
+            else {
+                throw runtime_error("Invalid character in equation: " + string(1, leftSide[i]));
+            }
+        }
+        
+        // Process right side (treat as constant)
+        if (!rightSide.empty()) {
+            Fraction rightValueFrac = evaluateExpression(rightSide);
+            double rightValue = static_cast<double>(rightValueFrac.numerator) / rightValueFrac.denominator;
+            d -= rightValue; // Move to left side: ax^3 + bx^2 + cx + d - rightValue = 0
+        }
+        
+        if (!hasX3) {
+            throw runtime_error("Cubic equation must contain x^3 term");
+        }
+        
+        // Normalize coefficients
+        b /= a;
+        c /= a;
+        d /= a;
+        
+        // Use Cardano's method to solve cubic equation
+        // Convert to depressed cubic: t^3 + pt + q = 0
+        double p = c - b * b / 3.0;
+        double q = (2.0 * b * b * b - 9.0 * b * c + 27.0 * d) / 27.0;
+        
+        // Calculate discriminant
+        double discriminant = q * q / 4.0 + p * p * p / 27.0;
+        
+        vector<double> realRoots;
+        vector<std::pair<double, double>> complexRoots; // Real and imaginary parts
+        
+        if (discriminant > 0) {
+            // One real root and two complex conjugate roots
+            double sqrt_discriminant = sqrt(discriminant);
+            double u = cbrt(-q / 2.0 + sqrt_discriminant);
+            double v = cbrt(-q / 2.0 - sqrt_discriminant);
+            double realRoot = u + v - b / 3.0;
+            realRoots.push_back(realRoot);
+            
+            // Calculate complex roots
+            double realPart = -(u + v) / 2.0 - b / 3.0;
+            double imaginaryPart = (u - v) * sqrt(3.0) / 2.0;
+            complexRoots.push_back({realPart, imaginaryPart});
+            complexRoots.push_back({realPart, -imaginaryPart});
+        } else if (abs(discriminant) < 1e-12) { // discriminant == 0
+            // All roots are real and at least two are equal
+            if (abs(q) < 1e-12) {
+                // Triple root
+                realRoots.push_back(-b / 3.0);
+                realRoots.push_back(-b / 3.0);
+                realRoots.push_back(-b / 3.0);
+            } else {
+                // One single root and one double root
+                double u = cbrt(-q / 2.0);
+                realRoots.push_back(2.0 * u - b / 3.0);
+                realRoots.push_back(-u - b / 3.0);
+                realRoots.push_back(-u - b / 3.0);
+            }
+        } else {
+            // Three distinct real roots (Casus irreducibilis)
+            double rho = sqrt(-p * p * p / 27.0);
+            double theta = acos(-q / (2.0 * rho));
+            double cbrt_rho = cbrt(rho);
+            
+            realRoots.push_back(2.0 * cbrt_rho * cos(theta / 3.0) - b / 3.0);
+            realRoots.push_back(2.0 * cbrt_rho * cos((theta + 2.0 * M_PI) / 3.0) - b / 3.0);
+            realRoots.push_back(2.0 * cbrt_rho * cos((theta + 4.0 * M_PI) / 3.0) - b / 3.0);
+        }
+        
+        // Format result
+        string result;
+        int rootIndex = 1;
+        
+        // Add real roots to result
+        for (size_t i = 0; i < realRoots.size(); i++) {
+            if (rootIndex > 1) result += ", ";
+            
+            // Handle negative zero
+            if (abs(realRoots[i]) < 1e-10) {
+                realRoots[i] = 0.0;
+            }
+            
+            Fraction root_frac = Fraction::fromDouble(realRoots[i]);
+            if (std::fabs(realRoots[i] - (static_cast<double>(root_frac.numerator) / root_frac.denominator)) < 1e-9) {
+                result += "x" + to_string(rootIndex) + " = " + root_frac.toString();
+            } else {
+                std::ostringstream oss;
+                oss << std::fixed << std::setprecision(10) << realRoots[i];
+                string rootStr = oss.str();
+                // Remove trailing zeros and decimal point if not needed
+                rootStr = rootStr.substr(0, rootStr.find_last_not_of('0') + 1);
+                if (rootStr.back() == '.') rootStr.pop_back();
+                result += "x" + to_string(rootIndex) + " = " + rootStr;
+            }
+            rootIndex++;
+        }
+        
+        // Add complex roots to result
+        for (size_t i = 0; i < complexRoots.size(); i++) {
+            if (rootIndex > 1) result += ", ";
+            
+            double realPart = complexRoots[i].first;
+            double imaginaryPart = complexRoots[i].second;
+            
+            // Handle negative zero
+            if (abs(realPart) < 1e-10) realPart = 0.0;
+            if (abs(imaginaryPart) < 1e-10) imaginaryPart = 0.0;
+            
+            std::ostringstream oss_real, oss_imag;
+            oss_real << std::fixed << std::setprecision(10) << realPart;
+            oss_imag << std::fixed << std::setprecision(10) << abs(imaginaryPart);
+            
+            string realStr = oss_real.str();
+            string imagStr = oss_imag.str();
+            
+            // Remove trailing zeros for cleaner output
+            realStr = realStr.substr(0, realStr.find_last_not_of('0') + 1);
+            if (realStr.back() == '.') realStr.pop_back();
+            
+            imagStr = imagStr.substr(0, imagStr.find_last_not_of('0') + 1);
+            if (imagStr.back() == '.') imagStr.pop_back();
+            
+            // Format complex number
+            if (abs(realPart) < 1e-10) {
+                // Pure imaginary
+                if (abs(abs(imaginaryPart) - 1.0) < 1e-10) {
+                    if (imaginaryPart >= 0) {
+                        result += "x" + to_string(rootIndex) + " = i";
+                    } else {
+                        result += "x" + to_string(rootIndex) + " = -i";
+                    }
+                } else {
+                    if (imaginaryPart >= 0) {
+                        result += "x" + to_string(rootIndex) + " = " + imagStr + "i";
+                    } else {
+                        result += "x" + to_string(rootIndex) + " = -" + imagStr + "i";
+                    }
+                }
+            } else {
+                // Complex number with both real and imaginary parts
+                string formattedRoot = realStr;
+                if (imaginaryPart >= 0) {
+                    if (abs(abs(imaginaryPart) - 1.0) < 1e-10) {
+                        formattedRoot += " + i";
+                    } else {
+                        formattedRoot += " + " + imagStr + "i";
+                    }
+                } else {
+                    if (abs(abs(imaginaryPart) - 1.0) < 1e-10) {
+                        formattedRoot += " - i";
+                    } else {
+                        formattedRoot += " - " + imagStr + "i";
+                    }
+                }
+                result += "x" + to_string(rootIndex) + " = " + formattedRoot;
+            }
+            rootIndex++;
+        }
+        
+        return result;
+    }
+    
     // Function to solve systems of linear equations with multiple variables
     string solveLinearSystem(const string& input) {
         
@@ -818,8 +1117,12 @@ namespace sp {
             
             // Check if it's an equation solving request
             if (input.length() >= 9 && input.substr(0, 9) == "equation(") {
+                // Check if it's a cubic equation (contains x^3)
+                if (input.find("x^3") != string::npos) {
+                    return solveCubicEquation(input);
+                }
                 // Check if it's a quadratic equation (contains x^2)
-                if (input.find("x^2") != string::npos) {
+                else if (input.find("x^2") != string::npos) {
                     return solveQuadraticEquation(input);
                 } else {
                     // Linear equation

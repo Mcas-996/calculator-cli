@@ -1,2 +1,2 @@
-BasicArithmeticTest 6 0.0153748
+BasicArithmeticTest 1 0.770616
 ---
