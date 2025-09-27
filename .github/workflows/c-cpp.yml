@@ -15,42 +15,55 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
-    - name: Compile on Ubuntu
+    - name: Install dependencies
       run: |
-        sudo apt-get install -y g++
-        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator -static
+        sudo apt-get update
+        sudo apt-get install -y cmake g++
+    - name: Configure CMake
+      run: cmake -B build -S .
+    - name: Build with CMake
+      run: cmake --build build --config Release
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: calculator-linux
-        path: calculator
+        path: build/calculator
 
   build-windows:
     runs-on: windows-latest
 
     steps:
     - uses: actions/checkout@v4
-    - name: Compile on Windows
-      run: g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator.exe -static
+    - name: Install dependencies
+      run: |
+        choco install cmake
+    - name: Configure CMake
+      run: cmake -B build -S .
+    - name: Build with CMake
+      run: cmake --build build --config Release
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: calculator-windows
-        path: calculator.exe
+        path: build/Release/calculator.exe
 
   build-macos:
     runs-on: macos-latest
 
     steps:
     - uses: actions/checkout@v4
-    - name: Compile on macOS
+    - name: Install dependencies
       run: |
-        g++ -std=c++17 main_cli.cpp string_processing.cpp -o calculator
+        brew install cmake
+    - name: Configure CMake
+      run: cmake -B build -S .
+    - name: Build with CMake
+      run: cmake --build build --config Release
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
         name: calculator-macos
-        path: calculator
+        path: build/calculator
 
   release:
     runs-on: ubuntu-latest
