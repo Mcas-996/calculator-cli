@@ -42,6 +42,6 @@
 
 .vs
 
-./build/*
+build
 run
 test
