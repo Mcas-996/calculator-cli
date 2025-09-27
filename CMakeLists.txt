@@ -19,3 +19,9 @@ add_executable(run_tests calculator_tests.cpp string_processing.cpp)
 
 # 将测试添加到 CTest
 add_test(NAME BasicArithmeticTest COMMAND run_tests)
+
+# Windows特定配置
+if(WIN32)
+    # 在Windows上定义M_PI常量以避免编译错误
+    add_definitions(-D_USE_MATH_DEFINES)
+endif()
