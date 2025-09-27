@@ -43,7 +43,7 @@ namespace sp {
                 if (b.numerator < 0) {
                     // (a/b)^-n = (b/a)^n
                     Fraction base = a;
-                    int exponent = -b.numerator; // Assuming integer exponent for now
+                    int exponent = static_cast<int>(-b.numerator); // Assuming integer exponent for now
                     Fraction result(1);
                     for (int i = 0; i < exponent; ++i) {
                         result = result * base;
@@ -1022,7 +1022,7 @@ namespace sp {
         }
         
         // Build matrix for Gaussian elimination
-        int n = variables.size();
+        int n = static_cast<int>(variables.size());
         vector<vector<double>> matrix(n, vector<double>(n + 1));
         vector<char> varList(variables.begin(), variables.end());
         sort(varList.begin(), varList.end());  // Sort for consistent ordering
