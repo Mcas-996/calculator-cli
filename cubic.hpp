@@ -19,7 +19,7 @@ inline std::vector<double> solve_cubic(double a, double b, double c, double d) {
 
     // Define PI if not available
     #ifndef M_PI
-    const double M_PI = std::acos(-1.0);
+    constexpr double M_PI = std::acos(-1.0);
     #endif
 
     // Normalize to x^3 + Bx^2 + Cx + D = 0

@@ -24,6 +24,7 @@ using std::abs;
 using std::swap;
 
 namespace sp {
+    constexpr double M_PI = std::acos(-1.0);
     // Helper function to perform arithmetic operations for Fractions
     Fraction applyOp(Fraction a, Fraction b, char op) {
         switch(op) {

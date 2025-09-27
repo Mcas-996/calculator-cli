@@ -7,7 +7,7 @@
 #include <sstream> // For std::istringstream
 
 #include "string_processing.hpp"
-
+constexpr double M_PI = std::acos(-1.0);
 // Helper function to compare double results with a tolerance
 bool compare_doubles(double d1, double d2, double epsilon = 0.00001) {
     return std::abs(d1 - d2) < epsilon;
