@@ -139,7 +139,7 @@ namespace sp {
             
             // Handle natural constants pi and e
             else if(i + 2 <= expression.length() && expression.substr(i, 2) == "pi") {
-                Fraction pi_val = Fraction::fromDouble(3.14159265359);
+                Fraction pi_val = Fraction::fromDouble(acos(-1.0));
                 values.push(pi_val);
                 i += 1; // Move past "pi"
                 expecting_operand = false; // After a constant, expect an operator

@@ -26,6 +26,10 @@ jobs:
       run: cmake -B build -S .
     - name: Build with CMake
       run: cmake --build build --config Release
+    - name: Test
+      run: |
+        cd build
+        ctest -C Release
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -47,6 +51,10 @@ jobs:
       run: cmake -B build -S .
     - name: Build with CMake
       run: cmake --build build --config Release
+    - name: Test
+      run: |
+        cd build
+        ctest -C Release
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
@@ -68,6 +76,10 @@ jobs:
       run: cmake -B build -S .
     - name: Build with CMake
       run: cmake --build build --config Release
+    - name: Test
+      run: |
+        cd build
+        ctest -C Release
     - name: Upload artifact
       uses: actions/upload-artifact@v4
       with:
