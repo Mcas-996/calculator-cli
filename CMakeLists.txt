@@ -17,10 +17,6 @@ enable_testing()
 # 添加测试可执行文件
 add_executable(run_tests calculator_tests.cpp string_processing.cpp)
 
-# 将测试添加到 CTest
-# 修改: 明确指定测试可执行文件的路径，解决Windows上的测试执行问题
-add_test(NAME BasicArithmeticTest COMMAND $<TARGET_FILE:run_tests>)
-
 # Windows特定配置
 if(WIN32)
     # 在Windows上定义M_PI常量以避免编译错误
