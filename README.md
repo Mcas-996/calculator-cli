@@ -45,39 +45,6 @@ Equation solving:
 > equation(x^3-6x^2+11x-6=0)
 > equation2(x+y=5,x-y=1)
 
-## Implementation Details
-
-The calculator uses a stack-based algorithm to evaluate expressions with proper operator precedence. Fractions are used internally for precise calculations.
-
-For equation solving:
-- Linear equations are solved using basic algebra
-- Quadratic equations use the quadratic formula
-- Cubic equations are solved using Cardano's method
-- Systems of linear equations use Gaussian elimination
-
-## Building
-
-To build the calculator, compile the C++ source files with a C++11 compatible compiler.
-
-## License
-
-MIT
-
-[中文版说明文档 (Chinese README)](README_zh.md) | [WSL使用说明 (WSL Instructions)](README_WSL.md)
-
-## Features
-
-- Basic arithmetic operations: `+`, `-`, `*`, `/`, `^` (exponent)
-- Parentheses for grouping expressions
-- Negative numbers and decimal numbers
-- Percentage calculations (e.g., `50%` converts to `0.5`)
-- Square root function: `sqrt(x)`
-- Mathematical constants: `pi` (π) and `e`
-- Linear equation solving: `equation(x+1=0)`
-- Quadratic equation solving: `equation(x^2+2x+1=0)`
-- Systems of linear equations: `equation2(x+y=5,x-y=1)`
-- Error handling for invalid expressions
-
 ## Supported Operations
 
 ```bash
