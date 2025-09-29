@@ -95,16 +95,37 @@ chmod +x build_macos.sh
 ./build_macos.sh
 ```
 
+## Running on macOS
+
+If you download the pre-compiled binary for macOS, you might encounter a security warning because the application is not signed with an Apple Developer certificate. This is normal for applications distributed outside the App Store.
+
+To run the calculator on macOS, you can do one of the following:
+
+### Option 1: Using Terminal
+Open Terminal and run the following command to remove the quarantine attribute:
+```bash
+xattr -d com.apple.quarantine /path/to/calculator
+```
+
+Replace `/path/to/calculator` with the actual path to the downloaded calculator executable.
+
+### Option 2: Using Finder
+1. In Finder, navigate to the calculator application
+2. Right-click (or Control-click) on the application
+3. Select "Open" from the context menu
+4. Confirm that you want to open the application when prompted
+
+Note: This is a common security measure on macOS to protect users from potentially malicious software. As this is an open-source project, you can review the code and compile it yourself to ensure its safety.
+
 ## Usage
 
 ```bash
 # Basic usage
-calculator "3 + 4 * 2"
+./calculator
+# Then enter expressions like: 2 + 3 * 4
 
-# Show help
-calculator --help
-# or
-calculator -h
+# Or pass expression directly as argument
+./calculator "2 + 3 * 4"
 ```
 
 ## Requirements
