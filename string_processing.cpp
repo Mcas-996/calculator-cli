@@ -10,6 +10,8 @@
 #include <algorithm>
 #include <iostream>
 #include <iomanip> // For std::fixed, std::setprecision
+#include <numeric> // For std::gcd
+#include <numbers>
 
 using std::string;
 using std::vector;
@@ -812,8 +814,8 @@ namespace sp {
             double cbrt_rho = cbrt(rho);
             
             realRoots.push_back(2.0 * cbrt_rho * cos(theta / 3.0) - b / 3.0);
-            realRoots.push_back(2.0 * cbrt_rho * cos((theta + 2.0 * M_PI) / 3.0) - b / 3.0);
-            realRoots.push_back(2.0 * cbrt_rho * cos((theta + 4.0 * M_PI) / 3.0) - b / 3.0);
+            realRoots.push_back(2.0 * cbrt_rho * cos((theta + 2.0 * std::numbers::pi) / 3.0) - b / 3.0);
+            realRoots.push_back(2.0 * cbrt_rho * cos((theta + 4.0 * std::numbers::pi) / 3.0) - b / 3.0);
         }
         
         // Format result

@@ -1,7 +1,0 @@
-# ninja log v7
-11	1182	7806381853887821	CMakeFiles/calculator.dir/main_cli.cpp.obj	4310b267679e3c00
-38	1506	7806381854149162	CMakeFiles/run_tests.dir/calculator_tests.cpp.obj	180297e033f3e5e9
-52	3291	7806381854292116	CMakeFiles/run_tests.dir/string_processing.cpp.obj	15292f597eca7a12
-24	3344	7806381854018176	CMakeFiles/calculator.dir/string_processing.cpp.obj	786b0bcd0d7ad4ca
-3291	4417	7806381886676124	run_tests.exe	8c9fa96d183c0de8
-3345	4419	7806381887220716	calculator.exe	67ec678bd43d3472

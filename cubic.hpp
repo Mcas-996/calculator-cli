@@ -18,7 +18,7 @@ inline std::vector<double> solve_cubic(double a, double b, double c, double d) {
     }
 
     // Define PI if not available
-    #ifndef M_PI
+    #ifndef std::numbers::pi
     #endif
 
     // Normalize to x^3 + Bx^2 + Cx + D = 0
@@ -61,8 +61,8 @@ inline std::vector<double> solve_cubic(double a, double b, double c, double d) {
             double phi = std::acos(acos_arg);
 
             roots.push_back(term1 * std::cos(phi / 3.0) + offset);
-            roots.push_back(term1 * std::cos((phi + 2.0 * M_PI) / 3.0) + offset);
-            roots.push_back(term1 * std::cos((phi - 2.0 * M_PI) / 3.0) + offset);
+            roots.push_back(term1 * std::cos((phi + 2.0 * std::numbers::pi) / 3.0) + offset);
+            roots.push_back(term1 * std::cos((phi - 2.0 * std::numbers::pi) / 3.0) + offset);
         }
     }
     
