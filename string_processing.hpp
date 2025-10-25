@@ -31,6 +31,12 @@ namespace sp {
     // For equations with complex solutions, returns format: "x1 = a+bi, x2 = a-bi"
     // Throws std::runtime_error for invalid equations
     std::string solveQuadraticEquation(const std::string& equation);
+
+    // Function to solve quartic equations
+    // Supports format: equation(x^4+x^3+x^2+x+1=0)
+    // Returns up to four solutions (real or complex) formatted as "xk = value"
+    // Throws std::runtime_error for invalid equations or solver failures
+    std::string solveQuarticEquation(const std::string& equation);
     
     // Unified function to process any input string
     // Automatically detects the type of input and calls appropriate function

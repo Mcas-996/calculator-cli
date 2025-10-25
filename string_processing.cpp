@@ -622,6 +622,158 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
         }
     }
     
+    string solveQuarticEquation(const string& equation) {
+        if (equation.length() < 11 || equation.substr(0, 9) != "equation(") {
+            throw runtime_error("Invalid equation format. Use: equation(x^4+x^3+x^2+x+1=0)");
+        }
+
+        size_t endPos = equation.find_last_of(')');
+        if (endPos == string::npos || endPos != equation.length() - 1) {
+            throw runtime_error("Invalid equation format. Use: equation(x^4+x^3+x^2+x+1=0)");
+        }
+
+        string eqContent = equation.substr(9, endPos - 9);
+        size_t equalsPos = eqContent.find('=');
+        if (equalsPos == string::npos) {
+            throw runtime_error("Equation must contain '=' sign");
+        }
+
+        string leftSide = eqContent.substr(0, equalsPos);
+        string rightSide = eqContent.substr(equalsPos + 1);
+
+        double a = 0.0, b = 0.0, c = 0.0, d = 0.0, e = 0.0;
+        bool hasX4 = false;
+
+        size_t i = 0;
+        while (i < leftSide.length()) {
+            if (leftSide[i] == ' ') {
+                ++i;
+                continue;
+            }
+
+            size_t termStart = i;
+            double sign = 1.0;
+            if (leftSide[i] == '+') {
+                ++i;
+            } else if (leftSide[i] == '-') {
+                sign = -1.0;
+                ++i;
+            }
+
+            while (i < leftSide.length() && leftSide[i] == ' ') {
+                ++i;
+            }
+
+            double num = 0.0;
+            bool hasDigits = false;
+
+            while (i < leftSide.length() && isdigit(leftSide[i])) {
+                hasDigits = true;
+                num = num * 10 + (leftSide[i] - '0');
+                ++i;
+            }
+
+            if (i < leftSide.length() && leftSide[i] == '.') {
+                ++i;
+                double decimalMultiplier = 0.1;
+                while (i < leftSide.length() && isdigit(leftSide[i])) {
+                    hasDigits = true;
+                    num += (leftSide[i] - '0') * decimalMultiplier;
+                    decimalMultiplier *= 0.1;
+                    ++i;
+                }
+            }
+
+            while (i < leftSide.length() && leftSide[i] == ' ') {
+                ++i;
+            }
+
+            bool hasVariable = false;
+            int exponent = 0;
+            if (i < leftSide.length() && leftSide[i] == 'x') {
+                hasVariable = true;
+                exponent = 1;
+                ++i;
+                if (i < leftSide.length() && leftSide[i] == '^') {
+                    ++i;
+                    if (i >= leftSide.length() || !isdigit(leftSide[i])) {
+                        throw runtime_error("Invalid character in equation: ^");
+                    }
+                    exponent = 0;
+                    while (i < leftSide.length() && isdigit(leftSide[i])) {
+                        exponent = exponent * 10 + (leftSide[i] - '0');
+                        ++i;
+                    }
+                }
+            }
+
+            if (!hasDigits && !hasVariable) {
+                char invalidChar = leftSide[termStart];
+                throw runtime_error("Invalid character in equation: " + string(1, invalidChar));
+            }
+
+            if (!hasDigits) {
+                num = 1.0;
+            }
+            double coeff = num * sign;
+
+            if (!hasVariable) {
+                exponent = 0;
+            }
+
+            if (exponent > 4) {
+                throw runtime_error("Quartic equations support exponents up to 4");
+            }
+
+            switch (exponent) {
+                case 4:
+                    hasX4 = true;
+                    a += coeff;
+                    break;
+                case 3:
+                    b += coeff;
+                    break;
+                case 2:
+                    c += coeff;
+                    break;
+                case 1:
+                    d += coeff;
+                    break;
+                case 0:
+                    e += coeff;
+                    break;
+                default:
+                    throw runtime_error("Invalid character in equation: " + string(1, leftSide[termStart]));
+            }
+        }
+
+        if (!rightSide.empty()) {
+            ComplexNumber rightValueComplex = evaluateExpression(rightSide);
+            double rightValue = extractRealComponent(rightValueComplex, "Quartic equations require real constants");
+            e -= rightValue;
+        }
+
+        if (!hasX4 || std::abs(a) < quartic::QUARTIC_EPS) {
+            throw runtime_error("Quartic equation must contain x^4 term");
+        }
+
+        auto result = quartic::solve(a, b, c, d, e);
+        if (!result.converged) {
+            throw runtime_error("Quartic solver failed to converge within " + std::to_string(result.iterations) + " iterations");
+        }
+
+        string output;
+        for (size_t idx = 0; idx < result.roots.size(); ++idx) {
+            if (idx > 0) {
+                output += ", ";
+            }
+            ComplexNumber root(result.roots[idx].real(), result.roots[idx].imag());
+            output += "x" + to_string(static_cast<int>(idx + 1)) + " = " + root.toString();
+        }
+
+        return output;
+    }
+    
     // Function to solve cubic equations
     string solveCubicEquation(const string& equation) {
         // Check if equation starts with "equation(" and ends with ")"
@@ -1129,6 +1281,10 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             
             // Check if it's an equation solving request
             if (input.length() >= 9 && input.substr(0, 9) == "equation(") {
+                // Check if it's a quartic equation (contains x^4)
+                if (input.find("x^4") != string::npos) {
+                    return solveQuarticEquation(input);
+                }
                 // Check if it's a cubic equation (contains x^3)
                 if (input.find("x^3") != string::npos) {
                     return solveCubicEquation(input);
