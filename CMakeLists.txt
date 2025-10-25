@@ -25,12 +25,15 @@ target_include_directories(calculator_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 add_executable(calculator main_cli.cpp)
 target_link_libraries(calculator PRIVATE calculator_core)
 
-add_executable(run_tests calculator_tests.cpp)
-target_link_libraries(run_tests PRIVATE calculator_core)
+add_executable(calculator_tests_runner calculator_tests.cpp)
+target_link_libraries(calculator_tests_runner PRIVATE calculator_core)
 
 if(WIN32)
     target_compile_definitions(calculator_core PUBLIC _USE_MATH_DEFINES)
+    target_compile_definitions(calculator_tests_runner PRIVATE _USE_MATH_DEFINES)
 endif()
 
 enable_testing()
-add_test(NAME calculator_tests COMMAND run_tests)
+# Use the generator expression to ensure CTest invokes the correct binary for
+# the active configuration (e.g. Release on Windows multi-config generators).
+add_test(NAME calculator_tests COMMAND $<TARGET_FILE:calculator_tests_runner>)
