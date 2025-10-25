@@ -1,4 +1,5 @@
 #include "string_processing.hpp"
+#include "3+time_equation/quadric.hpp"
 #include <stack>
 #include <cctype>
 #include <stdexcept>
