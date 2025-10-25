@@ -2,12 +2,12 @@
 #define STRING_PROCESSING_HPP
 
 #include <string>
-#include "fractions.hpp" // Include the Fraction class
+#include "complex_number.hpp" // Include the ComplexNumber class
 
 namespace sp {
     // Function to evaluate middle school math expressions
-    // Now returns a Fraction to support fractional results
-    Fraction evaluateExpression(const std::string& expression);
+    // Now returns a ComplexNumber to support complex results
+    ComplexNumber evaluateExpression(const std::string& expression);
     
     // Function to solve simple linear equations
     // Supports format: equation(x+1=0) or equation(2x-3=7)

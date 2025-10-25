@@ -1,24 +1,36 @@
-# CMake 最低版本要求
+# Minimum required CMake version
 cmake_minimum_required(VERSION 3.10)
 
-# 项目名称
+# Project definition
 project(Calculator)
 
-# 设置C++标准为C++17以支持std::gcd
+# Use C++20 to unlock std::numbers, std::complex helpers, etc.
 set(CMAKE_CXX_STANDARD 20)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-# 添加可执行文件 (您的主程序)
-add_executable(calculator main_cli.cpp string_processing.cpp)
+set(CALCULATOR_HEADERS
+    complex_number.hpp
+    fractions.hpp
+    cubic.hpp
+    string_processing.hpp
+)
 
-# 启用测试
-enable_testing()
+set(CALCULATOR_SOURCES
+    string_processing.cpp
+)
 
-# 添加测试可执行文件
-add_executable(run_tests calculator_tests.cpp string_processing.cpp)
+add_library(calculator_core ${CALCULATOR_SOURCES} ${CALCULATOR_HEADERS})
+target_include_directories(calculator_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
 
-# Windows特定配置
+add_executable(calculator main_cli.cpp)
+target_link_libraries(calculator PRIVATE calculator_core)
+
+add_executable(run_tests calculator_tests.cpp)
+target_link_libraries(run_tests PRIVATE calculator_core)
+
 if(WIN32)
-    # 在Windows上定义M_PI常量以避免编译错误
-    add_definitions(-D_USE_MATH_DEFINES)
+    target_compile_definitions(calculator_core PUBLIC _USE_MATH_DEFINES)
 endif()
+
+enable_testing()
+add_test(NAME calculator_tests COMMAND run_tests)

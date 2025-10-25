@@ -12,6 +12,7 @@
 #include <iomanip> // For std::fixed, std::setprecision
 #include <numeric> // For std::gcd
 #include <numbers>
+#include <functional>
 
 using std::string;
 using std::vector;
@@ -26,36 +27,18 @@ using std::abs;
 using std::swap;
 
 namespace sp {
-    // Helper function to perform arithmetic operations for Fractions
-    Fraction applyOp(Fraction a, Fraction b, char op) {
+    // Helper function to perform arithmetic operations for ComplexNumbers
+    ComplexNumber applyOp(const ComplexNumber& a, const ComplexNumber& b, char op) {
         switch(op) {
             case '+': return a + b;
             case '-': return a - b;
             case '*': return a * b;
             case '/': 
-                if (b.numerator == 0) throw runtime_error("Division by zero");
                 return a / b;
             case '^': 
-                // Exponentiation for fractions, converting to double for now, then back to fraction.
-                // For integer exponents with Fraction objects, a more robust implementation would involve
-                // repeated multiplication or a custom power function without converting to double.
-                // Assuming base is not zero for now during conversion.
-                if (a.denominator == 0) throw runtime_error("Invalid base for exponentiation: 0/0");
-                // Handle negative exponents for fractions
-                if (b.numerator < 0) {
-                    // (a/b)^-n = (b/a)^n
-                    Fraction base = a;
-                    int exponent = static_cast<int>(-b.numerator); // Assuming integer exponent for now
-                    Fraction result(1);
-                    for (int i = 0; i < exponent; ++i) {
-                        result = result * base;
-                    }
-                    return result.inverse(); // (b/a)^n
-                }
-                return Fraction::fromDouble(pow(static_cast<double>(a.numerator) / a.denominator, 
-                                                     static_cast<double>(b.numerator) / b.denominator));
+                return a.pow(b);
         }
-        return Fraction(0); // Should not reach here
+        return ComplexNumber();
     }
 
     // Original applyOp for double (used by equation solvers for double calculations)
@@ -72,18 +55,6 @@ namespace sp {
         return 0; // Should not reach here
     }
 
-    // Helper function to handle unary operations (like square root)
-    // Still uses double for internal sqrt calculation, then converts to Fraction if needed
-    double applyUnaryOp(double a, const string& op) {
-        if(op == "sqrt") {
-            if(a < 0) throw runtime_error("Square root of negative number");
-            return sqrt(a);
-        } else if(op == "abs") {
-            return abs(a);
-        }
-        return a;
-    }
-
     // Helper function to determine operator precedence
     int precedence(char op) {
         if(op == '+' || op == '-') return 1;
@@ -92,19 +63,16 @@ namespace sp {
         return 0;
     }
 
-    // Helper function to parse numbers (including decimals)
-    // Now returns a Fraction
-    Fraction parseNumber(const string& expression, size_t& i) {
-        double result = 0; // Temporarily parse as double
+    // Helper function to parse numbers (including decimals and imaginary suffix)
+    ComplexNumber parseNumber(const string& expression, size_t& i) {
+        double result = 0;
         double decimalMultiplier = 0.1;
         
-        // Parse integer part
         while (i < expression.length() && isdigit(expression[i])) {
             result = result * 10 + (expression[i] - '0');
             i++;
         }
         
-        // Parse decimal part
         if (i < expression.length() && expression[i] == '.') {
             i++;
             while (i < expression.length() && isdigit(expression[i])) {
@@ -113,18 +81,67 @@ namespace sp {
                 i++;
             }
         }
-        
-        i--; // Adjust for extra increment in the main loop
-        return Fraction::fromDouble(result);
+
+        bool isImaginary = false;
+        if (i < expression.length() && expression[i] == 'i') {
+            isImaginary = true;
+        } else {
+            i--;
+        }
+
+        if (isImaginary) {
+            return ComplexNumber(0.0, result);
+        }
+        return ComplexNumber(result, 0.0);
     }
 
+double extractRealComponent(const ComplexNumber& value, const string& errorMessage) {
+    if (!value.isApproximatelyReal()) {
+        throw runtime_error(errorMessage);
+    }
+    return value.real;
+}
+
+ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
+    static const double RAD_PER_DEG = std::numbers::pi / 180.0;
+    return degrees * ComplexNumber(RAD_PER_DEG, 0.0);
+}
+
     // Function to evaluate middle school math expressions
-    // Now returns a Fraction
-    Fraction evaluateExpression(const string& expression) {
-        stack<Fraction> values;  // Stack for Fraction numbers
+    // Now returns a ComplexNumber
+    ComplexNumber evaluateExpression(const string& expression) {
+        stack<ComplexNumber> values;  // Stack for numbers
         stack<char> ops;    // Stack for operators
         bool expecting_operand = true; // Flag to distinguish unary minus
         
+        auto handleFunctionCall = [&](const string& funcName, size_t& index, size_t funcLength,
+                                      const std::function<ComplexNumber(const ComplexNumber&)>& funcEvaluator) {
+            size_t len = expression.length();
+            index += funcLength - 1; // move to end of function name
+            while (index + 1 < len && expression[index + 1] == ' ') index++;
+            if (index + 1 >= len || expression[index + 1] != '(') {
+                throw runtime_error(funcName + " requires parentheses");
+            }
+            index += 2; // move past '(' to first char of inner expression
+            size_t startExpr = index;
+            int parenCount = 1;
+            size_t endExpr = index;
+            
+            while(endExpr < len && parenCount > 0) {
+                endExpr++;
+                if(endExpr >= len) throw runtime_error("Unmatched parentheses in " + funcName);
+                if(expression[endExpr] == '(') parenCount++;
+                else if(expression[endExpr] == ')') parenCount--;
+            }
+            
+            string innerExpr = expression.substr(startExpr, endExpr - startExpr);
+            ComplexNumber innerResult = evaluateExpression(innerExpr);
+            values.push(funcEvaluator(innerResult));
+            
+            index = endExpr; // Move 'i' to the matching ')'
+            expecting_operand = false; // After a function call, expect an operator
+        };
+
         for(size_t i = 0; i < expression.length(); i++) {
             // Skip whitespace
             if(expression[i] == ' ') continue;
@@ -132,16 +149,16 @@ namespace sp {
             // Handle percentages
             if(expression[i] == '%') {
                 if(values.empty()) throw runtime_error("Invalid percentage syntax");
-                Fraction val = values.top();
+                ComplexNumber val = values.top();
                 values.pop();
-                values.push(val * Fraction(1, 100)); // Divide by 100
+                values.push(val * ComplexNumber(0.01, 0.0)); // Divide by 100
                 expecting_operand = false; // After a number/percentage, expect an operator
                 continue;
             }
             
             // Handle natural constants pi and e
             else if(i + 2 <= expression.length() && expression.substr(i, 2) == "pi") {
-                Fraction pi_val = Fraction::fromDouble(acos(-1.0));
+                ComplexNumber pi_val(acos(-1.0), 0.0);
                 values.push(pi_val);
                 i += 1; // Move past "pi"
                 expecting_operand = false; // After a constant, expect an operator
@@ -150,64 +167,56 @@ namespace sp {
             else if(expression[i] == 'e' && (i == 0 || !isalpha(expression[i-1]))) {
                 // Check if it's 'e' constant (not part of another word)
                 if(i + 1 >= expression.length() || !isalpha(expression[i+1])) {
-                    values.push(Fraction::fromDouble(2.71828182846));
+                    values.push(ComplexNumber(2.71828182846, 0.0));
                     expecting_operand = false; // After a constant, expect an operator
+                    continue;
+                }
+            }
+            else if(expression[i] == 'i' && (i == 0 || !isalpha(expression[i-1]))) {
+                if (i + 1 >= expression.length() || !isalpha(expression[i + 1])) {
+                    values.push(ComplexNumber(0.0, 1.0));
+                    expecting_operand = false;
                     continue;
                 }
             }
             // If number, parse it
             else if(isdigit(expression[i])) { 
-                Fraction val = parseNumber(expression, i);
+                ComplexNumber val = parseNumber(expression, i);
                 values.push(val);
                 expecting_operand = false; // After a number, expect an operator
                 continue; // parseNumber already advanced i
             }
             // Handle unary minus (e.g., -5, -(2+3))
             else if (expression[i] == '-' && expecting_operand) {
-                values.push(Fraction(0)); // Push a zero
+                values.push(ComplexNumber(0.0, 0.0)); // Push a zero
                 ops.push('-'); // Push the minus operator
                 expecting_operand = false; // After pushing an operator, expect an operand
             }
-            // Handle sqrt function
+            // Handle supported functions
             else if(i + 4 <= expression.length() && expression.substr(i, 4) == "sqrt") {
-                i += 3; // Move to end of "sqrt" (now 't')
-                
-                // Skip whitespace after sqrt
-                while(i + 1 < expression.length() && expression[i + 1] == ' ') i++;
-                
-                // Expect opening parenthesis
-                if(i + 1 >= expression.length() || expression[i + 1] != '(') {
-                    throw runtime_error("sqrt requires parentheses");
-                }
-                // At this point, i points to 't' (or last char of sqrt). expression[i+1] is '('.
-                // We need to move i to point to the char *after* '('.
-                i += 2; // Move past '(' and then to the first char inside.
-                        // Example: sqrt(16) -> i points to 't', i+1 is '('. So i+2 points to '1'.
-                
-                size_t startExpr = i; // Start of the actual expression inside parenthesis
-                int parenCount = 1; // Count for the current parenthesis
-                size_t endExpr = i; // Will find the matching closing parenthesis
-                
-                while(endExpr < expression.length() && parenCount > 0) { // Loop until matching ')' is found
-                    endExpr++;
-                    if(endExpr >= expression.length()) throw runtime_error("Unmatched parentheses in sqrt"); // Reached end of string
-                    if(expression[endExpr] == '(') parenCount++;
-                    else if(expression[endExpr] == ')') parenCount--;
-                }
-                
-                // At this point, endExpr points to the matching ')'
-                // The length of the substring is (endExpr - startExpr)
-                string sqrtExpr = expression.substr(startExpr, endExpr - startExpr);
-                
-                // Recursively call evaluateExpression which returns a Fraction, then convert to double for std::sqrt
-                Fraction innerResult = evaluateExpression(sqrtExpr);
-                double sqrtVal = static_cast<double>(innerResult.numerator) / innerResult.denominator;
-                
-                if(sqrtVal < 0) throw runtime_error("Square root of negative number");
-                values.push(Fraction::fromDouble(sqrt(sqrtVal)));
-                
-                i = endExpr; // Move 'i' to the matching ')'
-                expecting_operand = false; // After a function call, expect an operator
+                handleFunctionCall("sqrt", i, 4, [](const ComplexNumber& value) {
+                    return value.sqrtPrincipal();
+                });
+            }
+            else if(i + 4 <= expression.length() && expression.substr(i, 4) == "sind") {
+                handleFunctionCall("sind", i, 4, [&](const ComplexNumber& value) {
+                    return degreesToRadians(value).sin();
+                });
+            }
+            else if(i + 3 <= expression.length() && expression.substr(i, 3) == "sin") {
+                handleFunctionCall("sin", i, 3, [](const ComplexNumber& value) {
+                    return value.sin();
+                });
+            }
+            else if(i + 4 <= expression.length() && expression.substr(i, 4) == "cosd") {
+                handleFunctionCall("cosd", i, 4, [&](const ComplexNumber& value) {
+                    return degreesToRadians(value).cos();
+                });
+            }
+            else if(i + 3 <= expression.length() && expression.substr(i, 3) == "cos") {
+                handleFunctionCall("cos", i, 3, [](const ComplexNumber& value) {
+                    return value.cos();
+                });
             }
             // If opening parenthesis, push to ops stack
             else if(expression[i] == '(') {
@@ -218,10 +227,10 @@ namespace sp {
             else if(expression[i] == ')') {
                 while(!ops.empty() && ops.top() != '(') {
                     if (values.size() < 2) throw runtime_error("Too few operands for operator " + string(1, ops.top()));
-                    Fraction val2 = values.top();
+                    ComplexNumber val2 = values.top();
                     values.pop();
                     
-                    Fraction val1 = values.top();
+                    ComplexNumber val1 = values.top();
                     values.pop();
                     
                     char op = ops.top();
@@ -237,10 +246,10 @@ namespace sp {
             else if(expression[i] == '+' || expression[i] == '-' || expression[i] == '*' || expression[i] == '/' || expression[i] == '^') {
                 while(!ops.empty() && precedence(ops.top()) >= precedence(expression[i])) {
                     if (values.size() < 2) throw runtime_error("Too few operands for operator " + string(1, ops.top()));
-                    Fraction val2 = values.top();
+                    ComplexNumber val2 = values.top();
                     values.pop();
                     
-                    Fraction val1 = values.top();
+                    ComplexNumber val1 = values.top();
                     values.pop();
                     
                     char op = ops.top();
@@ -259,10 +268,10 @@ namespace sp {
         while(!ops.empty()) {
             if(ops.top() == '(') throw runtime_error("Unmatched opening parenthesis");
             if (values.size() < 2) throw runtime_error("Too few operands for operator " + string(1, ops.top()));
-            Fraction val2 = values.top();
+            ComplexNumber val2 = values.top();
             values.pop();
             
-            Fraction val1 = values.top();
+            ComplexNumber val1 = values.top();
             values.pop();
             
             char op = ops.top();
@@ -375,8 +384,8 @@ namespace sp {
         
         // Process right side (treat as constant)
         if (!rightSide.empty()) {
-            Fraction rightValueFrac = evaluateExpression(rightSide);
-            double rightValue = static_cast<double>(rightValueFrac.numerator) / rightValueFrac.denominator;
+            ComplexNumber rightValueComplex = evaluateExpression(rightSide);
+            double rightValue = extractRealComponent(rightValueComplex, "Linear equations require real constants");
             b -= rightValue; // Move to left side: ax + b - rightValue = 0
         }
         
@@ -524,8 +533,8 @@ namespace sp {
         
         // Process right side (treat as constant)
         if (!rightSide.empty()) {
-            Fraction rightValueFrac = evaluateExpression(rightSide);
-            double rightValue = static_cast<double>(rightValueFrac.numerator) / rightValueFrac.denominator;
+            ComplexNumber rightValueComplex = evaluateExpression(rightSide);
+            double rightValue = extractRealComponent(rightValueComplex, "Quadratic equations require real constants");
             c -= rightValue; // Move to left side: ax^2 + bx + c - rightValue = 0
         }
         
@@ -755,8 +764,8 @@ namespace sp {
         
         // Process right side (treat as constant)
         if (!rightSide.empty()) {
-            Fraction rightValueFrac = evaluateExpression(rightSide);
-            double rightValue = static_cast<double>(rightValueFrac.numerator) / rightValueFrac.denominator;
+            ComplexNumber rightValueComplex = evaluateExpression(rightSide);
+            double rightValue = extractRealComponent(rightValueComplex, "Cubic equations require real constants");
             d -= rightValue; // Move to left side: ax^3 + bx^2 + cx + d - rightValue = 0
         }
         
@@ -1015,8 +1024,8 @@ namespace sp {
             // --- End of Refactored Parser ---
             
             // Parse right side
-            Fraction rightValueFrac = evaluateExpression(rightSide);
-            double rightValue = static_cast<double>(rightValueFrac.numerator) / rightValueFrac.denominator;
+            ComplexNumber rightValueComplex = evaluateExpression(rightSide);
+            double rightValue = extractRealComponent(rightValueComplex, "Systems of equations require real constants");
             eqConst += rightValue;
             
             coefficients.push_back(eqCoeff);
@@ -1133,7 +1142,7 @@ namespace sp {
             }
             else {
                 // Regular expression evaluation
-                Fraction result = evaluateExpression(input);
+                ComplexNumber result = evaluateExpression(input);
                 return result.toString();
             }
         } catch (const std::exception& e) {

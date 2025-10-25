@@ -1,142 +1,78 @@
 # Calculator CLI
 
-A command-line calculator that supports basic arithmetic operations, equation solving, and more.
+A lightweight C++20 command-line calculator capable of evaluating real/complex expressions, solving equations, and processing small systems of linear equations.
 
 ## Features
 
-### Basic Operations
-- Addition (+)
-- Subtraction (-)
-- Multiplication (*)
-- Division (/)
-- Exponentiation (^)
-- Parentheses for grouping
-- Percentage calculations (%)
-- Square root function (sqrt)
-- Absolute value function (abs)
-- Constants: pi, e
+### Expression Engine
+- Addition, subtraction, multiplication, division, exponentiation.
+- Percentages (`50% * 200`), parentheses, unary minus.
+- Constants `pi`, `e`, imaginary unit `i`, and decimal or fractional inputs (fractions auto-simplify in output).
+- Square root `sqrt()`, absolute value `abs()`, trigonometric functions in radians `sin()/cos()` and degree variants `sind()/cosd()`.
+- Full complex-number arithmetic, e.g. `sqrt(-4)`, `(3+2i)*(1-i)`, `cosd(60+i)`.
 
 ### Equation Solving
-- Linear equations (e.g., `equation(2x+5=0)`)
-- Quadratic equations (e.g., `equation(x^2+5x+6=0)`)
-- Cubic equations (e.g., `equation(x^3-6x^2+11x-6=0)`)
-- System of linear equations (e.g., `equation2(x+y=5,x-y=1)`)
+- Linear equations: `equation(2x+5=0)`
+- Quadratic equations: `equation(x^2-5x+6=0)` (real or complex roots)
+- Cubic equations: `equation(x^3-6x^2+11x-6=0)`
+- Systems of linear equations (up to 3 variables): `equation2(x+y=5,x-y=1)`
 
-### Number Format
-- Integer and decimal numbers
-- Fractions (automatic conversion)
-- Mixed numbers
+### Output Formatting
+- Results favor exact fractions when possible (e.g. `1/3` stays rational) and fall back to decimals for irrational/complex parts.
+- Complex numbers print as `a + bi`, with simplified `i`/`-i` where appropriate.
 
 ## Usage
 
-Run the calculator executable and enter expressions or equations to solve.
-
-### Examples
-
-Basic arithmetic:
-> 2 + 3 * 4
-> (1 + 2) * (3 + 4)
-> sqrt(16) + 2^3
-> 50%
-
-Equation solving:
-> equation(2x+5=0)
-> equation(x^2+5x+6=0)
-> equation(x^3-6x^2+11x-6=0)
-> equation2(x+y=5,x-y=1)
-
-## Supported Operations
-
 ```bash
-# Basic arithmetic
-3 + 5 * (2 - 8)^2
--2.5 * 4 + 3^2
+# Basic usage (expression as CLI argument)
+./calculator "3 + 5 * (2 - 8)^2"
 
-# Percentages
-50% * 200
+# Complex numbers
+./calculator "(3+2i) * (1 - i)"
+./calculator "sqrt(-9)"        # -> 3i
 
-# Square roots
-sqrt(16) + 3
+# Trigonometry
+./calculator "sin(pi / 6)"     # radians
+./calculator "sind(30)"        # degrees
 
-# Constants
-pi * 2
-e^2
-
-# Linear equations
-equation(x+1=0)
-equation(2x-3=7)
-
-# Quadratic equations
-equation(x^2+2x+1=0)
-equation(x^2-5x+6=0)
-
-# Systems of linear equations
-equation2(x+y=5,x-y=1)
-equation2(2x+3y=12,4x-y=5)
-equation2(x+y+z=6,x-y+z=2,2x+y-z=3)
+# Equation solving
+./calculator "equation(x^2-5x+6=0)"
+./calculator "equation2(x+y=5,x-y=1)"
 ```
+
+Passing `--help` or `--version` prints CLI info. Without an argument the program exits with usage guidance.
 
 ## Building
 
-### Windows
+The preferred workflow uses CMake (required >= 3.10) and a C++20 compiler.
+
 ```bash
-build_windows.bat
+cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+ctest --output-on-failure --test-dir build   # optional, runs calculator_tests
 ```
 
-### Linux
-```bash
-chmod +x build_linux.sh
-./build_linux.sh
-```
+- Windows (MSVC, VS Build Tools, or clang-cl) should specify the desired architecture: `cmake -B build -S . -A x64`.
+- macOS/Linux follow the same commands; install `cmake`/`g++`/`clang++` via your package manager.
+- Legacy helper scripts (`build_windows.bat`, `build_linux.sh`, `build_macos.sh`) remain available but the CMake flow above is authoritative.
 
-### macOS
-```bash
-chmod +x build_macos.sh
-./build_macos.sh
-```
+## macOS Gatekeeper
 
-## Running on macOS
+Unsigned binaries downloaded from CI may trigger Gatekeeper warnings. To run them:
 
-If you download the pre-compiled binary for macOS, you might encounter a security warning because the application is not signed with an Apple Developer certificate. This is normal for applications distributed outside the App Store.
-
-To run the calculator on macOS, you can do one of the following:
-
-### Option 1: Using Terminal
-Open Terminal and run the following command to remove the quarantine attribute:
 ```bash
 xattr -d com.apple.quarantine /path/to/calculator
 ```
 
-Replace `/path/to/calculator` with the actual path to the downloaded calculator executable.
+or right-click the app in Finder, choose "Open," and confirm.
 
-### Option 2: Using Finder
-1. In Finder, navigate to the calculator application
-2. Right-click (or Control-click) on the application
-3. Select "Open" from the context menu
-4. Confirm that you want to open the application when prompted
+## Project Structure
 
-Note: This is a common security measure on macOS to protect users from potentially malicious software. As this is an open-source project, you can review the code and compile it yourself to ensure its safety.
+- `complex_number.hpp`, `fractions.hpp`, `string_processing.*` - expression/core logic.
+- `main_cli.cpp` - CLI entry point.
+- `calculator_tests.cpp` - unit/regression tests invoked via CTest.
+- `.github/workflows/c-cpp.yml` - GitHub Actions pipeline for Linux/macOS/Windows builds, tests, and releases.
 
-## Usage
+## License
 
-```bash
-# Basic usage
-./calculator
-# Then enter expressions like: 2 + 3 * 4
-
-# Or pass expression directly as argument
-./calculator "2 + 3 * 4"
-```
-
-## Requirements
-
-- C++11 compatible compiler (g++)
-- Standard C++ library
-- Math library
-
-## Files
-
-- `main_cli.cpp` - Main application entry point
-- `string_processing.cpp` - Expression evaluation logic
-- `string_processing.hpp` - Header file for the calculator functions
-- `build_*.sh/bat` - Platform-specific build scripts
+MIT

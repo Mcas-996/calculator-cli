@@ -4,6 +4,23 @@
 using namespace std;
 
 int main(int argc, char* argv[]) {
+    if (argc == 1) {
+        cout << "Interactive mode (Ctrl+D to exit)" << endl;
+        string line;
+        while (true) {
+            cout << ">>> " << flush;
+            if (!getline(cin, line)) {
+                cout << endl;
+                break;
+            }
+            if (line.empty()) {
+                continue;
+            }
+            string result = sp::processInput(line);
+            cout << result << endl;
+        }
+        return 0;
+    }
     if (argc != 2) {
         cout << "Usage: " << argv[0] << " \"expression\"" << endl;
         return 1;
@@ -24,6 +41,7 @@ int main(int argc, char* argv[]) {
         cout << "  Negative numbers and decimals" << endl;
         cout << "  Percentages (e.g., 50% converts to 0.5)" << endl;
         cout << "  sqrt() function for square roots" << endl;
+        cout << "  sin(), cos() (radians) and sind(), cosd() (degrees, complex-friendly)" << endl;
         cout << "  Constants: pi (3.14159...), e (2.71828...)" << endl;
         cout << "  Equation solving: equation(x+1=0)" << endl;
         cout << "  Quadratic equations: equation(x^2+2x+1=0)" << endl;

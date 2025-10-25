@@ -6,13 +6,17 @@
 #include <algorithm>
 #include <numeric>
 
+using std::vector;
+using std::acos;
+using std::numbers;
+
 // A small epsilon value for floating-point comparisons
 const double CUBIC_EPSILON = 1e-9;
 
 // Solves the cubic equation ax^3 + bx^2 + cx + d = 0
 // and returns a vector containing the real roots.
 // The implementation is all within this header file as requested.
-inline std::vector<double> solve_cubic(double a, double b, double c, double d) {
+inline vector<double> solve_cubic(double a, double b, double c, double d) {
     if (std::abs(a) < CUBIC_EPSILON) {
         throw std::invalid_argument("Coefficient 'a' cannot be zero in a cubic equation.");
     }
@@ -31,7 +35,7 @@ inline std::vector<double> solve_cubic(double a, double b, double c, double d) {
     double q = D + (2.0 * B * B * B) / 27.0 - (B * C) / 3.0;
     double offset = -B / 3.0;
 
-    std::vector<double> roots;
+    vector<double> roots;
 
     if (std::abs(p) < CUBIC_EPSILON) { // Special case: p is close to 0, y^3 = -q
         roots.push_back(std::cbrt(-q) + offset);
@@ -58,11 +62,11 @@ inline std::vector<double> solve_cubic(double a, double b, double c, double d) {
             double term2 = (3.0 * q) / (2.0 * p) * std::sqrt(-3.0 / p);
             // Clamp term2 to the [-1, 1] range due to potential floating point errors
             double acos_arg = std::max(-1.0, std::min(1.0, term2));
-            double phi = std::acos(acos_arg);
+            double phi = acos(acos_arg);
 
             roots.push_back(term1 * std::cos(phi / 3.0) + offset);
-            roots.push_back(term1 * std::cos((phi + 2.0 * std::numbers::pi) / 3.0) + offset);
-            roots.push_back(term1 * std::cos((phi - 2.0 * std::numbers::pi) / 3.0) + offset);
+            roots.push_back(term1 * std::cos((phi + 2.0 * numbers::pi) / 3.0) + offset);
+            roots.push_back(term1 * std::cos((phi - 2.0 * numbers::pi) / 3.0) + offset);
         }
     }
     

@@ -1,86 +1,78 @@
 # 计算器命令行工具
 
-一个支持基本算术运算、方程求解等功能的命令行计算器。
+一个用 C++20 编写的轻量级命令行计算器，支持实/复数混合运算、方程求解以及小型线性方程组处理。
 
 ## 功能特性
 
-### 基本运算
-- 加法 (+)
-- 减法 (-)
-- 乘法 (*)
-- 除法 (/)
-- 乘方 (^)
-- 括号分组
-- 百分比计算 (%)
-- 平方根函数 (sqrt)
-- 绝对值函数 (abs)
-- 常数: pi, e
+### 表达式引擎
+- 加、减、乘、除、乘方和括号。
+- 百分号（`50% * 200`）、一元负号。
+- 常量 `pi`、`e`、虚数单位 `i`，自动解析小数或分数（结果尽量以最简分数输出）。
+- `sqrt()`、`abs()`、弧度制三角函数 `sin()/cos()`，以及角度制的 `sind()/cosd()`。
+- 完整的复数运算，例如 `sqrt(-4)`、`(3+2i)*(1-i)`、`cosd(60+i)`。
 
 ### 方程求解
-- 线性方程 (例如: `equation(2x+5=0)`)
-- 二次方程 (例如: `equation(x^2+5x+6=0)`)
-- 三次方程 (例如: `equation(x^3-6x^2+11x-6=0)`)
-- 线性方程组 (例如: `equation2(x+y=5,x-y=1)`)
+- 一元一次方程：`equation(2x+5=0)`
+- 一元二次方程：`equation(x^2-5x+6=0)`（自动给出实数或复数根）
+- 一元三次方程：`equation(x^3-6x^2+11x-6=0)`
+- 线性方程组（最多 3 个变量）：`equation2(x+y=5,x-y=1)`
 
-### 数字格式
-- 整数和小数
-- 分数 (自动转换)
-- 混合数
+### 输出格式
+- 若结果可表示为有理数则输出分数，否则回退到带指定精度的小数。
+- 复数固定输出为 `a + bi` 形式，并根据系数简化为 `i` 或 `-i`。
 
 ## 使用方法
 
-运行计算器可执行文件，输入表达式或方程进行计算。
+```bash
+# 直接在命令行传入表达式
+./calculator "3 + 5 * (2 - 8)^2"
 
-### 示例
+# 复数
+./calculator "(3+2i) * (1 - i)"
+./calculator "sqrt(-9)"         # -> 3i
 
-基本运算:
-> 2 + 3 * 4
-> (1 + 2) * (3 + 4)
-> sqrt(16) + 2^3
-> 50%
+# 三角函数
+./calculator "sin(pi / 6)"      # 弧度
+./calculator "sind(30)"         # 角度
 
-方程求解:
-> equation(2x+5=0)
-> equation(x^2+5x+6=0)
-> equation(x^3-6x^2+11x-6=0)
-> equation2(x+y=5,x-y=1)
+# 方程
+./calculator "equation(x^2-5x+6=0)"
+./calculator "equation2(x+y=5,x-y=1)"
+```
 
-## 实现细节
+`--help`/`--version` 可查看帮助和版本信息。若未提供参数，程序会提示正确用法。
 
-计算器使用基于栈的算法来计算表达式，并正确处理运算符优先级。内部使用分数进行精确计算。
+## 构建
 
-方程求解:
-- 线性方程使用基本代数方法求解
-- 二次方程使用二次公式求解
-- 三次方程使用卡丹诺方法求解
-- 线性方程组使用高斯消元法求解
+推荐使用 CMake（≥3.10）及支持 C++20 的编译器：
 
-## 编译
+```bash
+cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
+cmake --build build --parallel
+ctest --output-on-failure --test-dir build   # 可选，运行 calculator_tests
+```
 
-使用支持C++11的编译器编译C++源文件即可构建计算器。
+- Windows：可使用 MSVC/clang-cl，必要时添加 `-A x64` 选择架构。
+- macOS / Linux：同样的命令即可，确保安装 `cmake` 与 `g++` 或 `clang++`。
+- 仍保留 `build_*.sh/.bat` 脚本，但以上 CMake 流程为主。
 
-## 在 macOS 上运行
+## macOS Gatekeeper
 
-如果您下载了预编译的 macOS 二进制文件，可能会遇到安全警告，因为该应用程序未使用 Apple 开发者证书签名。这是正常现象，因为应用程序是在 App Store 之外分发的。
+CI 产出的未签名二进制在 macOS 可能触发安全警告，可执行：
 
-要在 macOS 上运行计算器，您可以采用以下方法之一：
-
-### 方法一：使用终端
-打开终端并运行以下命令以移除隔离属性：
 ```bash
 xattr -d com.apple.quarantine /path/to/calculator
 ```
 
-将 `/path/to/calculator` 替换为下载的计算器可执行文件的实际路径。
+或在 Finder 中右键 “打开” 并确认。
 
-### 方法二：使用 Finder
-1. 在 Finder 中找到计算器应用程序
-2. 右键单击（或按住 Control 键单击）该应用程序
-3. 从上下文菜单中选择"打开"
-4. 在提示时确认您要打开该应用程序
+## 目录结构
 
-注意：这是 macOS 上的常见安全措施，用于保护用户免受潜在恶意软件的侵害。由于这是一个开源项目，您可以查看代码并自行编译以确保其安全性。
+- `complex_number.hpp`、`fractions.hpp`、`string_processing.*`：核心计算逻辑
+- `main_cli.cpp`：命令行入口
+- `calculator_tests.cpp`：测试用例（通过 CTest 运行）
+- `.github/workflows/c-cpp.yml`：GitHub Actions 持续集成/发布流程
 
-## 许可证
+## 许可
 
 MIT
