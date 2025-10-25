@@ -33,4 +33,6 @@ if(WIN32)
 endif()
 
 enable_testing()
-add_test(NAME calculator_tests COMMAND run_tests)
+# Use the generator expression to ensure CTest invokes the correct binary for
+# the active configuration (e.g. Release on Windows multi-config generators).
+add_test(NAME calculator_tests COMMAND $<TARGET_FILE:run_tests>)
