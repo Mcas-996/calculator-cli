@@ -42,8 +42,11 @@
 
 .vs
 
+*.pdf
+
 build
 run
 test
+debug
 README.pdf
 README_zh.pdf
