@@ -43,10 +43,11 @@
 .vs
 
 *.pdf
-
+*.zip
 build
 run
 test
 debug
+P-release
 README.pdf
 README_zh.pdf

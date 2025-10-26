@@ -2,8 +2,15 @@
 
 A lightweight C++20 command-line calculator capable of evaluating real/complex expressions, solving equations (with exact symbolic output up to quintics), and processing small systems of linear equations.
 
-## **Warning**
+## Warning
 Please **do not** compile on a machine with less than **32 GB RAM**—take this README to your manager and request an upgrade instead.
+
+## Quick Start
+
+1. Clone the project: `git clone https://github.com/allen/calculator-cli && cd calculator-cli`.
+2. Configure and build a Release binary: `cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel`.
+3. Run an expression straight from your shell: `./build/calculator "equation(x^2-5x+6=0)"`.
+
 ## Features
 
 ### Expression Engine
@@ -62,6 +69,10 @@ ctest --output-on-failure --test-dir build   # optional, runs calculator_tests
 - The project vendors [SymEngine](https://github.com/symengine/symengine) in `third-part/`; no separate install is required, but the first build can take a few minutes while SymEngine compiles.
 - Legacy helper scripts (`build_windows.bat`, `build_linux.sh`, `build_macos.sh`) remain available but the CMake flow above is authoritative.
 
+## Testing
+
+`ctest` drives the regression coverage defined in `calculator_tests.cpp`. Running `ctest --output-on-failure --test-dir build` after a build exercises all arithmetic, complex, and symbolic paths; use `ctest -R <name>` for targeted cases when debugging.
+
 ## macOS Gatekeeper
 
 Unsigned binaries downloaded from CI may trigger Gatekeeper warnings. To run them:
@@ -78,6 +89,13 @@ or right-click the app in Finder, choose "Open," and confirm.
 - `main_cli.cpp` - CLI entry point.
 - `calculator_tests.cpp` - unit/regression tests invoked via CTest.
 - `.github/workflows/c-cpp.yml` - GitHub Actions pipeline for Linux/macOS/Windows builds, tests, and releases.
+
+## Troubleshooting
+
+- **CMake cannot find a compiler**: install the latest Visual Studio Build Tools on Windows or ensure `build-essential`/Xcode Command Line Tools are present on Linux/macOS.
+- **First build appears stuck**: SymEngine builds from source on the first configure, so heavy CPU use is expected; subsequent builds are incremental.
+- **Missing runtime DLLs on Windows**: run inside a Developer Command Prompt or install the MSVC redistributable that matches your toolchain.
+- **Locale-dependent parsing issues**: force the C locale before running (`set LC_ALL=C`) if your shell uses comma decimals.
 
 ## License
 

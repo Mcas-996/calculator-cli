@@ -2,6 +2,12 @@
 
 一个用 C++20 编写的轻量级命令行计算器，支持实/复数混合运算、方程求解以及小型线性方程组处理。
 
+## 快速上手
+
+1. 克隆仓库：`git clone https://github.com/allen/calculator-cli && cd calculator-cli`。
+2. 配置并编译 Release 版本：`cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel`。
+3. 立即体验：`./build/calculator "equation(x^2-5x+6=0)"`。
+
 ## 功能特性
 
 ### 表达式引擎
@@ -56,6 +62,10 @@ ctest --output-on-failure --test-dir build   # 可选，运行 calculator_tests
 - macOS / Linux：同样的命令即可，确保安装 `cmake` 与 `g++` 或 `clang++`。
 - 仍保留 `build_*.sh/.bat` 脚本，但以上 CMake 流程为主。
 
+## 测试
+
+`ctest` 会运行 `calculator_tests.cpp` 中的全部回归用例。构建完成后执行 `ctest --output-on-failure --test-dir build` 即可覆盖实数、复数以及符号路径；调试特定用例时可以使用 `ctest -R <name>`。
+
 ## macOS Gatekeeper
 
 CI 产出的未签名二进制在 macOS 可能触发安全警告，可执行：
@@ -72,6 +82,13 @@ xattr -d com.apple.quarantine /path/to/calculator
 - `main_cli.cpp`：命令行入口
 - `calculator_tests.cpp`：测试用例（通过 CTest 运行）
 - `.github/workflows/c-cpp.yml`：GitHub Actions 持续集成/发布流程
+
+## 常见问题
+
+- **CMake 找不到编译器**：在 Windows 安装最新 Visual Studio Build Tools，在 Linux/macOS 安装 `build-essential` 或 Xcode Command Line Tools。
+- **首次构建时间较长**：SymEngine 需首次从源码编译，请耐心等待；之后构建会增量进行。
+- **运行时报缺少 DLL**：在 Developer Command Prompt 中运行，或安装与所用编译器匹配的 MSVC 运行库。
+- **小数点解析异常**：若系统使用逗号小数，请在运行前设置 `LC_ALL=C`。
 
 ## 许可
 
