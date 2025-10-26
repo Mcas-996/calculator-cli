@@ -29,6 +29,10 @@ set(BUILD_TESTS no CACHE BOOL "Build SymEngine tests" FORCE)
 set(BUILD_BENCHMARKS no CACHE BOOL "Build SymEngine benchmarks" FORCE)
 set(BUILD_BENCHMARKS_GOOGLE no CACHE BOOL "Build SymEngine google benchmarks" FORCE)
 
+if(APPLE)
+    set(CMAKE_PREFIX_PATH "/opt/homebrew" ${CMAKE_PREFIX_PATH})
+endif()
+
 add_subdirectory(third-part/symengine third-part/symengine/build_integration EXCLUDE_FROM_ALL)
 set(SYMENGINE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/third-part/symengine/build_integration)
 
