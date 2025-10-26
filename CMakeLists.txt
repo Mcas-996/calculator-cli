@@ -31,6 +31,8 @@ set(BUILD_BENCHMARKS_GOOGLE no CACHE BOOL "Build SymEngine google benchmarks" FO
 
 if(APPLE)
     set(CMAKE_PREFIX_PATH "/opt/homebrew" ${CMAKE_PREFIX_PATH})
+    set(GMP_ROOT "/opt/homebrew" CACHE PATH "Path to GMP")
+    target_include_directories(calculator_core PUBLIC "/opt/homebrew/include")
 endif()
 
 add_subdirectory(third-part/symengine third-part/symengine/build_integration EXCLUDE_FROM_ALL)

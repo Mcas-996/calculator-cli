@@ -1,411 +1,410 @@
-﻿2025-10-26T01:40:15.1942760Z Current runner version: '2.329.0'
-2025-10-26T01:40:15.1956670Z ##[group]Runner Image Provisioner
-2025-10-26T01:40:15.1957150Z Hosted Compute Agent
-2025-10-26T01:40:15.1957490Z Version: 20251016.436
-2025-10-26T01:40:15.1957870Z Commit: 8ab8ac8bfd662a3739dab9fe09456aba92132568
-2025-10-26T01:40:15.1958310Z Build Date: 2025-10-15T20:44:12Z
-2025-10-26T01:40:15.1958690Z ##[endgroup]
-2025-10-26T01:40:15.1959010Z ##[group]Operating System
-2025-10-26T01:40:15.1959370Z macOS
-2025-10-26T01:40:15.1959670Z 15.7.1
-2025-10-26T01:40:15.1959970Z 24G231
-2025-10-26T01:40:15.1960240Z ##[endgroup]
-2025-10-26T01:40:15.1960550Z ##[group]Runner Image
-2025-10-26T01:40:15.1960880Z Image: macos-15-arm64
-2025-10-26T01:40:15.1961200Z Version: 20251021.0066
-2025-10-26T01:40:15.1961890Z Included Software: https://github.com/actions/runner-images/blob/macos-15-arm64/20251021.0066/images/macos/macos-15-arm64-Readme.md
-2025-10-26T01:40:15.1962890Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-15-arm64%2F20251021.0066
-2025-10-26T01:40:15.1963500Z ##[endgroup]
-2025-10-26T01:40:15.1964280Z ##[group]GITHUB_TOKEN Permissions
-2025-10-26T01:40:15.1965220Z Contents: read
-2025-10-26T01:40:15.1965520Z Metadata: read
-2025-10-26T01:40:15.1965810Z Packages: read
-2025-10-26T01:40:15.1966100Z ##[endgroup]
-2025-10-26T01:40:15.1967290Z Secret source: Actions
-2025-10-26T01:40:15.1967670Z Prepare workflow directory
-2025-10-26T01:40:15.2196600Z Prepare all required actions
-2025-10-26T01:40:15.2224730Z Getting action download info
-2025-10-26T01:40:15.6835130Z Download action repository 'actions/checkout@v4' (SHA:08eba0b27e820071cde6df949e0beb9ba4906955)
-2025-10-26T01:40:16.1965460Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
-2025-10-26T01:40:16.5113000Z Complete job name: build-macos
-2025-10-26T01:40:16.5577280Z ##[group]Run actions/checkout@v4
-2025-10-26T01:40:16.5577810Z with:
-2025-10-26T01:40:16.5578090Z   submodules: recursive
-2025-10-26T01:40:16.5578410Z   repository: Mcas-996/calculator-cli
-2025-10-26T01:40:16.5578970Z   token: ***
-2025-10-26T01:40:16.5579250Z   ssh-strict: true
-2025-10-26T01:40:16.5579530Z   ssh-user: git
-2025-10-26T01:40:16.5579800Z   persist-credentials: true
-2025-10-26T01:40:16.5580110Z   clean: true
-2025-10-26T01:40:16.5580400Z   sparse-checkout-cone-mode: true
-2025-10-26T01:40:16.5580730Z   fetch-depth: 1
-2025-10-26T01:40:16.5581010Z   fetch-tags: false
-2025-10-26T01:40:16.5581300Z   show-progress: true
-2025-10-26T01:40:16.5581590Z   lfs: false
-2025-10-26T01:40:16.5581860Z   set-safe-directory: true
-2025-10-26T01:40:16.5582290Z ##[endgroup]
-2025-10-26T01:40:16.9918120Z Syncing repository: Mcas-996/calculator-cli
-2025-10-26T01:40:16.9919530Z ##[group]Getting Git version info
-2025-10-26T01:40:16.9920110Z Working directory is '/Users/runner/work/calculator-cli/calculator-cli'
-2025-10-26T01:40:16.9920840Z [command]/opt/homebrew/bin/git version
-2025-10-26T01:40:17.0560210Z git version 2.50.1
-2025-10-26T01:40:17.0611130Z ##[endgroup]
-2025-10-26T01:40:17.0625750Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/e97a811f-d804-4a97-90ff-95c8e928ca4f/.gitconfig'
-2025-10-26T01:40:17.0641750Z Temporarily overriding HOME='/Users/runner/work/_temp/e97a811f-d804-4a97-90ff-95c8e928ca4f' before making global git config changes
-2025-10-26T01:40:17.0643050Z Adding repository directory to the temporary git global config as a safe directory
-2025-10-26T01:40:17.0649230Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/calculator-cli/calculator-cli
-2025-10-26T01:40:17.0815860Z Deleting the contents of '/Users/runner/work/calculator-cli/calculator-cli'
-2025-10-26T01:40:17.0819110Z ##[group]Initializing the repository
-2025-10-26T01:40:17.0825960Z [command]/opt/homebrew/bin/git init /Users/runner/work/calculator-cli/calculator-cli
-2025-10-26T01:40:17.1114950Z hint: Using 'master' as the name for the initial branch. This default branch name
-2025-10-26T01:40:17.1117760Z hint: is subject to change. To configure the initial branch name to use in all
-2025-10-26T01:40:17.1119170Z hint: of your new repositories, which will suppress this warning, call:
-2025-10-26T01:40:17.1119720Z hint:
-2025-10-26T01:40:17.1121070Z hint: 	git config --global init.defaultBranch <name>
-2025-10-26T01:40:17.1121530Z hint:
-2025-10-26T01:40:17.1121990Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
-2025-10-26T01:40:17.1122640Z hint: 'development'. The just-created branch can be renamed via this command:
-2025-10-26T01:40:17.1123130Z hint:
-2025-10-26T01:40:17.1123420Z hint: 	git branch -m <name>
-2025-10-26T01:40:17.1123760Z hint:
-2025-10-26T01:40:17.1124180Z hint: Disable this message with "git config set advice.defaultBranchName false"
-2025-10-26T01:40:17.1124910Z Initialized empty Git repository in /Users/runner/work/calculator-cli/calculator-cli/.git/
-2025-10-26T01:40:17.1126310Z [command]/opt/homebrew/bin/git remote add origin https://github.com/Mcas-996/calculator-cli
-2025-10-26T01:40:17.1240840Z ##[endgroup]
-2025-10-26T01:40:17.1241700Z ##[group]Disabling automatic garbage collection
-2025-10-26T01:40:17.1242340Z [command]/opt/homebrew/bin/git config --local gc.auto 0
-2025-10-26T01:40:17.1338600Z ##[endgroup]
-2025-10-26T01:40:17.1343470Z ##[group]Setting up auth
-2025-10-26T01:40:17.1376900Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
-2025-10-26T01:40:17.1463970Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2025-10-26T01:40:17.2584820Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2025-10-26T01:40:17.2646240Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2025-10-26T01:40:17.3345540Z [command]/opt/homebrew/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
-2025-10-26T01:40:17.3425270Z ##[endgroup]
-2025-10-26T01:40:17.3426690Z ##[group]Fetching the repository
-2025-10-26T01:40:17.3432390Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +dadf865c143536b379a937eb25ad6ec81019cffd:refs/remotes/origin/main
-2025-10-26T01:40:17.7826130Z From https://github.com/Mcas-996/calculator-cli
-2025-10-26T01:40:17.7827140Z  * [new ref]         dadf865c143536b379a937eb25ad6ec81019cffd -> origin/main
-2025-10-26T01:40:17.7886910Z ##[endgroup]
-2025-10-26T01:40:17.7887500Z ##[group]Determining the checkout info
-2025-10-26T01:40:17.7888090Z ##[endgroup]
-2025-10-26T01:40:17.7891050Z [command]/opt/homebrew/bin/git sparse-checkout disable
-2025-10-26T01:40:17.7957690Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
-2025-10-26T01:40:17.8015250Z ##[group]Checking out the ref
-2025-10-26T01:40:17.8017400Z [command]/opt/homebrew/bin/git checkout --progress --force -B main refs/remotes/origin/main
-2025-10-26T01:40:17.8149880Z Switched to a new branch 'main'
-2025-10-26T01:40:17.8151820Z branch 'main' set up to track 'origin/main'.
-2025-10-26T01:40:17.8155340Z ##[endgroup]
-2025-10-26T01:40:17.8155880Z ##[group]Setting up auth for fetching submodules
-2025-10-26T01:40:17.8158910Z [command]/opt/homebrew/bin/git config --global http.https://github.com/.extraheader AUTHORIZATION: basic ***
-2025-10-26T01:40:17.8226190Z [command]/opt/homebrew/bin/git config --global --unset-all url.https://github.com/.insteadOf
-2025-10-26T01:40:17.8281790Z [command]/opt/homebrew/bin/git config --global --add url.https://github.com/.insteadOf git@github.com:
-2025-10-26T01:40:17.8338390Z [command]/opt/homebrew/bin/git config --global --add url.https://github.com/.insteadOf org-221949771@github.com:
-2025-10-26T01:40:17.8393040Z ##[endgroup]
-2025-10-26T01:40:17.8393580Z ##[group]Fetching submodules
-2025-10-26T01:40:17.8395100Z [command]/opt/homebrew/bin/git submodule sync --recursive
-2025-10-26T01:40:17.9104940Z [command]/opt/homebrew/bin/git -c protocol.version=2 submodule update --init --force --depth=1 --recursive
-2025-10-26T01:40:17.9936260Z Submodule 'third-part/symengine' (https://github.com/symengine/symengine) registered for path 'third-part/symengine'
-2025-10-26T01:40:18.0136940Z Cloning into '/Users/runner/work/calculator-cli/calculator-cli/third-part/symengine'...
-2025-10-26T01:40:18.8391230Z Submodule path 'third-part/symengine': checked out '1ba4a6f855574b45e9e984854e7743740d749a1b'
-2025-10-26T01:40:18.8796340Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local gc.auto 0
-2025-10-26T01:40:19.0101740Z Entering 'third-part/symengine'
-2025-10-26T01:40:19.0523320Z ##[endgroup]
-2025-10-26T01:40:19.0626280Z ##[group]Persisting credentials for submodules
-2025-10-26T01:40:19.0730010Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'url\.https\:\/\/github\.com\/\.insteadOf' && git config --local --unset-all 'url.https://github.com/.insteadOf' || :"
-2025-10-26T01:40:19.1809230Z Entering 'third-part/symengine'
-2025-10-26T01:40:19.2079400Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local 'http.https://github.com/.extraheader' 'AUTHORIZATION: basic ***' && git config --local --show-origin --name-only --get-regexp remote.origin.url"
-2025-10-26T01:40:19.3035030Z Entering 'third-part/symengine'
-2025-10-26T01:40:19.3267200Z file:/Users/runner/work/calculator-cli/calculator-cli/.git/modules/third-part/symengine/config	remote.origin.url
-2025-10-26T01:40:19.3402690Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'git@github.com:'
-2025-10-26T01:40:19.4216010Z Entering 'third-part/symengine'
-2025-10-26T01:40:19.4447850Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'org-221949771@github.com:'
-2025-10-26T01:40:19.7330470Z Entering 'third-part/symengine'
-2025-10-26T01:40:19.7766950Z ##[endgroup]
-2025-10-26T01:40:19.8073840Z [command]/opt/homebrew/bin/git log -1 --format=%H
-2025-10-26T01:40:19.8281410Z dadf865c143536b379a937eb25ad6ec81019cffd
-2025-10-26T01:40:19.9358830Z ##[group]Run brew update
-2025-10-26T01:40:19.9359990Z [36;1mbrew update[0m
-2025-10-26T01:40:19.9360820Z [36;1mbrew install cmake ninja gmp[0m
-2025-10-26T01:40:19.9422790Z shell: /bin/bash -e {0}
-2025-10-26T01:40:19.9423320Z ##[endgroup]
-2025-10-26T01:40:22.7685900Z [34m==>[0m [1mUpdating Homebrew...[0m
-2025-10-26T01:40:35.7449980Z To restore the stashed changes to /opt/homebrew/Library/Taps/homebrew/homebrew-core, run:
-2025-10-26T01:40:35.7451100Z   cd /opt/homebrew/Library/Taps/homebrew/homebrew-core && git stash pop
-2025-10-26T01:40:36.8583840Z [34m==>[0m [1mHomebrew's analytics have entirely moved to our InfluxDB instance in the EU.[0m
-2025-10-26T01:40:36.8584660Z We gather less data than before and have destroyed all Google Analytics data:
-2025-10-26T01:40:36.8585540Z   [4mhttps://docs.brew.sh/Analytics[24m[0m
-2025-10-26T01:40:36.8586280Z Please reconsider re-enabling analytics to help our volunteer maintainers with:
-2025-10-26T01:40:36.8586940Z   brew analytics on
-2025-10-26T01:40:36.8783230Z [34m==>[0m [1mHomebrew is run entirely by unpaid volunteers. Please consider donating:[0m
-2025-10-26T01:40:36.8784320Z   [4mhttps://github.com/Homebrew/brew#donations[24m
-2025-10-26T01:40:36.8784730Z 
-2025-10-26T01:40:38.2157220Z Updated 3 taps (hashicorp/tap, homebrew/core and homebrew/cask).
-2025-10-26T01:40:38.2160210Z [34m==>[0m [1mNew Formulae[0m
-2025-10-26T01:40:38.5518170Z aicommit2: Reactive CLI that generates commit messages for Git and Jujutsu with AI
-2025-10-26T01:40:38.5519160Z btllib: Bioinformatics Technology Lab common code library
-2025-10-26T01:40:38.5523800Z erlang-language-platform: LSP server and CLI for the Erlang programming language
-2025-10-26T01:40:38.5527500Z ghidra: Multi-platform software reverse engineering framework
-2025-10-26T01:40:38.5535250Z kekkai: File integrity monitoring tool
-2025-10-26T01:40:38.5549110Z pelican: Static site generator that supports Markdown and reST syntax
-2025-10-26T01:40:38.5560940Z q: Tiny command-line DNS client with support for UDP, TCP, DoT, DoH, DoQ and ODoH
-2025-10-26T01:40:38.5572780Z shortest: AI-powered natural language end-to-end testing framework
-2025-10-26T01:40:38.5583080Z tfplugingen-openapi: OpenAPI to Terraform Provider Code Generation Specification
-2025-10-26T01:40:38.5593600Z vibe-log-cli: CLI tool for analyzing Claude Code sessions
-2025-10-26T01:40:38.5613410Z [34m==>[0m [1mNew Casks[0m
-2025-10-26T01:40:38.8069190Z orcasheets: Local-first data analytics
-2025-10-26T01:40:38.8074270Z pikpak: Client for PikPak cloud storage service
-2025-10-26T01:40:38.8080080Z sculptor: GUI for Claude Code
-2025-10-26T01:40:38.8082300Z [34m==>[0m [1mDeleted Installed Formulae[0m
-2025-10-26T01:40:38.8082880Z openssl@1.1
-2025-10-26T01:40:39.1272130Z [34m==>[0m [1mOutdated Formulae[0m
-2025-10-26T01:40:39.1272480Z aws-sam-cli
-2025-10-26T01:40:39.1273250Z gh
-2025-10-26T01:40:39.1273480Z git
-2025-10-26T01:40:39.1273750Z glib
-2025-10-26T01:40:39.1273920Z kotlin
-2025-10-26T01:40:39.1274120Z pcre2
-2025-10-26T01:40:39.1274420Z python@3.13
-2025-10-26T01:40:39.1274620Z ruby@3.3
-2025-10-26T01:40:39.1274810Z selenium-server
-2025-10-26T01:40:39.1275020Z unbound
-2025-10-26T01:40:39.1275140Z 
-2025-10-26T01:40:39.1275370Z You have [1m10[0m outdated formulae installed.
-2025-10-26T01:40:39.1275690Z You can upgrade them with [1mbrew upgrade[0m
-2025-10-26T01:40:39.1276840Z or list them with [1mbrew outdated[0m.
-2025-10-26T01:40:40.4877310Z ##[warning]cmake 4.1.2 is already installed and up-to-date.
+﻿2025-10-26T01:46:36.0393370Z Current runner version: '2.329.0'
+2025-10-26T01:46:36.0407990Z ##[group]Runner Image Provisioner
+2025-10-26T01:46:36.0408480Z Hosted Compute Agent
+2025-10-26T01:46:36.0408850Z Version: 20251016.436
+2025-10-26T01:46:36.0409260Z Commit: 8ab8ac8bfd662a3739dab9fe09456aba92132568
+2025-10-26T01:46:36.0409720Z Build Date: 2025-10-15T20:44:12Z
+2025-10-26T01:46:36.0410120Z ##[endgroup]
+2025-10-26T01:46:36.0410480Z ##[group]Operating System
+2025-10-26T01:46:36.0410860Z macOS
+2025-10-26T01:46:36.0411190Z 15.7.1
+2025-10-26T01:46:36.0411520Z 24G231
+2025-10-26T01:46:36.0411840Z ##[endgroup]
+2025-10-26T01:46:36.0412170Z ##[group]Runner Image
+2025-10-26T01:46:36.0412540Z Image: macos-15-arm64
+2025-10-26T01:46:36.0412890Z Version: 20251021.0066
+2025-10-26T01:46:36.0413580Z Included Software: https://github.com/actions/runner-images/blob/macos-15-arm64/20251021.0066/images/macos/macos-15-arm64-Readme.md
+2025-10-26T01:46:36.0414570Z Image Release: https://github.com/actions/runner-images/releases/tag/macos-15-arm64%2F20251021.0066
+2025-10-26T01:46:36.0415190Z ##[endgroup]
+2025-10-26T01:46:36.0415900Z ##[group]GITHUB_TOKEN Permissions
+2025-10-26T01:46:36.0416850Z Contents: read
+2025-10-26T01:46:36.0417200Z Metadata: read
+2025-10-26T01:46:36.0417530Z Packages: read
+2025-10-26T01:46:36.0417870Z ##[endgroup]
+2025-10-26T01:46:36.0419050Z Secret source: Actions
+2025-10-26T01:46:36.0419470Z Prepare workflow directory
+2025-10-26T01:46:36.0617770Z Prepare all required actions
+2025-10-26T01:46:36.0644270Z Getting action download info
+2025-10-26T01:46:36.3935040Z Download action repository 'actions/checkout@v4' (SHA:08eba0b27e820071cde6df949e0beb9ba4906955)
+2025-10-26T01:46:36.6185490Z Download action repository 'actions/upload-artifact@v4' (SHA:ea165f8d65b6e75b540449e92b4886f43607fa02)
+2025-10-26T01:46:36.8432060Z Complete job name: build-macos
+2025-10-26T01:46:36.8810440Z ##[group]Run actions/checkout@v4
+2025-10-26T01:46:36.8811100Z with:
+2025-10-26T01:46:36.8811460Z   submodules: recursive
+2025-10-26T01:46:36.8811910Z   repository: Mcas-996/calculator-cli
+2025-10-26T01:46:36.8812510Z   token: ***
+2025-10-26T01:46:36.8812880Z   ssh-strict: true
+2025-10-26T01:46:36.8813290Z   ssh-user: git
+2025-10-26T01:46:36.8813660Z   persist-credentials: true
+2025-10-26T01:46:36.8814080Z   clean: true
+2025-10-26T01:46:36.8814450Z   sparse-checkout-cone-mode: true
+2025-10-26T01:46:36.8814860Z   fetch-depth: 1
+2025-10-26T01:46:36.8815200Z   fetch-tags: false
+2025-10-26T01:46:36.8815550Z   show-progress: true
+2025-10-26T01:46:36.8815900Z   lfs: false
+2025-10-26T01:46:36.8816290Z   set-safe-directory: true
+2025-10-26T01:46:36.8816880Z ##[endgroup]
+2025-10-26T01:46:37.1537930Z Syncing repository: Mcas-996/calculator-cli
+2025-10-26T01:46:37.1539450Z ##[group]Getting Git version info
+2025-10-26T01:46:37.1540170Z Working directory is '/Users/runner/work/calculator-cli/calculator-cli'
+2025-10-26T01:46:37.1541090Z [command]/opt/homebrew/bin/git version
+2025-10-26T01:46:37.2073150Z git version 2.50.1
+2025-10-26T01:46:37.2097710Z ##[endgroup]
+2025-10-26T01:46:37.2104030Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/b2dd204d-0d4e-4192-8f1c-3473e96d4fad/.gitconfig'
+2025-10-26T01:46:37.2117320Z Temporarily overriding HOME='/Users/runner/work/_temp/b2dd204d-0d4e-4192-8f1c-3473e96d4fad' before making global git config changes
+2025-10-26T01:46:37.2119120Z Adding repository directory to the temporary git global config as a safe directory
+2025-10-26T01:46:37.2136230Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/calculator-cli/calculator-cli
+2025-10-26T01:46:37.2217220Z Deleting the contents of '/Users/runner/work/calculator-cli/calculator-cli'
+2025-10-26T01:46:37.2219720Z ##[group]Initializing the repository
+2025-10-26T01:46:37.2223920Z [command]/opt/homebrew/bin/git init /Users/runner/work/calculator-cli/calculator-cli
+2025-10-26T01:46:37.2409340Z hint: Using 'master' as the name for the initial branch. This default branch name
+2025-10-26T01:46:37.2410360Z hint: is subject to change. To configure the initial branch name to use in all
+2025-10-26T01:46:37.2411940Z hint: of your new repositories, which will suppress this warning, call:
+2025-10-26T01:46:37.2412980Z hint:
+2025-10-26T01:46:37.2413730Z hint: 	git config --global init.defaultBranch <name>
+2025-10-26T01:46:37.2415810Z hint:
+2025-10-26T01:46:37.2439590Z hint: Names commonly chosen instead of 'master' are 'main', 'trunk' and
+2025-10-26T01:46:37.2440890Z hint: 'development'. The just-created branch can be renamed via this command:
+2025-10-26T01:46:37.2441880Z hint:
+2025-10-26T01:46:37.2442650Z hint: 	git branch -m <name>
+2025-10-26T01:46:37.2443470Z hint:
+2025-10-26T01:46:37.2444380Z hint: Disable this message with "git config set advice.defaultBranchName false"
+2025-10-26T01:46:37.2445630Z Initialized empty Git repository in /Users/runner/work/calculator-cli/calculator-cli/.git/
+2025-10-26T01:46:37.2448540Z [command]/opt/homebrew/bin/git remote add origin https://github.com/Mcas-996/calculator-cli
+2025-10-26T01:46:37.2487330Z ##[endgroup]
+2025-10-26T01:46:37.2488750Z ##[group]Disabling automatic garbage collection
+2025-10-26T01:46:37.2489820Z [command]/opt/homebrew/bin/git config --local gc.auto 0
+2025-10-26T01:46:37.2540870Z ##[endgroup]
+2025-10-26T01:46:37.2541670Z ##[group]Setting up auth
+2025-10-26T01:46:37.2544780Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-10-26T01:46:37.2591400Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-10-26T01:46:37.3399200Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-10-26T01:46:37.3547070Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-10-26T01:46:37.4212150Z [command]/opt/homebrew/bin/git config --local http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-10-26T01:46:37.4267770Z ##[endgroup]
+2025-10-26T01:46:37.4268500Z ##[group]Fetching the repository
+2025-10-26T01:46:37.4272440Z [command]/opt/homebrew/bin/git -c protocol.version=2 fetch --no-tags --prune --no-recurse-submodules --depth=1 origin +384cad8c8e23e9bb3d8e8c37c619ab708277ce3b:refs/remotes/origin/main
+2025-10-26T01:46:38.1351140Z From https://github.com/Mcas-996/calculator-cli
+2025-10-26T01:46:38.1457640Z  * [new ref]         384cad8c8e23e9bb3d8e8c37c619ab708277ce3b -> origin/main
+2025-10-26T01:46:38.1762830Z ##[endgroup]
+2025-10-26T01:46:38.1864970Z ##[group]Determining the checkout info
+2025-10-26T01:46:38.1967510Z ##[endgroup]
+2025-10-26T01:46:38.2008240Z [command]/opt/homebrew/bin/git sparse-checkout disable
+2025-10-26T01:46:38.2011190Z [command]/opt/homebrew/bin/git config --local --unset-all extensions.worktreeConfig
+2025-10-26T01:46:38.2013770Z ##[group]Checking out the ref
+2025-10-26T01:46:38.2016930Z [command]/opt/homebrew/bin/git checkout --progress --force -B main refs/remotes/origin/main
+2025-10-26T01:46:38.2118790Z Switched to a new branch 'main'
+2025-10-26T01:46:38.2243660Z branch 'main' set up to track 'origin/main'.
+2025-10-26T01:46:38.2556180Z ##[endgroup]
+2025-10-26T01:46:38.2659060Z ##[group]Setting up auth for fetching submodules
+2025-10-26T01:46:38.2794380Z [command]/opt/homebrew/bin/git config --global http.https://github.com/.extraheader AUTHORIZATION: basic ***
+2025-10-26T01:46:38.3110510Z [command]/opt/homebrew/bin/git config --global --unset-all url.https://github.com/.insteadOf
+2025-10-26T01:46:38.3428160Z [command]/opt/homebrew/bin/git config --global --add url.https://github.com/.insteadOf git@github.com:
+2025-10-26T01:46:38.3752780Z [command]/opt/homebrew/bin/git config --global --add url.https://github.com/.insteadOf org-221949771@github.com:
+2025-10-26T01:46:38.4071240Z ##[endgroup]
+2025-10-26T01:46:38.4174180Z ##[group]Fetching submodules
+2025-10-26T01:46:38.4317430Z [command]/opt/homebrew/bin/git submodule sync --recursive
+2025-10-26T01:46:38.4630660Z [command]/opt/homebrew/bin/git -c protocol.version=2 submodule update --init --force --depth=1 --recursive
+2025-10-26T01:46:38.5302660Z Submodule 'third-part/symengine' (https://github.com/symengine/symengine) registered for path 'third-part/symengine'
+2025-10-26T01:46:38.5410220Z Cloning into '/Users/runner/work/calculator-cli/calculator-cli/third-part/symengine'...
+2025-10-26T01:46:39.7104120Z Submodule path 'third-part/symengine': checked out '1ba4a6f855574b45e9e984854e7743740d749a1b'
+2025-10-26T01:46:39.7514380Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local gc.auto 0
+2025-10-26T01:46:39.8465340Z Entering 'third-part/symengine'
+2025-10-26T01:46:39.8761400Z ##[endgroup]
+2025-10-26T01:46:39.8773730Z ##[group]Persisting credentials for submodules
+2025-10-26T01:46:39.8779220Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'url\.https\:\/\/github\.com\/\.insteadOf' && git config --local --unset-all 'url.https://github.com/.insteadOf' || :"
+2025-10-26T01:46:39.9402380Z Entering 'third-part/symengine'
+2025-10-26T01:46:39.9591710Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local 'http.https://github.com/.extraheader' 'AUTHORIZATION: basic ***' && git config --local --show-origin --name-only --get-regexp remote.origin.url"
+2025-10-26T01:46:40.0275830Z Entering 'third-part/symengine'
+2025-10-26T01:46:40.0465460Z file:/Users/runner/work/calculator-cli/calculator-cli/.git/modules/third-part/symengine/config	remote.origin.url
+2025-10-26T01:46:40.0551470Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'git@github.com:'
+2025-10-26T01:46:40.1532120Z Entering 'third-part/symengine'
+2025-10-26T01:46:40.1684070Z [command]/opt/homebrew/bin/git submodule foreach --recursive git config --local --add 'url.https://github.com/.insteadOf' 'org-221949771@github.com:'
+2025-10-26T01:46:40.2387920Z Entering 'third-part/symengine'
+2025-10-26T01:46:40.2660410Z ##[endgroup]
+2025-10-26T01:46:40.3132540Z [command]/opt/homebrew/bin/git log -1 --format=%H
+2025-10-26T01:46:40.3345240Z 384cad8c8e23e9bb3d8e8c37c619ab708277ce3b
+2025-10-26T01:46:40.3990540Z ##[group]Run brew update
+2025-10-26T01:46:40.3990800Z [36;1mbrew update[0m
+2025-10-26T01:46:40.3990970Z [36;1mbrew install cmake ninja gmp[0m
+2025-10-26T01:46:40.4096400Z shell: /bin/bash -e {0}
+2025-10-26T01:46:40.4096620Z ##[endgroup]
+2025-10-26T01:46:44.3776380Z [34m==>[0m [1mUpdating Homebrew...[0m
+2025-10-26T01:46:58.7360450Z To restore the stashed changes to /opt/homebrew/Library/Taps/homebrew/homebrew-core, run:
+2025-10-26T01:46:58.7362350Z   cd /opt/homebrew/Library/Taps/homebrew/homebrew-core && git stash pop
+2025-10-26T01:46:59.8162760Z [34m==>[0m [1mHomebrew's analytics have entirely moved to our InfluxDB instance in the EU.[0m
+2025-10-26T01:46:59.8163610Z We gather less data than before and have destroyed all Google Analytics data:
+2025-10-26T01:46:59.8164350Z   [4mhttps://docs.brew.sh/Analytics[24m[0m
+2025-10-26T01:46:59.8165260Z Please reconsider re-enabling analytics to help our volunteer maintainers with:
+2025-10-26T01:46:59.8166140Z   brew analytics on
+2025-10-26T01:46:59.8339830Z [34m==>[0m [1mHomebrew is run entirely by unpaid volunteers. Please consider donating:[0m
+2025-10-26T01:46:59.8340490Z   [4mhttps://github.com/Homebrew/brew#donations[24m
+2025-10-26T01:46:59.8340760Z 
+2025-10-26T01:47:00.9104630Z Updated 3 taps (hashicorp/tap, homebrew/core and homebrew/cask).
+2025-10-26T01:47:00.9107840Z [34m==>[0m [1mNew Formulae[0m
+2025-10-26T01:47:01.2282290Z aicommit2: Reactive CLI that generates commit messages for Git and Jujutsu with AI
+2025-10-26T01:47:01.2285490Z btllib: Bioinformatics Technology Lab common code library
+2025-10-26T01:47:01.2286330Z erlang-language-platform: LSP server and CLI for the Erlang programming language
+2025-10-26T01:47:01.2287630Z ghidra: Multi-platform software reverse engineering framework
+2025-10-26T01:47:01.2297030Z kekkai: File integrity monitoring tool
+2025-10-26T01:47:01.2303950Z pelican: Static site generator that supports Markdown and reST syntax
+2025-10-26T01:47:01.2311180Z q: Tiny command-line DNS client with support for UDP, TCP, DoT, DoH, DoQ and ODoH
+2025-10-26T01:47:01.2318730Z shortest: AI-powered natural language end-to-end testing framework
+2025-10-26T01:47:01.2326890Z tfplugingen-openapi: OpenAPI to Terraform Provider Code Generation Specification
+2025-10-26T01:47:01.2335320Z vibe-log-cli: CLI tool for analyzing Claude Code sessions
+2025-10-26T01:47:01.2349470Z [34m==>[0m [1mNew Casks[0m
+2025-10-26T01:47:01.4691770Z orcasheets: Local-first data analytics
+2025-10-26T01:47:01.4696640Z pikpak: Client for PikPak cloud storage service
+2025-10-26T01:47:01.4702540Z sculptor: GUI for Claude Code
+2025-10-26T01:47:01.4705430Z [34m==>[0m [1mDeleted Installed Formulae[0m
+2025-10-26T01:47:01.4706140Z openssl@1.1
+2025-10-26T01:47:01.7603630Z [34m==>[0m [1mOutdated Formulae[0m
+2025-10-26T01:47:01.7603980Z aws-sam-cli
+2025-10-26T01:47:01.7604480Z gh
+2025-10-26T01:47:01.7604800Z git
+2025-10-26T01:47:01.7605160Z glib
+2025-10-26T01:47:01.7605450Z kotlin
+2025-10-26T01:47:01.7605800Z pcre2
+2025-10-26T01:47:01.7606130Z python@3.13
+2025-10-26T01:47:01.7606500Z ruby@3.3
+2025-10-26T01:47:01.7606790Z selenium-server
+2025-10-26T01:47:01.7607100Z unbound
+2025-10-26T01:47:01.7607390Z 
+2025-10-26T01:47:01.7607740Z You have [1m10[0m outdated formulae installed.
+2025-10-26T01:47:01.7608250Z You can upgrade them with [1mbrew upgrade[0m
+2025-10-26T01:47:01.7608750Z or list them with [1mbrew outdated[0m.
+2025-10-26T01:47:03.1981840Z ##[warning]cmake 4.1.2 is already installed and up-to-date.
 To reinstall 4.1.2, run:
   brew reinstall cmake
 
-2025-10-26T01:40:40.4883970Z ##[warning]ninja 1.13.1 is already installed and up-to-date.
+2025-10-26T01:47:03.1989600Z ##[warning]ninja 1.13.1 is already installed and up-to-date.
 To reinstall 1.13.1, run:
   brew reinstall ninja
 
-2025-10-26T01:40:40.4890270Z ##[warning]gmp 6.3.0 is already installed and up-to-date.
+2025-10-26T01:47:03.1991060Z ##[warning]gmp 6.3.0 is already installed and up-to-date.
 To reinstall 6.3.0, run:
   brew reinstall gmp
 
-2025-10-26T01:40:40.5099490Z ##[group]Run rm -rf build/
-2025-10-26T01:40:40.5099840Z [36;1mrm -rf build/[0m
-2025-10-26T01:40:40.5135460Z shell: /bin/bash -e {0}
-2025-10-26T01:40:40.5135680Z ##[endgroup]
-2025-10-26T01:40:40.5861750Z ##[group]Run cmake -G Ninja -B build -S . -DCMAKE_BUILD_TYPE=Release
-2025-10-26T01:40:40.5862350Z [36;1mcmake -G Ninja -B build -S . -DCMAKE_BUILD_TYPE=Release[0m
-2025-10-26T01:40:40.5910790Z shell: /bin/bash -e {0}
-2025-10-26T01:40:40.5911110Z ##[endgroup]
-2025-10-26T01:40:41.2064420Z -- The C compiler identification is AppleClang 17.0.0.17000013
-2025-10-26T01:40:42.2371980Z -- The CXX compiler identification is AppleClang 17.0.0.17000013
-2025-10-26T01:40:42.2707960Z -- Detecting C compiler ABI info
-2025-10-26T01:40:42.4040390Z -- Detecting C compiler ABI info - done
-2025-10-26T01:40:42.4335160Z -- Check for working C compiler: /usr/bin/cc - skipped
-2025-10-26T01:40:42.4338590Z -- Detecting C compile features
-2025-10-26T01:40:42.4346620Z -- Detecting C compile features - done
-2025-10-26T01:40:42.4423710Z -- Detecting CXX compiler ABI info
-2025-10-26T01:40:42.5709780Z -- Detecting CXX compiler ABI info - done
-2025-10-26T01:40:42.5998270Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
-2025-10-26T01:40:42.5999810Z -- Detecting CXX compile features
-2025-10-26T01:40:42.6004580Z -- Detecting CXX compile features - done
-2025-10-26T01:40:43.8633430Z -- Linker does not support --exclude-libs
-2025-10-26T01:40:44.2883700Z -- Linker supports -unexported_symbol
-2025-10-26T01:40:44.3130600Z -- Looking for sys/types.h
-2025-10-26T01:40:44.4530710Z -- Looking for sys/types.h - found
-2025-10-26T01:40:44.4531290Z -- Looking for stdint.h
-2025-10-26T01:40:44.5934970Z -- Looking for stdint.h - found
-2025-10-26T01:40:44.5935260Z -- Looking for stddef.h
-2025-10-26T01:40:44.7349120Z -- Looking for stddef.h - found
-2025-10-26T01:40:44.7349980Z -- Check size of long double
-2025-10-26T01:40:44.9480930Z -- Check size of long double - done
-2025-10-26T01:40:46.5844660Z -- Found GMP: /opt/homebrew/lib/libgmp.dylib
-2025-10-26T01:40:46.5935050Z -- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY
-2025-10-26T01:40:46.7241760Z -- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY - Success
-2025-10-26T01:40:46.7247980Z -- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY
-2025-10-26T01:40:46.8661350Z -- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY - Success
-2025-10-26T01:40:46.8661880Z -- Performing Test COMPILER_HAS_DEPRECATED_ATTR
-2025-10-26T01:40:47.0103330Z -- Performing Test COMPILER_HAS_DEPRECATED_ATTR - Success
-2025-10-26T01:40:47.0419390Z --------------------------------------------------------------------------------
-2025-10-26T01:40:47.0519520Z 
-2025-10-26T01:40:47.0519800Z -- Configuring done (6.4s)
-2025-10-26T01:40:47.0633050Z +-------------------------------+
-2025-10-26T01:40:47.0737930Z | Configuration results SUMMARY |
-2025-10-26T01:40:47.0738290Z -- Generating done (0.0s)
-2025-10-26T01:40:47.0815680Z +-------------------------------+
-2025-10-26T01:40:47.0816350Z -- Build files have been written to: /Users/runner/work/calculator-cli/calculator-cli/build
-2025-10-26T01:40:47.0842150Z 
-2025-10-26T01:40:47.0869330Z CMAKE_C_COMPILER:   /usr/bin/cc
-2025-10-26T01:40:47.0870090Z CMAKE_CXX_COMPILER: /usr/bin/c++
-2025-10-26T01:40:47.0871430Z CMAKE_BUILD_TYPE: Release
-2025-10-26T01:40:47.0872370Z CMAKE_CONFIGURATION_TYPES: 
-2025-10-26T01:40:47.0872820Z CMAKE_C_FLAGS:           
-2025-10-26T01:40:47.0873390Z CMAKE_CXX_FLAGS:         -std=c++11  -fPIC -D__extern_always_inline=inline
-2025-10-26T01:40:47.0874190Z CMAKE_CXX_FLAGS_DEBUG:   -g -Wno-unknown-pragmas
-2025-10-26T01:40:47.0874790Z CMAKE_CXX_FLAGS_RELEASE: -O3 -DNDEBUG -Wno-unknown-pragmas
-2025-10-26T01:40:47.0875470Z CMAKE_INSTALL_PREFIX: /usr/local
-2025-10-26T01:40:47.0876240Z BUILD_SHARED_LIBS: 
-2025-10-26T01:40:47.0876680Z INTEGER_CLASS : GMP
-2025-10-26T01:40:47.0876920Z HAVE_SYMENGINE_GMP: yes
-2025-10-26T01:40:47.0877240Z WITH_SYMENGINE_ASSERT: no
-2025-10-26T01:40:47.0878090Z WITH_SYMENGINE_RCP: yes
-2025-10-26T01:40:47.0878680Z WITH_SYMENGINE_TEUCHOS: no
-2025-10-26T01:40:47.0879330Z WITH_COTIRE: no
-2025-10-26T01:40:47.0890480Z WITH_GENERATE_PARSER: no
-2025-10-26T01:40:47.0955430Z HAVE_GCC_ABI_DEMANGLE: yes
-2025-10-26T01:40:47.0956570Z HAVE_C_FUNCTION_NOT_FUNC: no
-2025-10-26T01:40:47.0957080Z HAVE_DEFAULT_CONSTRUCTORS: yes
-2025-10-26T01:40:47.0957390Z HAVE_SYMENGINE_NOEXCEPT: yes
-2025-10-26T01:40:47.0957730Z HAVE_SYMENGINE_IS_CONSTRUCTIBLE: yes
-2025-10-26T01:40:47.0958050Z HAVE_SYMENGINE_RESERVE: yes
-2025-10-26T01:40:47.0958430Z HAVE_SYMENGINE_STD_TO_STRING: TRUE
-2025-10-26T01:40:47.0958960Z WITH_SYMENGINE_THREAD_SAFE: no
-2025-10-26T01:40:47.0959310Z BUILD_TESTS: no
-2025-10-26T01:40:47.0959540Z BUILD_BENCHMARKS: no
-2025-10-26T01:40:47.0959790Z BUILD_BENCHMARKS_GOOGLE: no
-2025-10-26T01:40:47.0960040Z WITH_GMP: yes
-2025-10-26T01:40:47.0961240Z GMP_INCLUDE_DIRS: /opt/homebrew/include
-2025-10-26T01:40:47.0961650Z GMP_LIBRARIES: /opt/homebrew/lib/libgmp.dylib
-2025-10-26T01:40:47.0961970Z WITH_BFD: no
-2025-10-26T01:40:47.0962270Z WITH_ECM: no
-2025-10-26T01:40:47.0962500Z WITH_PRIMESIEVE: no
-2025-10-26T01:40:47.0962730Z WITH_FLINT: no
-2025-10-26T01:40:47.0962980Z WITH_ARB: no
-2025-10-26T01:40:47.0963200Z WITH_MPFR: no
-2025-10-26T01:40:47.0963440Z WITH_PIRANHA: no
-2025-10-26T01:40:47.0963700Z WITH_LLVM: no
-2025-10-26T01:40:47.0963910Z WITH_BOOST: no
-2025-10-26T01:40:47.0964560Z WITH_PTHREAD: no
-2025-10-26T01:40:47.0964820Z WITH_MPC: no
-2025-10-26T01:40:47.0965070Z WITH_TCMALLOC: no
-2025-10-26T01:40:47.0965320Z WITH_OPENMP: no
-2025-10-26T01:40:47.0965560Z WITH_VIRTUAL_TYPEID: no
-2025-10-26T01:40:47.0965920Z WITH_SYSTEM_CEREAL: no
-2025-10-26T01:40:47.0966220Z WITH_SYSTEM_FASTFLOAT: no
-2025-10-26T01:40:47.0966480Z LIBS: gmp
-2025-10-26T01:40:47.0966650Z 
-2025-10-26T01:40:47.0966890Z --------------------------------------------------------------------------------
-2025-10-26T01:40:47.0967180Z 
-2025-10-26T01:40:47.0995970Z ##[group]Run cmake --build build --parallel
-2025-10-26T01:40:47.0996340Z [36;1mcmake --build build --parallel[0m
-2025-10-26T01:40:47.1033370Z shell: /bin/bash -e {0}
-2025-10-26T01:40:47.1033550Z ##[endgroup]
-2025-10-26T01:40:49.4576630Z [1/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/complex_double.cpp.o
-2025-10-26T01:40:49.6384970Z [2/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/complex.cpp.o
-2025-10-26T01:40:49.9310740Z [3/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/constants.cpp.o
-2025-10-26T01:40:50.7459990Z [4/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/add.cpp.o
-2025-10-26T01:40:56.6056560Z [5/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/cse.cpp.o
-2025-10-26T01:40:58.8417070Z [6/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/dict.cpp.o
-2025-10-26T01:41:01.0856040Z [7/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/derivative.cpp.o
-2025-10-26T01:41:01.2359190Z [8/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/diophantine.cpp.o
-2025-10-26T01:41:02.5134590Z [9/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/basic.cpp.o
-2025-10-26T01:41:03.2944090Z [10/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/eval.cpp.o
-2025-10-26T01:41:04.2028110Z [11/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/cwrapper.cpp.o
-2025-10-26T01:41:05.8289190Z [12/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/expression.cpp.o
-2025-10-26T01:41:06.3375230Z [13/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/expand.cpp.o
-2025-10-26T01:41:07.3352160Z [14/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/dense_matrix.cpp.o
-2025-10-26T01:41:08.0231100Z [15/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/finitediff.cpp.o
-2025-10-26T01:41:09.4847820Z [16/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/fields.cpp.o
-2025-10-26T01:41:09.6448920Z [17/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/infinity.cpp.o
-2025-10-26T01:41:09.8853220Z [18/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/eval_double.cpp.o
-2025-10-26T01:41:10.0462760Z [19/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/integer.cpp.o
-2025-10-26T01:41:11.5886550Z [20/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/monomials.cpp.o
-2025-10-26T01:41:11.8603270Z [21/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrix.cpp.o
-2025-10-26T01:41:14.0695000Z [22/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/logic.cpp.o
-2025-10-26T01:41:14.1340230Z [23/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/nan.cpp.o
-2025-10-26T01:41:14.9339650Z [24/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/mul.cpp.o
-2025-10-26T01:41:15.3793290Z [25/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/functions.cpp.o
-2025-10-26T01:41:15.6787540Z [26/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/number.cpp.o
-2025-10-26T01:41:15.8538690Z [27/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/ntheory_funcs.cpp.o
-2025-10-26T01:41:16.6919150Z [28/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/ntheory.cpp.o
-2025-10-26T01:41:17.4134200Z [29/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/numer_denom.cpp.o
-2025-10-26T01:41:17.8467920Z [30/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/parser.tab.cc.o
-2025-10-26T01:41:18.0469760Z [31/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/tokenizer.cpp.o
-2025-10-26T01:41:19.0519480Z [32/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/sbml/sbml_parser.tab.cc.o
-2025-10-26T01:41:19.3639290Z [33/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/sbml/sbml_tokenizer.cpp.o
-2025-10-26T01:41:19.7631500Z [34/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/parser.cpp.o
-2025-10-26T01:41:20.8306110Z [35/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/parser_old.cpp.o
-2025-10-26T01:41:21.6015410Z [36/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/sbml/sbml_parser.cpp.o
-2025-10-26T01:41:21.7421640Z [37/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/polys/msymenginepoly.cpp.o
-2025-10-26T01:41:22.0513980Z [38/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/polys/basic_conversions.cpp.o
-2025-10-26T01:41:22.2842850Z [39/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/polys/uexprpoly.cpp.o
-2025-10-26T01:41:22.7414520Z [40/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/polys/uintpoly.cpp.o
-2025-10-26T01:41:23.0904620Z [41/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/prime_sieve.cpp.o
-2025-10-26T01:41:23.4897650Z [42/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/polys/uratpoly.cpp.o
-2025-10-26T01:41:24.5169210Z [43/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/pow.cpp.o
-2025-10-26T01:41:25.9488090Z [44/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/mathml.cpp.o
-2025-10-26T01:41:26.0192830Z [45/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/codegen.cpp.o
-2025-10-26T01:41:26.6748550Z [46/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/sbml.cpp.o
-2025-10-26T01:41:28.4653330Z [47/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/stringbox.cpp.o
-2025-10-26T01:41:29.1625490Z [48/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/rational.cpp.o
-2025-10-26T01:41:31.0999200Z [49/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/latex.cpp.o
-2025-10-26T01:41:31.5189400Z [50/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/real_double.cpp.o
-2025-10-26T01:41:31.7097860Z [51/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/strprinter.cpp.o
-2025-10-26T01:41:32.8588000Z [52/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/unicode.cpp.o
-2025-10-26T01:41:33.4228420Z [53/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/rings.cpp.o
-2025-10-26T01:41:33.8913990Z [54/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/rewrite.cpp.o
-2025-10-26T01:41:34.6103310Z [55/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/series.cpp.o
-2025-10-26T01:41:35.6697190Z [56/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/set_funcs.cpp.o
-2025-10-26T01:41:35.7104720Z [57/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/series_generic.cpp.o
-2025-10-26T01:41:36.0525030Z [58/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/sets.cpp.o
-2025-10-26T01:41:36.4729200Z [59/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/symengine_rcp.cpp.o
-2025-10-26T01:41:36.7643300Z [60/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/symbol.cpp.o
-2025-10-26T01:41:37.6633070Z [61/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/sparse_matrix.cpp.o
-2025-10-26T01:41:38.1515560Z [62/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/assumptions.cpp.o
-2025-10-26T01:41:39.7141140Z [63/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/test_visitors.cpp.o
-2025-10-26T01:41:39.7643490Z [64/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/solve.cpp.o
-2025-10-26T01:41:40.1590270Z [65/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/refine.cpp.o
-2025-10-26T01:41:40.5705410Z [66/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/simplify.cpp.o
-2025-10-26T01:41:41.0448830Z [67/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/tuple.cpp.o
-2025-10-26T01:41:41.0653580Z [68/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/identity_matrix.cpp.o
-2025-10-26T01:41:41.4074150Z [69/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/matrix_symbol.cpp.o
-2025-10-26T01:41:41.8544250Z [70/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/zero_matrix.cpp.o
-2025-10-26T01:41:42.1559880Z [71/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/diagonal_matrix.cpp.o
-2025-10-26T01:41:42.2320700Z [72/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/immutable_dense_matrix.cpp.o
-2025-10-26T01:41:42.4610760Z [73/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/visitor.cpp.o
-2025-10-26T01:41:42.7794700Z [74/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/matrix_add.cpp.o
-2025-10-26T01:41:43.2074900Z [75/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/hadamard_product.cpp.o
-2025-10-26T01:41:43.5496430Z [76/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/matrix_mul.cpp.o
-2025-10-26T01:41:44.6589820Z [77/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/conjugate_matrix.cpp.o
-2025-10-26T01:41:44.9711120Z [78/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/transpose.cpp.o
-2025-10-26T01:41:45.3819750Z [79/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/trace.cpp.o
-2025-10-26T01:41:46.3528320Z [80/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/size.cpp.o
-2025-10-26T01:41:46.6846460Z [81/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_zero.cpp.o
-2025-10-26T01:41:47.8405280Z [82/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_real.cpp.o
-2025-10-26T01:41:48.1602320Z [83/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_symmetric.cpp.o
-2025-10-26T01:41:48.5012270Z [84/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_square.cpp.o
-2025-10-26T01:41:49.4158250Z [85/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_diagonal.cpp.o
-2025-10-26T01:41:49.7762270Z [86/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_lower.cpp.o
-2025-10-26T01:41:49.7863600Z [87/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/mp_wrapper.cpp.o
-2025-10-26T01:41:50.9142260Z [88/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_upper.cpp.o
-2025-10-26T01:41:51.2410550Z [89/97] Building CXX object CMakeFiles/calculator_core.dir/symbolic_solver.cpp.o
-2025-10-26T01:41:51.2511210Z FAILED: [code=1] CMakeFiles/calculator_core.dir/symbolic_solver.cpp.o 
-2025-10-26T01:41:51.2616550Z /usr/bin/c++ -DCALC_WITH_SYMENGINE -I/Users/runner/work/calculator-cli/calculator-cli -I/Users/runner/work/calculator-cli/calculator-cli/third-part/symengine -I/Users/runner/work/calculator-cli/calculator-cli/build/third-part/symengine/build_integration -I/Users/runner/work/calculator-cli/calculator-cli/build/third-part/symengine/build_integration/symengine/utilities/teuchos -O3 -DNDEBUG -std=gnu++20 -arch arm64 -MD -MT CMakeFiles/calculator_core.dir/symbolic_solver.cpp.o -MF CMakeFiles/calculator_core.dir/symbolic_solver.cpp.o.d -o CMakeFiles/calculator_core.dir/symbolic_solver.cpp.o -c /Users/runner/work/calculator-cli/calculator-cli/symbolic_solver.cpp
-2025-10-26T01:41:51.2719640Z In file included from /Users/runner/work/calculator-cli/calculator-cli/symbolic_solver.cpp:8:
-2025-10-26T01:41:51.2821470Z In file included from /Users/runner/work/calculator-cli/calculator-cli/third-part/symengine/symengine/add.h:17:
-2025-10-26T01:41:51.2922430Z In file included from /Users/runner/work/calculator-cli/calculator-cli/third-part/symengine/symengine/basic.h:37:
-2025-10-26T01:41:51.3022970Z In file included from /Users/runner/work/calculator-cli/calculator-cli/third-part/symengine/symengine/dict.h:9:
-2025-10-26T01:41:51.3125320Z In file included from /Users/runner/work/calculator-cli/calculator-cli/third-part/symengine/symengine/mp_class.h:8:
-2025-10-26T01:41:51.3226980Z /Users/runner/work/calculator-cli/calculator-cli/third-part/symengine/symengine/mp_wrapper.h:5:10: fatal error: 'gmp.h' file not found
-2025-10-26T01:41:51.3328510Z     5 | #include <gmp.h>
-2025-10-26T01:41:51.3430280Z       |          ^~~~~~~
-2025-10-26T01:41:51.3531610Z 1 error generated.
-2025-10-26T01:41:51.3632960Z [90/97] Building CXX object CMakeFiles/calculator.dir/main_cli.cpp.o
-2025-10-26T01:41:51.3734230Z [91/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_toeplitz.cpp.o
-2025-10-26T01:41:51.8553490Z [92/97] Building CXX object CMakeFiles/calculator_tests_runner.dir/calculator_tests.cpp.o
-2025-10-26T01:41:52.5335730Z [93/97] Building CXX object CMakeFiles/calculator_core.dir/string_processing.cpp.o
-2025-10-26T01:41:52.5336360Z ninja: build stopped: subcommand failed.
-2025-10-26T01:41:52.5493660Z ##[error]Process completed with exit code 1.
-2025-10-26T01:41:52.5687290Z Post job cleanup.
-2025-10-26T01:41:52.7167090Z [command]/opt/homebrew/bin/git version
-2025-10-26T01:41:52.7268980Z git version 2.50.1
-2025-10-26T01:41:52.7296070Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/fa8ce5a5-7bc8-4950-82e9-bf4cd2e33ecb/.gitconfig'
-2025-10-26T01:41:52.7308160Z Temporarily overriding HOME='/Users/runner/work/_temp/fa8ce5a5-7bc8-4950-82e9-bf4cd2e33ecb' before making global git config changes
-2025-10-26T01:41:52.7309350Z Adding repository directory to the temporary git global config as a safe directory
-2025-10-26T01:41:52.7311910Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/calculator-cli/calculator-cli
-2025-10-26T01:41:52.7409680Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
-2025-10-26T01:41:52.7500160Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
-2025-10-26T01:41:52.8405790Z Entering 'third-part/symengine'
-2025-10-26T01:41:52.8641500Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
-2025-10-26T01:41:52.8728940Z http.https://github.com/.extraheader
-2025-10-26T01:41:52.8731630Z [command]/opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
-2025-10-26T01:41:52.8795870Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
-2025-10-26T01:41:53.0601550Z Entering 'third-part/symengine'
-2025-10-26T01:41:53.0746570Z http.https://github.com/.extraheader
-2025-10-26T01:41:53.0973820Z Cleaning up orphan processes
+2025-10-26T01:47:03.2252250Z ##[group]Run rm -rf build/
+2025-10-26T01:47:03.2252560Z [36;1mrm -rf build/[0m
+2025-10-26T01:47:03.2289220Z shell: /bin/bash -e {0}
+2025-10-26T01:47:03.2289580Z ##[endgroup]
+2025-10-26T01:47:03.2863110Z ##[group]Run cmake -G Ninja -B build -S . -DCMAKE_BUILD_TYPE=Release
+2025-10-26T01:47:03.2863570Z [36;1mcmake -G Ninja -B build -S . -DCMAKE_BUILD_TYPE=Release[0m
+2025-10-26T01:47:03.2893950Z shell: /bin/bash -e {0}
+2025-10-26T01:47:03.2894240Z ##[endgroup]
+2025-10-26T01:47:03.7864460Z -- The C compiler identification is AppleClang 17.0.0.17000013
+2025-10-26T01:47:04.9568960Z -- The CXX compiler identification is AppleClang 17.0.0.17000013
+2025-10-26T01:47:04.9897700Z -- Detecting C compiler ABI info
+2025-10-26T01:47:05.1199570Z -- Detecting C compiler ABI info - done
+2025-10-26T01:47:05.1504160Z -- Check for working C compiler: /usr/bin/cc - skipped
+2025-10-26T01:47:05.1506610Z -- Detecting C compile features
+2025-10-26T01:47:05.1515490Z -- Detecting C compile features - done
+2025-10-26T01:47:05.1580220Z -- Detecting CXX compiler ABI info
+2025-10-26T01:47:05.2839750Z -- Detecting CXX compiler ABI info - done
+2025-10-26T01:47:05.3102660Z -- Check for working CXX compiler: /usr/bin/c++ - skipped
+2025-10-26T01:47:05.3103570Z -- Detecting CXX compile features
+2025-10-26T01:47:05.3108420Z -- Detecting CXX compile features - done
+2025-10-26T01:47:06.3478230Z -- Linker does not support --exclude-libs
+2025-10-26T01:47:06.6969930Z -- Linker supports -unexported_symbol
+2025-10-26T01:47:06.7225150Z -- Looking for sys/types.h
+2025-10-26T01:47:06.8432370Z -- Looking for sys/types.h - found
+2025-10-26T01:47:06.8432820Z -- Looking for stdint.h
+2025-10-26T01:47:06.9662940Z -- Looking for stdint.h - found
+2025-10-26T01:47:06.9663260Z -- Looking for stddef.h
+2025-10-26T01:47:07.0894010Z -- Looking for stddef.h - found
+2025-10-26T01:47:07.0894280Z -- Check size of long double
+2025-10-26T01:47:07.2380680Z -- Check size of long double - done
+2025-10-26T01:47:08.2874940Z -- Found GMP: /opt/homebrew/lib/libgmp.dylib
+2025-10-26T01:47:08.2957850Z -- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY
+2025-10-26T01:47:08.4752880Z -- Performing Test COMPILER_HAS_HIDDEN_VISIBILITY - Success
+2025-10-26T01:47:08.4756670Z -- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY
+2025-10-26T01:47:08.6135720Z -- Performing Test COMPILER_HAS_HIDDEN_INLINE_VISIBILITY - Success
+2025-10-26T01:47:08.6136190Z -- Performing Test COMPILER_HAS_DEPRECATED_ATTR
+2025-10-26T01:47:08.7574280Z -- Performing Test COMPILER_HAS_DEPRECATED_ATTR - Success
+2025-10-26T01:47:08.7865860Z --------------------------------------------------------------------------------
+2025-10-26T01:47:08.7972770Z 
+2025-10-26T01:47:08.7973050Z -- Configuring done (5.4s)
+2025-10-26T01:47:08.8074140Z +-------------------------------+
+2025-10-26T01:47:08.8074420Z -- Generating done (0.0s)
+2025-10-26T01:47:08.8151920Z | Configuration results SUMMARY |
+2025-10-26T01:47:08.8152280Z -- Build files have been written to: /Users/runner/work/calculator-cli/calculator-cli/build
+2025-10-26T01:47:08.8188960Z +-------------------------------+
+2025-10-26T01:47:08.8189300Z 
+2025-10-26T01:47:08.8189450Z CMAKE_C_COMPILER:   /usr/bin/cc
+2025-10-26T01:47:08.8189710Z CMAKE_CXX_COMPILER: /usr/bin/c++
+2025-10-26T01:47:08.8189930Z CMAKE_BUILD_TYPE: Release
+2025-10-26T01:47:08.8190180Z CMAKE_CONFIGURATION_TYPES: 
+2025-10-26T01:47:08.8190340Z CMAKE_C_FLAGS:           
+2025-10-26T01:47:08.8190810Z CMAKE_CXX_FLAGS:         -std=c++11  -fPIC -D__extern_always_inline=inline
+2025-10-26T01:47:08.8191110Z CMAKE_CXX_FLAGS_DEBUG:   -g -Wno-unknown-pragmas
+2025-10-26T01:47:08.8191380Z CMAKE_CXX_FLAGS_RELEASE: -O3 -DNDEBUG -Wno-unknown-pragmas
+2025-10-26T01:47:08.8191700Z CMAKE_INSTALL_PREFIX: /usr/local
+2025-10-26T01:47:08.8192050Z BUILD_SHARED_LIBS: 
+2025-10-26T01:47:08.8192180Z INTEGER_CLASS : GMP
+2025-10-26T01:47:08.8192310Z HAVE_SYMENGINE_GMP: yes
+2025-10-26T01:47:08.8192510Z WITH_SYMENGINE_ASSERT: no
+2025-10-26T01:47:08.8192660Z WITH_SYMENGINE_RCP: yes
+2025-10-26T01:47:08.8192890Z WITH_SYMENGINE_TEUCHOS: no
+2025-10-26T01:47:08.8193130Z WITH_COTIRE: no
+2025-10-26T01:47:08.8193390Z WITH_GENERATE_PARSER: no
+2025-10-26T01:47:08.8193550Z HAVE_GCC_ABI_DEMANGLE: yes
+2025-10-26T01:47:08.8194250Z HAVE_C_FUNCTION_NOT_FUNC: no
+2025-10-26T01:47:08.8194430Z HAVE_DEFAULT_CONSTRUCTORS: yes
+2025-10-26T01:47:08.8194590Z HAVE_SYMENGINE_NOEXCEPT: yes
+2025-10-26T01:47:08.8194750Z HAVE_SYMENGINE_IS_CONSTRUCTIBLE: yes
+2025-10-26T01:47:08.8195000Z HAVE_SYMENGINE_RESERVE: yes
+2025-10-26T01:47:08.8195230Z HAVE_SYMENGINE_STD_TO_STRING: TRUE
+2025-10-26T01:47:08.8195400Z WITH_SYMENGINE_THREAD_SAFE: no
+2025-10-26T01:47:08.8195630Z BUILD_TESTS: no
+2025-10-26T01:47:08.8195750Z BUILD_BENCHMARKS: no
+2025-10-26T01:47:08.8195890Z BUILD_BENCHMARKS_GOOGLE: no
+2025-10-26T01:47:08.8196050Z WITH_GMP: yes
+2025-10-26T01:47:08.8196200Z GMP_INCLUDE_DIRS: /opt/homebrew/include
+2025-10-26T01:47:08.8196410Z GMP_LIBRARIES: /opt/homebrew/lib/libgmp.dylib
+2025-10-26T01:47:08.8196610Z WITH_BFD: no
+2025-10-26T01:47:08.8196730Z WITH_ECM: no
+2025-10-26T01:47:08.8196910Z WITH_PRIMESIEVE: no
+2025-10-26T01:47:08.8197140Z WITH_FLINT: no
+2025-10-26T01:47:08.8197250Z WITH_ARB: no
+2025-10-26T01:47:08.8197410Z WITH_MPFR: no
+2025-10-26T01:47:08.8197530Z WITH_PIRANHA: no
+2025-10-26T01:47:08.8197770Z WITH_LLVM: no
+2025-10-26T01:47:08.8197890Z WITH_BOOST: no
+2025-10-26T01:47:08.8198030Z WITH_PTHREAD: no
+2025-10-26T01:47:08.8198160Z WITH_MPC: no
+2025-10-26T01:47:08.8198290Z WITH_TCMALLOC: no
+2025-10-26T01:47:08.8198420Z WITH_OPENMP: no
+2025-10-26T01:47:08.8198550Z WITH_VIRTUAL_TYPEID: no
+2025-10-26T01:47:08.8198700Z WITH_SYSTEM_CEREAL: no
+2025-10-26T01:47:08.8198850Z WITH_SYSTEM_FASTFLOAT: no
+2025-10-26T01:47:08.8198980Z LIBS: gmp
+2025-10-26T01:47:08.8199060Z 
+2025-10-26T01:47:08.8199170Z --------------------------------------------------------------------------------
+2025-10-26T01:47:08.8199370Z 
+2025-10-26T01:47:08.8222060Z ##[group]Run cmake --build build --parallel
+2025-10-26T01:47:08.8222310Z [36;1mcmake --build build --parallel[0m
+2025-10-26T01:47:08.8252090Z shell: /bin/bash -e {0}
+2025-10-26T01:47:08.8252240Z ##[endgroup]
+2025-10-26T01:47:10.7577700Z [1/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/complex_double.cpp.o
+2025-10-26T01:47:10.9399740Z [2/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/complex.cpp.o
+2025-10-26T01:47:11.1108090Z [3/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/constants.cpp.o
+2025-10-26T01:47:11.9787140Z [4/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/add.cpp.o
+2025-10-26T01:47:16.8051940Z [5/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/cse.cpp.o
+2025-10-26T01:47:18.1494250Z [6/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/dict.cpp.o
+2025-10-26T01:47:19.6529590Z [7/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/diophantine.cpp.o
+2025-10-26T01:47:20.0077650Z [8/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/derivative.cpp.o
+2025-10-26T01:47:21.1662230Z [9/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/basic.cpp.o
+2025-10-26T01:47:21.6279770Z [10/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/eval.cpp.o
+2025-10-26T01:47:22.6459900Z [11/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/cwrapper.cpp.o
+2025-10-26T01:47:23.7266770Z [12/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/expression.cpp.o
+2025-10-26T01:47:24.5566860Z [13/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/expand.cpp.o
+2025-10-26T01:47:25.0506560Z [14/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/finitediff.cpp.o
+2025-10-26T01:47:25.0808040Z [15/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/dense_matrix.cpp.o
+2025-10-26T01:47:26.5458280Z [16/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/fields.cpp.o
+2025-10-26T01:47:26.7482830Z [17/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/integer.cpp.o
+2025-10-26T01:47:27.0702830Z [18/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/infinity.cpp.o
+2025-10-26T01:47:27.0815480Z [19/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/eval_double.cpp.o
+2025-10-26T01:47:28.4986450Z [20/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/monomials.cpp.o
+2025-10-26T01:47:28.7640030Z [21/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrix.cpp.o
+2025-10-26T01:47:30.0387850Z [22/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/nan.cpp.o
+2025-10-26T01:47:30.2190770Z [23/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/logic.cpp.o
+2025-10-26T01:47:30.9152270Z [24/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/mul.cpp.o
+2025-10-26T01:47:31.7841590Z [25/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/number.cpp.o
+2025-10-26T01:47:31.7941860Z [26/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/ntheory_funcs.cpp.o
+2025-10-26T01:47:31.9199960Z [27/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/functions.cpp.o
+2025-10-26T01:47:32.6099980Z [28/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/ntheory.cpp.o
+2025-10-26T01:47:33.2059050Z [29/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/numer_denom.cpp.o
+2025-10-26T01:47:33.6259620Z [30/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/parser.tab.cc.o
+2025-10-26T01:47:33.8359230Z [31/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/tokenizer.cpp.o
+2025-10-26T01:47:34.8950900Z [32/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/sbml/sbml_parser.tab.cc.o
+2025-10-26T01:47:35.1856310Z [33/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/sbml/sbml_tokenizer.cpp.o
+2025-10-26T01:47:35.5569310Z [34/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/parser.cpp.o
+2025-10-26T01:47:36.6090480Z [35/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/parser_old.cpp.o
+2025-10-26T01:47:37.0024140Z [36/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/parser/sbml/sbml_parser.cpp.o
+2025-10-26T01:47:37.1084000Z [37/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/polys/msymenginepoly.cpp.o
+2025-10-26T01:47:37.3412880Z [38/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/polys/basic_conversions.cpp.o
+2025-10-26T01:47:37.5955240Z [39/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/polys/uexprpoly.cpp.o
+2025-10-26T01:47:38.1612690Z [40/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/polys/uintpoly.cpp.o
+2025-10-26T01:47:38.1714710Z [41/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/prime_sieve.cpp.o
+2025-10-26T01:47:38.5517810Z [42/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/polys/uratpoly.cpp.o
+2025-10-26T01:47:39.3824570Z [43/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/pow.cpp.o
+2025-10-26T01:47:40.2116290Z [44/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/codegen.cpp.o
+2025-10-26T01:47:40.2516410Z [45/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/mathml.cpp.o
+2025-10-26T01:47:40.3521400Z [46/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/sbml.cpp.o
+2025-10-26T01:47:41.5004370Z [47/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/stringbox.cpp.o
+2025-10-26T01:47:41.6428900Z [48/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/rational.cpp.o
+2025-10-26T01:47:43.0913320Z [49/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/latex.cpp.o
+2025-10-26T01:47:43.3627920Z [50/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/real_double.cpp.o
+2025-10-26T01:47:43.7541190Z [51/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/strprinter.cpp.o
+2025-10-26T01:47:44.7613740Z [52/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/printers/unicode.cpp.o
+2025-10-26T01:47:45.4446890Z [53/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/rewrite.cpp.o
+2025-10-26T01:47:45.4750490Z [54/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/rings.cpp.o
+2025-10-26T01:47:46.9276010Z [55/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/series.cpp.o
+2025-10-26T01:47:48.6784720Z [56/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/series_generic.cpp.o
+2025-10-26T01:47:48.7286430Z [57/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/set_funcs.cpp.o
+2025-10-26T01:47:49.1606960Z [58/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/sets.cpp.o
+2025-10-26T01:47:49.9073280Z [59/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/symengine_rcp.cpp.o
+2025-10-26T01:47:50.1882740Z [60/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/symbol.cpp.o
+2025-10-26T01:47:50.9326820Z [61/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/sparse_matrix.cpp.o
+2025-10-26T01:47:51.4360840Z [62/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/assumptions.cpp.o
+2025-10-26T01:47:52.4684870Z [63/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/solve.cpp.o
+2025-10-26T01:47:52.8718610Z [64/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/test_visitors.cpp.o
+2025-10-26T01:47:53.0611240Z [65/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/refine.cpp.o
+2025-10-26T01:47:53.4436080Z [66/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/simplify.cpp.o
+2025-10-26T01:47:53.5440500Z [67/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/tuple.cpp.o
+2025-10-26T01:47:53.9774470Z [68/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/identity_matrix.cpp.o
+2025-10-26T01:47:54.0678900Z [69/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/matrix_symbol.cpp.o
+2025-10-26T01:47:54.5321480Z [70/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/zero_matrix.cpp.o
+2025-10-26T01:47:54.6561940Z [71/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/diagonal_matrix.cpp.o
+2025-10-26T01:47:55.1412820Z [72/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/immutable_dense_matrix.cpp.o
+2025-10-26T01:47:55.2816590Z [73/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/visitor.cpp.o
+2025-10-26T01:47:55.4232140Z [74/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/matrix_add.cpp.o
+2025-10-26T01:47:55.8844930Z [75/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/hadamard_product.cpp.o
+2025-10-26T01:47:56.0994900Z [76/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/matrix_mul.cpp.o
+2025-10-26T01:47:57.1709160Z [77/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/conjugate_matrix.cpp.o
+2025-10-26T01:47:57.2714010Z [78/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/transpose.cpp.o
+2025-10-26T01:47:57.3752390Z [79/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/trace.cpp.o
+2025-10-26T01:47:57.9668250Z [80/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/size.cpp.o
+2025-10-26T01:47:57.9970170Z [81/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_zero.cpp.o
+2025-10-26T01:47:59.5014660Z [82/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_real.cpp.o
+2025-10-26T01:47:59.6913420Z [83/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_symmetric.cpp.o
+2025-10-26T01:47:59.7577030Z [84/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_square.cpp.o
+2025-10-26T01:48:00.7554460Z [85/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_diagonal.cpp.o
+2025-10-26T01:48:00.8359440Z [86/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_lower.cpp.o
+2025-10-26T01:48:01.1695030Z [87/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/mp_wrapper.cpp.o
+2025-10-26T01:48:02.2830730Z [88/97] Building CXX object CMakeFiles/calculator_core.dir/symbolic_solver.cpp.o
+2025-10-26T01:48:02.2931270Z FAILED: [code=1] CMakeFiles/calculator_core.dir/symbolic_solver.cpp.o 
+2025-10-26T01:48:02.3033730Z /usr/bin/c++ -DCALC_WITH_SYMENGINE -I/Users/runner/work/calculator-cli/calculator-cli -I/Users/runner/work/calculator-cli/calculator-cli/third-part/symengine -I/Users/runner/work/calculator-cli/calculator-cli/build/third-part/symengine/build_integration -I/Users/runner/work/calculator-cli/calculator-cli/build/third-part/symengine/build_integration/symengine/utilities/teuchos -O3 -DNDEBUG -std=gnu++20 -arch arm64 -MD -MT CMakeFiles/calculator_core.dir/symbolic_solver.cpp.o -MF CMakeFiles/calculator_core.dir/symbolic_solver.cpp.o.d -o CMakeFiles/calculator_core.dir/symbolic_solver.cpp.o -c /Users/runner/work/calculator-cli/calculator-cli/symbolic_solver.cpp
+2025-10-26T01:48:02.3133750Z In file included from /Users/runner/work/calculator-cli/calculator-cli/symbolic_solver.cpp:8:
+2025-10-26T01:48:02.3234720Z In file included from /Users/runner/work/calculator-cli/calculator-cli/third-part/symengine/symengine/add.h:17:
+2025-10-26T01:48:02.3335260Z In file included from /Users/runner/work/calculator-cli/calculator-cli/third-part/symengine/symengine/basic.h:37:
+2025-10-26T01:48:02.3436590Z In file included from /Users/runner/work/calculator-cli/calculator-cli/third-part/symengine/symengine/dict.h:9:
+2025-10-26T01:48:02.3537300Z In file included from /Users/runner/work/calculator-cli/calculator-cli/third-part/symengine/symengine/mp_class.h:8:
+2025-10-26T01:48:02.3672570Z /Users/runner/work/calculator-cli/calculator-cli/third-part/symengine/symengine/mp_wrapper.h:5:10: fatal error: 'gmp.h' file not found
+2025-10-26T01:48:02.3772680Z     5 | #include <gmp.h>
+2025-10-26T01:48:02.3873620Z       |          ^~~~~~~
+2025-10-26T01:48:02.3974020Z 1 error generated.
+2025-10-26T01:48:02.5113750Z [89/97] Building CXX object CMakeFiles/calculator.dir/main_cli.cpp.o
+2025-10-26T01:48:02.5777620Z [90/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_upper.cpp.o
+2025-10-26T01:48:02.6780300Z [91/97] Building CXX object third-part/symengine/build_integration/symengine/CMakeFiles/symengine.dir/matrices/is_toeplitz.cpp.o
+2025-10-26T01:48:03.6649140Z [92/97] Building CXX object CMakeFiles/calculator_core.dir/string_processing.cpp.o
+2025-10-26T01:48:03.6660310Z ninja: build stopped: subcommand failed.
+2025-10-26T01:48:03.6791680Z ##[error]Process completed with exit code 1.
+2025-10-26T01:48:03.6996660Z Post job cleanup.
+2025-10-26T01:48:03.9697280Z [command]/opt/homebrew/bin/git version
+2025-10-26T01:48:03.9876990Z git version 2.50.1
+2025-10-26T01:48:03.9980340Z Copying '/Users/runner/.gitconfig' to '/Users/runner/work/_temp/72011dc3-cfbd-4e63-8bf9-46dc8c09e33e/.gitconfig'
+2025-10-26T01:48:03.9981070Z Temporarily overriding HOME='/Users/runner/work/_temp/72011dc3-cfbd-4e63-8bf9-46dc8c09e33e' before making global git config changes
+2025-10-26T01:48:03.9983270Z Adding repository directory to the temporary git global config as a safe directory
+2025-10-26T01:48:03.9983910Z [command]/opt/homebrew/bin/git config --global --add safe.directory /Users/runner/work/calculator-cli/calculator-cli
+2025-10-26T01:48:04.0224160Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp core\.sshCommand
+2025-10-26T01:48:04.0556050Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'core\.sshCommand' && git config --local --unset-all 'core.sshCommand' || :"
+2025-10-26T01:48:04.1357340Z Entering 'third-part/symengine'
+2025-10-26T01:48:04.1852630Z [command]/opt/homebrew/bin/git config --local --name-only --get-regexp http\.https\:\/\/github\.com\/\.extraheader
+2025-10-26T01:48:04.1891730Z http.https://github.com/.extraheader
+2025-10-26T01:48:04.1922050Z [command]/opt/homebrew/bin/git config --local --unset-all http.https://github.com/.extraheader
+2025-10-26T01:48:04.1997270Z [command]/opt/homebrew/bin/git submodule foreach --recursive sh -c "git config --local --name-only --get-regexp 'http\.https\:\/\/github\.com\/\.extraheader' && git config --local --unset-all 'http.https://github.com/.extraheader' || :"
+2025-10-26T01:48:04.2753790Z Entering 'third-part/symengine'
+2025-10-26T01:48:04.2876680Z http.https://github.com/.extraheader
+2025-10-26T01:48:04.3087790Z Cleaning up orphan processes
