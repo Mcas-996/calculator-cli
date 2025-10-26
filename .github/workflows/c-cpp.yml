@@ -37,8 +37,9 @@ jobs:
 
   build-ubuntu-arm64:
     runs-on:
-      labels: ubuntu-latest
-      architecture: arm64
+      labels:
+        - ubuntu-latest
+        - arm64
 
     steps:
     - uses: actions/checkout@v4
