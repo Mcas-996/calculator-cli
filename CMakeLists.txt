@@ -13,14 +13,31 @@ set(CALCULATOR_HEADERS
     fractions.hpp
     cubic.hpp
     string_processing.hpp
+    symbolic_solver.hpp
 )
 
 set(CALCULATOR_SOURCES
     string_processing.cpp
+    symbolic_solver.cpp
 )
 
 add_library(calculator_core ${CALCULATOR_SOURCES} ${CALCULATOR_HEADERS})
 target_include_directories(calculator_core PUBLIC ${CMAKE_CURRENT_SOURCE_DIR})
+
+# Always build SymEngine to guarantee symbolic outputs.
+set(BUILD_TESTS no CACHE BOOL "Build SymEngine tests" FORCE)
+set(BUILD_BENCHMARKS no CACHE BOOL "Build SymEngine benchmarks" FORCE)
+set(BUILD_BENCHMARKS_GOOGLE no CACHE BOOL "Build SymEngine google benchmarks" FORCE)
+
+add_subdirectory(third-part/symengine third-part/symengine/build_integration EXCLUDE_FROM_ALL)
+set(SYMENGINE_BINARY_DIR ${CMAKE_CURRENT_BINARY_DIR}/third-part/symengine/build_integration)
+
+target_link_libraries(calculator_core PUBLIC symengine)
+target_include_directories(calculator_core PUBLIC
+    ${CMAKE_CURRENT_SOURCE_DIR}/third-part/symengine
+    ${SYMENGINE_BINARY_DIR}
+    ${SYMENGINE_BINARY_DIR}/symengine/utilities/teuchos)
+target_compile_definitions(calculator_core PUBLIC CALC_WITH_SYMENGINE)
 
 add_executable(calculator main_cli.cpp)
 target_link_libraries(calculator PRIVATE calculator_core)

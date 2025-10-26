@@ -37,6 +37,9 @@ namespace sp {
     // Returns up to four solutions (real or complex) formatted as "xk = value"
     // Throws std::runtime_error for invalid equations or solver failures
     std::string solveQuarticEquation(const std::string& equation);
+
+    // Function to solve quintic equations (symbolic output via SymEngine)
+    std::string solveQuinticEquation(const std::string& equation);
     
     // Unified function to process any input string
     // Automatically detects the type of input and calls appropriate function

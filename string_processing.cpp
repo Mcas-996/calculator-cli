@@ -1,5 +1,6 @@
 #include "string_processing.hpp"
 #include "3+time_equation/quadric.hpp"
+#include "symbolic_solver.hpp"
 #include <stack>
 #include <cctype>
 #include <stdexcept>
@@ -14,6 +15,7 @@
 #include <numeric> // For std::gcd
 #include <numbers>
 #include <functional>
+#include <complex>
 
 using std::string;
 using std::vector;
@@ -107,6 +109,313 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
     static const double RAD_PER_DEG = std::numbers::pi / 180.0;
     return degrees * ComplexNumber(RAD_PER_DEG, 0.0);
 }
+
+    namespace {
+        constexpr double POLY_EPSILON = 1e-12;
+        constexpr int MAX_DK_ITERATIONS = 200;
+        constexpr double DK_TOLERANCE = 1e-12;
+
+        std::string formatCoefficient(double value, bool allowOmitOne = false) {
+            double roundedInt = std::round(value);
+            if (std::fabs(value - roundedInt) < 1e-9) {
+                long long intValue = static_cast<long long>(roundedInt);
+                if (allowOmitOne && std::abs(intValue) == 1) {
+                    return intValue < 0 ? "-" : "";
+                }
+                return std::to_string(intValue);
+            }
+
+            Fraction frac = Fraction::fromDouble(value);
+            double fracValue = static_cast<double>(frac.numerator) / frac.denominator;
+            if (std::fabs(value - fracValue) < 1e-9) {
+                if (allowOmitOne && std::abs(frac.numerator) == frac.denominator) {
+                    return (frac.numerator < 0) ? "-" : "";
+                }
+                if (frac.denominator == 1) {
+                    return std::to_string(frac.numerator);
+                }
+                return std::to_string(frac.numerator) + "/" + std::to_string(frac.denominator);
+            }
+
+            std::ostringstream oss;
+            oss << std::fixed << std::setprecision(10) << value;
+            std::string s = oss.str();
+            while (!s.empty() && s.back() == '0') s.pop_back();
+            if (!s.empty() && s.back() == '.') s.pop_back();
+            return s.empty() ? "0" : s;
+        }
+
+        std::string polynomialToString(const std::vector<double>& coeffs) {
+            std::string result;
+            bool firstTerm = true;
+            for (int power = static_cast<int>(coeffs.size()) - 1; power >= 0; --power) {
+                double coeff = coeffs[static_cast<size_t>(power)];
+                if (std::fabs(coeff) < POLY_EPSILON) continue;
+
+                bool isNegative = coeff < 0;
+                double magnitude = isNegative ? -coeff : coeff;
+                std::string term;
+
+                if (power == 0) {
+                    term = formatCoefficient(magnitude);
+                } else {
+                    std::string coeffStr = formatCoefficient(magnitude, true);
+                    if (coeffStr.empty()) {
+                        term = "x";
+                    } else {
+                        term = coeffStr + "x";
+                    }
+                    if (power > 1) {
+                        term += "^" + std::to_string(power);
+                    }
+                }
+
+                if (firstTerm) {
+                    result += (isNegative ? "-" : "") + term;
+                    firstTerm = false;
+                } else {
+                    result += isNegative ? " - " : " + ";
+                    result += term;
+                }
+            }
+            if (result.empty()) {
+                result = "0";
+            }
+            return result;
+        }
+
+        std::string formatRootOfSolutions(const std::string& polynomialExpr, size_t degree) {
+            std::string output;
+            for (size_t idx = 0; idx < degree; ++idx) {
+                if (idx > 0) output += ", ";
+                output += "x" + std::to_string(static_cast<int>(idx + 1)) +
+                          " = RootOf(" + polynomialExpr + ", " + std::to_string(idx) + ")";
+            }
+            return output;
+        }
+
+        std::vector<double> normalizeCoefficients(const std::vector<double>& coeffs) {
+            std::vector<double> normalized = coeffs;
+            double leading = normalized.back();
+            for (double& c : normalized) {
+                c /= leading;
+            }
+            return normalized;
+        }
+
+        std::complex<double> evaluatePolynomial(const std::vector<double>& coeffs, const std::complex<double>& x) {
+            std::complex<double> result = coeffs.back();
+            for (int i = static_cast<int>(coeffs.size()) - 2; i >= 0; --i) {
+                result = result * x + coeffs[static_cast<size_t>(i)];
+            }
+            return result;
+        }
+
+        std::vector<std::complex<double>> durandKerner(const std::vector<double>& coeffs) {
+            size_t degree = coeffs.size() - 1;
+            if (degree == 0) {
+                throw runtime_error("Polynomial degree must be at least 1");
+            }
+
+            auto monic = normalizeCoefficients(coeffs);
+
+            double radius = 1.0;
+            for (size_t i = 0; i < degree; ++i) {
+                radius = std::max(radius, 1.0 + std::abs(monic[i]));
+            }
+
+            std::vector<std::complex<double>> roots(degree);
+            const double angleStep = 2.0 * std::numbers::pi / static_cast<double>(degree);
+            for (size_t i = 0; i < degree; ++i) {
+                double angle = angleStep * static_cast<double>(i);
+                roots[i] = std::polar(radius, angle);
+                roots[i] += std::complex<double>(0.001 * static_cast<double>(i), -0.001 * static_cast<double>(degree - i));
+            }
+
+            for (int iter = 0; iter < MAX_DK_ITERATIONS; ++iter) {
+                double maxStep = 0.0;
+                for (size_t i = 0; i < degree; ++i) {
+                    std::complex<double> denom(1.0, 0.0);
+                    for (size_t j = 0; j < degree; ++j) {
+                        if (i == j) continue;
+                        auto diff = roots[i] - roots[j];
+                        if (std::abs(diff) < 1e-15) {
+                            diff += std::complex<double>(1e-12, 1e-12);
+                        }
+                        denom *= diff;
+                    }
+                    auto delta = evaluatePolynomial(monic, roots[i]) / denom;
+                    roots[i] -= delta;
+                    maxStep = std::max(maxStep, std::abs(delta));
+                }
+                if (maxStep < DK_TOLERANCE) {
+                    break;
+                }
+            }
+            return roots;
+        }
+
+        std::string formatNumericRoots(const std::vector<std::complex<double>>& roots) {
+            string output;
+            for (size_t idx = 0; idx < roots.size(); ++idx) {
+                if (idx > 0) output += ", ";
+                ComplexNumber cn(roots[idx].real(), roots[idx].imag());
+                output += "x" + to_string(static_cast<int>(idx + 1)) + " = " + cn.toString();
+            }
+            return output;
+        }
+
+        std::vector<double> parsePolynomialLeftSide(const string& leftSide, int maxDegree, bool& hasLeadingTerm) {
+            std::vector<double> coefficients(static_cast<size_t>(maxDegree + 1), 0.0);
+            size_t i = 0;
+
+            while (i < leftSide.length()) {
+                if (leftSide[i] == ' ') {
+                    ++i;
+                    continue;
+                }
+
+                double sign = 1.0;
+                if (leftSide[i] == '+') {
+                    ++i;
+                } else if (leftSide[i] == '-') {
+                    sign = -1.0;
+                    ++i;
+                }
+
+                while (i < leftSide.length() && leftSide[i] == ' ') {
+                    ++i;
+                }
+
+                size_t termStart = i;
+                bool hasDigits = false;
+                double value = 0.0;
+
+                while (i < leftSide.length() && isdigit(leftSide[i])) {
+                    hasDigits = true;
+                    value = value * 10 + (leftSide[i] - '0');
+                    ++i;
+                }
+
+                if (i < leftSide.length() && leftSide[i] == '.') {
+                    ++i;
+                    double decimalMultiplier = 0.1;
+                    while (i < leftSide.length() && isdigit(leftSide[i])) {
+                        hasDigits = true;
+                        value += (leftSide[i] - '0') * decimalMultiplier;
+                        decimalMultiplier *= 0.1;
+                        ++i;
+                    }
+                }
+
+                while (i < leftSide.length() && leftSide[i] == ' ') {
+                    ++i;
+                }
+
+                bool hasVariable = false;
+                int exponent = 0;
+                if (i < leftSide.length() && leftSide[i] == 'x') {
+                    hasVariable = true;
+                    exponent = 1;
+                    ++i;
+                    if (i < leftSide.length() && leftSide[i] == '^') {
+                        ++i;
+                        if (i >= leftSide.length() || !isdigit(leftSide[i])) {
+                            throw runtime_error("Invalid character in equation: ^");
+                        }
+                        exponent = 0;
+                        while (i < leftSide.length() && isdigit(leftSide[i])) {
+                            exponent = exponent * 10 + (leftSide[i] - '0');
+                            ++i;
+                        }
+                    }
+                }
+
+                if (!hasDigits && !hasVariable) {
+                    if (termStart < leftSide.length()) {
+                        throw runtime_error("Invalid character in equation: " + string(1, leftSide[termStart]));
+                    }
+                    throw runtime_error("Invalid equation format.");
+                }
+
+                if (!hasDigits) {
+                    value = 1.0;
+                }
+
+                if (!hasVariable) {
+                    exponent = 0;
+                }
+
+                if (exponent > maxDegree) {
+                    throw runtime_error("Polynomial degree exceeds supported maximum x^" + to_string(maxDegree));
+                }
+
+                coefficients[static_cast<size_t>(exponent)] += sign * value;
+                if (exponent == maxDegree && std::fabs(coefficients[static_cast<size_t>(exponent)]) > POLY_EPSILON) {
+                    hasLeadingTerm = true;
+                }
+            }
+
+            return coefficients;
+        }
+
+        std::vector<double> parsePolynomialEquationCoefficients(const string& equation,
+                                                                int degree,
+                                                                const string& formatHint,
+                                                                const string& rhsRealMessage,
+                                                                const string& missingLeadingMessage) {
+            if (equation.length() < 11 || equation.substr(0, 9) != "equation(") {
+                throw runtime_error("Invalid equation format. Use: " + formatHint);
+            }
+
+            size_t endPos = equation.find_last_of(')');
+            if (endPos == string::npos || endPos != equation.length() - 1) {
+                throw runtime_error("Invalid equation format. Use: " + formatHint);
+            }
+
+            string eqContent = equation.substr(9, endPos - 9);
+            size_t equalsPos = eqContent.find('=');
+            if (equalsPos == string::npos) {
+                throw runtime_error("Equation must contain '=' sign");
+            }
+
+            string leftSide = eqContent.substr(0, equalsPos);
+            string rightSide = eqContent.substr(equalsPos + 1);
+
+            bool hasLeading = false;
+            auto coefficients = parsePolynomialLeftSide(leftSide, degree, hasLeading);
+
+            if (!rightSide.empty()) {
+                ComplexNumber rightValue = evaluateExpression(rightSide);
+                double realValue = extractRealComponent(rightValue, rhsRealMessage);
+                coefficients[0] -= realValue;
+            }
+
+            if (!hasLeading) {
+                throw runtime_error(missingLeadingMessage);
+            }
+
+            return coefficients;
+        }
+
+        std::string formatSymbolicOutput(const std::vector<std::string>& roots) {
+            if (roots.empty()) {
+                return "No solution";
+            }
+            if (roots.size() == 1) {
+                return "x = " + roots.front();
+            }
+
+            std::string result;
+            for (size_t i = 0; i < roots.size(); ++i) {
+                if (i > 0) {
+                    result += ", ";
+                }
+                result += "x" + std::to_string(i + 1) + " = " + roots[i];
+            }
+            return result;
+        }
+    } // namespace
 
     // Function to evaluate middle school math expressions
     // Now returns a ComplexNumber
@@ -389,6 +698,18 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             double rightValue = extractRealComponent(rightValueComplex, "Linear equations require real constants");
             b -= rightValue; // Move to left side: ax + b - rightValue = 0
         }
+
+        if (hasX) {
+            try {
+                std::vector<double> coeffs = {b, a};
+                auto symbolicRoots = symbolic::solvePolynomialSymbolically(coeffs);
+                if (!symbolicRoots.empty()) {
+                    return formatSymbolicOutput(symbolicRoots);
+                }
+            } catch (const std::exception&) {
+                // Fallback to numeric handling below.
+            }
+        }
         
         if (!hasX) {
             throw runtime_error("Equation must contain variable x");
@@ -538,6 +859,18 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             double rightValue = extractRealComponent(rightValueComplex, "Quadratic equations require real constants");
             c -= rightValue; // Move to left side: ax^2 + bx + c - rightValue = 0
         }
+
+        if (hasX2) {
+            try {
+                std::vector<double> coeffs = {c, b, a};
+                auto symbolicRoots = symbolic::solvePolynomialSymbolically(coeffs);
+                if (!symbolicRoots.empty()) {
+                    return formatSymbolicOutput(symbolicRoots);
+                }
+            } catch (const std::exception&) {
+                // Continue with numeric solution
+            }
+        }
         
         if (!hasX2) {
             throw runtime_error("Quadratic equation must contain x^2 term");
@@ -623,139 +956,31 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
     }
     
     string solveQuarticEquation(const string& equation) {
-        if (equation.length() < 11 || equation.substr(0, 9) != "equation(") {
-            throw runtime_error("Invalid equation format. Use: equation(x^4+x^3+x^2+x+1=0)");
-        }
+        auto coefficients = parsePolynomialEquationCoefficients(
+            equation,
+            4,
+            "equation(x^4+x^3+x^2+x+1=0)",
+            "Quartic equations require real constants",
+            "Quartic equation must contain x^4 term");
 
-        size_t endPos = equation.find_last_of(')');
-        if (endPos == string::npos || endPos != equation.length() - 1) {
-            throw runtime_error("Invalid equation format. Use: equation(x^4+x^3+x^2+x+1=0)");
-        }
-
-        string eqContent = equation.substr(9, endPos - 9);
-        size_t equalsPos = eqContent.find('=');
-        if (equalsPos == string::npos) {
-            throw runtime_error("Equation must contain '=' sign");
-        }
-
-        string leftSide = eqContent.substr(0, equalsPos);
-        string rightSide = eqContent.substr(equalsPos + 1);
-
-        double a = 0.0, b = 0.0, c = 0.0, d = 0.0, e = 0.0;
-        bool hasX4 = false;
-
-        size_t i = 0;
-        while (i < leftSide.length()) {
-            if (leftSide[i] == ' ') {
-                ++i;
-                continue;
-            }
-
-            size_t termStart = i;
-            double sign = 1.0;
-            if (leftSide[i] == '+') {
-                ++i;
-            } else if (leftSide[i] == '-') {
-                sign = -1.0;
-                ++i;
-            }
-
-            while (i < leftSide.length() && leftSide[i] == ' ') {
-                ++i;
-            }
-
-            double num = 0.0;
-            bool hasDigits = false;
-
-            while (i < leftSide.length() && isdigit(leftSide[i])) {
-                hasDigits = true;
-                num = num * 10 + (leftSide[i] - '0');
-                ++i;
-            }
-
-            if (i < leftSide.length() && leftSide[i] == '.') {
-                ++i;
-                double decimalMultiplier = 0.1;
-                while (i < leftSide.length() && isdigit(leftSide[i])) {
-                    hasDigits = true;
-                    num += (leftSide[i] - '0') * decimalMultiplier;
-                    decimalMultiplier *= 0.1;
-                    ++i;
-                }
-            }
-
-            while (i < leftSide.length() && leftSide[i] == ' ') {
-                ++i;
-            }
-
-            bool hasVariable = false;
-            int exponent = 0;
-            if (i < leftSide.length() && leftSide[i] == 'x') {
-                hasVariable = true;
-                exponent = 1;
-                ++i;
-                if (i < leftSide.length() && leftSide[i] == '^') {
-                    ++i;
-                    if (i >= leftSide.length() || !isdigit(leftSide[i])) {
-                        throw runtime_error("Invalid character in equation: ^");
-                    }
-                    exponent = 0;
-                    while (i < leftSide.length() && isdigit(leftSide[i])) {
-                        exponent = exponent * 10 + (leftSide[i] - '0');
-                        ++i;
-                    }
-                }
-            }
-
-            if (!hasDigits && !hasVariable) {
-                char invalidChar = leftSide[termStart];
-                throw runtime_error("Invalid character in equation: " + string(1, invalidChar));
-            }
-
-            if (!hasDigits) {
-                num = 1.0;
-            }
-            double coeff = num * sign;
-
-            if (!hasVariable) {
-                exponent = 0;
-            }
-
-            if (exponent > 4) {
-                throw runtime_error("Quartic equations support exponents up to 4");
-            }
-
-            switch (exponent) {
-                case 4:
-                    hasX4 = true;
-                    a += coeff;
-                    break;
-                case 3:
-                    b += coeff;
-                    break;
-                case 2:
-                    c += coeff;
-                    break;
-                case 1:
-                    d += coeff;
-                    break;
-                case 0:
-                    e += coeff;
-                    break;
-                default:
-                    throw runtime_error("Invalid character in equation: " + string(1, leftSide[termStart]));
-            }
-        }
-
-        if (!rightSide.empty()) {
-            ComplexNumber rightValueComplex = evaluateExpression(rightSide);
-            double rightValue = extractRealComponent(rightValueComplex, "Quartic equations require real constants");
-            e -= rightValue;
-        }
-
-        if (!hasX4 || std::abs(a) < quartic::QUARTIC_EPS) {
+        if (std::abs(coefficients[4]) < quartic::QUARTIC_EPS) {
             throw runtime_error("Quartic equation must contain x^4 term");
         }
+
+        try {
+            auto symbolicRoots = symbolic::solvePolynomialSymbolically(coefficients);
+            if (!symbolicRoots.empty()) {
+                return formatSymbolicOutput(symbolicRoots);
+            }
+        } catch (const std::exception&) {
+            // Fall back to numeric Durand–Kerner solver below.
+        }
+
+        double a = coefficients[4];
+        double b = coefficients[3];
+        double c = coefficients[2];
+        double d = coefficients[1];
+        double e = coefficients[0];
 
         auto result = quartic::solve(a, b, c, d, e);
         if (!result.converged) {
@@ -772,6 +997,41 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
         }
 
         return output;
+    }
+
+    string solveQuinticEquation(const string& equation) {
+        auto coefficients = parsePolynomialEquationCoefficients(
+            equation,
+            5,
+            "equation(x^5+x^4+x^3+x^2+x+1=0)",
+            "Quintic equations require real constants",
+            "Quintic equation must contain x^5 term");
+
+        if (std::fabs(coefficients[5]) < POLY_EPSILON) {
+            throw runtime_error("Quintic equation must contain x^5 term");
+        }
+
+        try {
+            auto symbolicRoots = symbolic::solvePolynomialSymbolically(coefficients);
+            if (symbolicRoots.empty()) {
+                throw runtime_error("SymEngine returned no symbolic quintic roots");
+            }
+            return formatSymbolicOutput(symbolicRoots);
+        } catch (const std::exception& e) {
+            const std::string errMessage = e.what();
+            const std::string prefix = "NON_FINITE::";
+            if (errMessage.rfind(prefix, 0) == 0) {
+                std::string polyExpr = polynomialToString(coefficients);
+                std::string rootOfOutput = formatRootOfSolutions(polyExpr, coefficients.size() - 1);
+                return rootOfOutput;
+            }
+            try {
+                auto numericRoots = durandKerner(coefficients);
+                return formatNumericRoots(numericRoots);
+            } catch (const std::exception& numericErr) {
+                throw runtime_error(string("SymEngine quintic solve failed: ") + errMessage + " / numeric fallback failed: " + numericErr.what());
+            }
+        }
     }
     
     // Function to solve cubic equations
@@ -920,6 +1180,18 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             ComplexNumber rightValueComplex = evaluateExpression(rightSide);
             double rightValue = extractRealComponent(rightValueComplex, "Cubic equations require real constants");
             d -= rightValue; // Move to left side: ax^3 + bx^2 + cx + d - rightValue = 0
+        }
+
+        if (hasX3) {
+            try {
+                std::vector<double> coeffs = {d, c, b, a};
+                auto symbolicRoots = symbolic::solvePolynomialSymbolically(coeffs);
+                if (!symbolicRoots.empty()) {
+                    return formatSymbolicOutput(symbolicRoots);
+                }
+            } catch (const std::exception&) {
+                // Continue with numeric fallback.
+            }
         }
         
         if (!hasX3) {
@@ -1281,6 +1553,10 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             
             // Check if it's an equation solving request
             if (input.length() >= 9 && input.substr(0, 9) == "equation(") {
+                // Check if it's a quintic equation (contains x^5)
+                if (input.find("x^5") != string::npos) {
+                    return solveQuinticEquation(input);
+                }
                 // Check if it's a quartic equation (contains x^4)
                 if (input.find("x^4") != string::npos) {
                     return solveQuarticEquation(input);

@@ -1,7 +1,9 @@
 # Calculator CLI
 
-A lightweight C++20 command-line calculator capable of evaluating real/complex expressions, solving equations, and processing small systems of linear equations.
+A lightweight C++20 command-line calculator capable of evaluating real/complex expressions, solving equations (with exact symbolic output up to quintics), and processing small systems of linear equations.
 
+## **Warning**
+Please **do not** compile on a machine with less than **32 GB RAM**—take this README to your manager and request an upgrade instead.
 ## Features
 
 ### Expression Engine
@@ -15,11 +17,14 @@ A lightweight C++20 command-line calculator capable of evaluating real/complex e
 - Linear equations: `equation(2x+5=0)`
 - Quadratic equations: `equation(x^2-5x+6=0)` (real or complex roots)
 - Cubic equations: `equation(x^3-6x^2+11x-6=0)`
+- Quartic equations: `equation(x^4-2=0)` (symbolic roots via `sqrt`/`cbrt`, numeric Durand–Kerner fallback)
+- Quintic equations: `equation(x^5+2x^4+...=0)` → outputs exact `RootOf(polynomial, k)` descriptors when radicals are unavailable, with optional numeric approximations for reference.
 - Systems of linear equations (up to 3 variables): `equation2(x+y=5,x-y=1)`
 
 ### Output Formatting
-- Results favor exact fractions when possible (e.g. `1/3` stays rational) and fall back to decimals for irrational/complex parts.
-- Complex numbers print as `a + bi`, with simplified `i`/`-i` where appropriate.
+- Results favor exact fractions when possible (e.g. `1/3` stays rational) and fall back to decimals only when necessary.
+- Complex numbers print as `a + bi`, with simplified `i`/`-i`.
+- Symbolic solutions use `sqrt`, `cbrt`, and `RootOf` notation so the CLI never hides the algebraic structure (e.g. `x = RootOf(x^5+2x^4+3x^3+4x^2-1, 0)`).
 
 ## Usage
 
@@ -54,6 +59,7 @@ ctest --output-on-failure --test-dir build   # optional, runs calculator_tests
 
 - Windows (MSVC, VS Build Tools, or clang-cl) should specify the desired architecture: `cmake -B build -S . -A x64`.
 - macOS/Linux follow the same commands; install `cmake`/`g++`/`clang++` via your package manager.
+- The project vendors [SymEngine](https://github.com/symengine/symengine) in `third-part/`; no separate install is required, but the first build can take a few minutes while SymEngine compiles.
 - Legacy helper scripts (`build_windows.bat`, `build_linux.sh`, `build_macos.sh`) remain available but the CMake flow above is authoritative.
 
 ## macOS Gatekeeper
