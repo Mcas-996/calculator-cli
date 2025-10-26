@@ -1,5 +1,4 @@
 #include "string_processing.hpp"
-#include "3+time_equation/quadric.hpp"
 #include "symbolic_solver.hpp"
 #include <stack>
 #include <cctype>
