@@ -5,10 +5,10 @@
 #include <stdexcept>
 #include <algorithm>
 #include <numeric>
+#include <complex>
 
 using std::vector;
 using std::acos;
-using std::numbers;
 
 // A small epsilon value for floating-point comparisons
 const double CUBIC_EPSILON = 1e-9;

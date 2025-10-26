@@ -962,40 +962,21 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             "Quartic equations require real constants",
             "Quartic equation must contain x^4 term");
 
-        if (std::abs(coefficients[4]) < quartic::QUARTIC_EPS) {
-            throw runtime_error("Quartic equation must contain x^4 term");
-        }
-
         try {
             auto symbolicRoots = symbolic::solvePolynomialSymbolically(coefficients);
             if (!symbolicRoots.empty()) {
                 return formatSymbolicOutput(symbolicRoots);
             }
         } catch (const std::exception&) {
-            // Fall back to numeric Durand–Kerner solver below.
+            // Continue to numeric fallback
         }
 
-        double a = coefficients[4];
-        double b = coefficients[3];
-        double c = coefficients[2];
-        double d = coefficients[1];
-        double e = coefficients[0];
-
-        auto result = quartic::solve(a, b, c, d, e);
-        if (!result.converged) {
-            throw runtime_error("Quartic solver failed to converge within " + std::to_string(result.iterations) + " iterations");
+        try {
+            auto numericRoots = durandKerner(coefficients);
+            return formatNumericRoots(numericRoots);
+        } catch (const std::exception& err) {
+            throw runtime_error("Numeric quartic solve failed: " + string(err.what()));
         }
-
-        string output;
-        for (size_t idx = 0; idx < result.roots.size(); ++idx) {
-            if (idx > 0) {
-                output += ", ";
-            }
-            ComplexNumber root(result.roots[idx].real(), result.roots[idx].imag());
-            output += "x" + to_string(static_cast<int>(idx + 1)) + " = " + root.toString();
-        }
-
-        return output;
     }
 
     string solveQuinticEquation(const string& equation) {
