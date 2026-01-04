@@ -1,6 +1,7 @@
 #pragma once
 
-import std;
+#include <string>
+#include <vector>
 
 namespace symbolic {
 

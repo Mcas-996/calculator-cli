@@ -1,6 +1,20 @@
 #include "string_processing.hpp"
 #include "symbolic_solver.hpp"
-import std;
+#include "pretty_output.hpp"
+#include <algorithm>
+#include <cmath>
+#include <complex>
+#include <functional>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <numeric>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <stdexcept>
+#include <string>
+#include <vector>
 
 using std::string;
 using std::vector;
@@ -119,7 +133,8 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
                 if (frac.denominator == 1) {
                     return std::to_string(frac.numerator);
                 }
-                return std::to_string(frac.numerator) + "/" + std::to_string(frac.denominator);
+                // 使用美化输出格式化分数
+                return pretty::PrettyOutput::format(frac);
             }
 
             std::ostringstream oss;
@@ -151,7 +166,8 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
                         term = coeffStr + "x";
                     }
                     if (power > 1) {
-                        term += "^" + std::to_string(power);
+                        // 使用美化输出格式化上标
+                        term += pretty::PrettyOutput::formatSuperscript(power);
                     }
                 }
 
@@ -173,8 +189,9 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             std::string output;
             for (size_t idx = 0; idx < degree; ++idx) {
                 if (idx > 0) output += ", ";
-                output += "x" + std::to_string(static_cast<int>(idx + 1)) +
-                          " = RootOf(" + polynomialExpr + ", " + std::to_string(idx) + ")";
+                // 使用美化输出格式化下标
+                std::string var = "x" + pretty::PrettyOutput::formatSubscript(static_cast<int>(idx + 1));
+                output += var + " = RootOf(" + polynomialExpr + ", " + std::to_string(idx) + ")";
             }
             return output;
         }
@@ -245,7 +262,9 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             for (size_t idx = 0; idx < roots.size(); ++idx) {
                 if (idx > 0) output += ", ";
                 ComplexNumber cn(roots[idx].real(), roots[idx].imag());
-                output += "x" + to_string(static_cast<int>(idx + 1)) + " = " + cn.toString();
+                // 使用美化输出格式化变量名和值
+                std::string var = "x" + pretty::PrettyOutput::formatSubscript(static_cast<int>(idx + 1));
+                output += var + " = " + pretty::PrettyOutput::format(cn);
             }
             return output;
         }
@@ -388,7 +407,7 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
                 return "No solution";
             }
             if (roots.size() == 1) {
-                return "x = " + roots.front();
+                return "x = " + pretty::PrettyOutput::format(roots.front());
             }
 
             std::string result;
@@ -396,7 +415,9 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
                 if (i > 0) {
                     result += ", ";
                 }
-                result += "x" + std::to_string(i + 1) + " = " + roots[i];
+                // 使用美化输出格式化变量名和值
+                std::string var = "x" + pretty::PrettyOutput::formatSubscript(static_cast<int>(i + 1));
+                result += var + " = " + pretty::PrettyOutput::format(roots[i]);
             }
             return result;
         }
@@ -1492,7 +1513,7 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             string valueStr;
             if (all_rational) {
                 Fraction sol_frac = Fraction::fromDouble(solutions[i]);
-                valueStr = sol_frac.toString();
+                valueStr = pretty::PrettyOutput::format(sol_frac);
             } else {
                 std::ostringstream oss;
                 oss << std::fixed << std::setprecision(10) << solutions[i];

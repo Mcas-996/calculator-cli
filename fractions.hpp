@@ -2,7 +2,17 @@
 #ifndef FRACTIONS_HPP
 #define FRACTIONS_HPP
 
-import std;
+#include <iomanip>
+#include <iostream>
+#include <numeric>
+#include <sstream>
+#include <string>
+#include <cmath>
+
+// Forward declaration
+namespace pretty {
+    class PrettyOutput;
+}
 
 class Fraction {
 public: // Make all members public, as they were in a struct

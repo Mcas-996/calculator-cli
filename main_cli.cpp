@@ -1,5 +1,7 @@
 #include"string_processing.hpp"
-import std;
+#include"pretty_output_config.hpp"
+#include <iostream>
+#include <string>
 using namespace std;
 
 int main(int argc, char* argv[]) {
@@ -20,50 +22,100 @@ int main(int argc, char* argv[]) {
         }
         return 0;
     }
-    if (argc != 2) {
-        cout << "Usage: " << argv[0] << " \"expression\"" << endl;
-        return 1;
+    // Process command line arguments
+    string expression;
+    bool hasExpression = false;
+
+    for (int i = 1; i < argc; i++) {
+        string arg = argv[i];
+        
+        if (arg == "--version" || arg == "-v") {
+            cout << "1.0.0" << endl;
+            return 0;
+        }
+        else if (arg == "--pretty" || arg == "-p") {
+            // Enable pretty output (auto-detect best format)
+            pretty::PrettyConfig::getInstance().setPrettyLevel(pretty::PrettyLevel::UNICODE);
+            // Try to upgrade to LaTeX if available
+            if (pretty::PrettyConfig::getInstance().supportsKittyProtocol() &&
+                pretty::PrettyConfig::getInstance().isLaTeXAvailable()) {
+                pretty::PrettyConfig::getInstance().setPrettyLevel(pretty::PrettyLevel::LATEX);
+            }
+        }
+        else if (arg == "--unicode" || arg == "-u") {
+            pretty::PrettyConfig::getInstance().setPrettyLevel(pretty::PrettyLevel::UNICODE);
+        }
+        else if (arg == "--ascii" || arg == "-a") {
+            pretty::PrettyConfig::getInstance().setPrettyLevel(pretty::PrettyLevel::ASCII);
+        }
+        else if (arg == "--help" || arg == "-h") {
+            cout << "Math Expression Calculator" << endl;
+            cout << "Usage: " << argv[0] << " [OPTIONS] \"expression\"" << endl;
+            cout << endl;
+            cout << "Options:" << endl;
+            cout << "  --pretty, -p     Enable pretty output (auto-detect best format)" << endl;
+            cout << "  --unicode, -u    Force Unicode math symbols output" << endl;
+            cout << "  --ascii, -a      Force ASCII output (default)" << endl;
+            cout << "  --help, -h       Show this help message" << endl;
+            cout << "  --version, -v    Show version information" << endl;
+            cout << endl;
+            cout << "Supported operations:" << endl;
+            cout << "  +, -, *, /, ^ (exponent)" << endl;
+            cout << "  Parentheses for grouping" << endl;
+            cout << "  Negative numbers and decimals" << endl;
+            cout << "  Percentages (e.g., 50% converts to 0.5)" << endl;
+            cout << "  sqrt() function for square roots" << endl;
+            cout << "  sin(), cos() (radians) and sind(), cosd() (degrees, complex-friendly)" << endl;
+            cout << "  Constants: pi (3.14159...), e (2.71828...)" << endl;
+            cout << "  Equation solving: equation(x+1=0)" << endl;
+            cout << "  Quadratic equations: equation(x^2+2x+1=0)" << endl;
+            cout << "  System of linear equations: equation2(x+y=5,x-y=1)" << endl;
+            cout << endl;
+            cout << "Examples:" << endl;
+            cout << "  " << argv[0] << " \"3 + 5 * (2 - 8)^2\"" << endl;
+            cout << "  " << argv[0] << " --pretty \"sqrt(16) + 3\"" << endl;
+            cout << "  " << argv[0] << " -2.5 * 4 + 3^2" << endl;
+            cout << "  " << argv[0] << " \"50% * 200\"" << endl;
+            cout << "  " << argv[0] << " \"sqrt(16) + 3\"" << endl;
+            cout << "  " << argv[0] << " \"pi * 2\"" << endl;
+            cout << "  " << argv[0] << " \"e^2\"" << endl;
+            cout << "  " << argv[0] << " \"equation(x+1=0)\"" << endl;
+            cout << "  " << argv[0] << " \"equation(2x-3=7)\"" << endl;
+            cout << "  " << argv[0] << " \"equation(x^2+2x+1=0)\"" << endl;
+            cout << "  " << argv[0] << " \"equation(x^2-5x+6=0)\"" << endl;
+            cout << "  " << argv[0] << " \"equation2(x+y=5,x-y=1)\"" << endl;
+            cout << "  " << argv[0] << " \"equation2(2x+3y=12,4x-y=5)\"" << endl;
+            cout << "  " << argv[0] << " \"equation2(x+y+z=6,x-y+z=2,2x+y-z=3)\"" << endl;
+            return 0;
+        }
+        else {
+            // Assume it's an expression
+            expression = arg;
+            hasExpression = true;
+        }
     }
     
-    string arg = argv[1];
-    if (arg == "--version" || arg == "-v") {
-        cout << "1.0.0" << endl;
-        return 0;
-    }
-    if (arg == "--help" || arg == "-h") {
-        cout << "Math Expression Calculator" << endl;
-        cout << "Usage: " << argv[0] << " \"expression\"" << endl;
-        cout << endl;
-        cout << "Supported operations:" << endl;
-        cout << "  +, -, *, /, ^ (exponent)" << endl;
-        cout << "  Parentheses for grouping" << endl;
-        cout << "  Negative numbers and decimals" << endl;
-        cout << "  Percentages (e.g., 50% converts to 0.5)" << endl;
-        cout << "  sqrt() function for square roots" << endl;
-        cout << "  sin(), cos() (radians) and sind(), cosd() (degrees, complex-friendly)" << endl;
-        cout << "  Constants: pi (3.14159...), e (2.71828...)" << endl;
-        cout << "  Equation solving: equation(x+1=0)" << endl;
-        cout << "  Quadratic equations: equation(x^2+2x+1=0)" << endl;
-        cout << "  System of linear equations: equation2(x+y=5,x-y=1)" << endl;
-        cout << endl;
-        cout << "Examples:" << endl;
-        cout << "  3 + 5 * (2 - 8)^2" << endl;
-        cout << "  -2.5 * 4 + 3^2" << endl;
-        cout << "  50% * 200" << endl;
-        cout << "  sqrt(16) + 3" << endl;
-        cout << "  pi * 2" << endl;
-        cout << "  e^2" << endl;
-        cout << "  equation(x+1=0)" << endl;
-        cout << "  equation(2x-3=7)" << endl;
-        cout << "  equation(x^2+2x+1=0)" << endl;
-        cout << "  equation(x^2-5x+6=0)" << endl;
-        cout << "  equation2(x+y=5,x-y=1)" << endl;
-        cout << "  equation2(2x+3y=12,4x-y=5)" << endl;
-        cout << "  equation2(x+y+z=6,x-y+z=2,2x+y-z=3)" << endl;
+    // If no expression provided, enter interactive mode
+    if (!hasExpression) {
+        cout << "Interactive mode (Ctrl+D to exit)" << endl;
+        string line;
+        while (true) {
+            cout << pretty::PrettyConfig::getInstance().getPrompt() << flush;
+            if (!getline(cin, line)) {
+                cout << endl;
+                break;
+            }
+            if (line.empty()) {
+                continue;
+            }
+            string result = sp::processInput(line);
+            cout << result << endl;
+        }
         return 0;
     }
     
-    string result = sp::processInput(argv[1]);
+    // Evaluate the expression
+    string result = sp::processInput(expression);
     cout << result << endl;
     
     // Check if the result starts with "Error:" to determine exit code

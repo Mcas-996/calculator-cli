@@ -1,7 +1,13 @@
 #ifndef COMPLEX_NUMBER_HPP
 #define COMPLEX_NUMBER_HPP
 
-import std;
+#include <cmath>
+#include <complex>
+#include <iomanip>
+#include <iostream>
+#include <numbers>
+#include <sstream>
+#include <string>
 
 #include "fractions.hpp"
 

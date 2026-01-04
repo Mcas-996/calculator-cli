@@ -1,7 +1,20 @@
 #ifndef STRING_PROCESSING_HPP
 #define STRING_PROCESSING_HPP
 
-import std;
+#include <algorithm>
+#include <cmath>
+#include <complex>
+#include <iomanip>
+#include <iostream>
+#include <map>
+#include <numeric>
+#include <set>
+#include <sstream>
+#include <stack>
+#include <stdexcept>
+#include <string>
+#include <vector>
+
 #include "complex_number.hpp" // Include the ComplexNumber class
 using std::string;
 

@@ -1,6 +1,10 @@
-import std;
-
 #include "string_processing.hpp"
+#include <cassert>
+#include <cmath>
+#include <iostream>
+#include <sstream>
+#include <string>
+#include <vector>
 // Helper function to compare double results with a tolerance
 bool compare_doubles(double d1, double d2, double epsilon = 0.00001) {
     return std::abs(d1 - d2) < epsilon;
