@@ -921,11 +921,11 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             double solution = -b / (2 * a);
             Fraction solution_frac = Fraction::fromDouble(solution);
             if (std::fabs(solution - (static_cast<double>(solution_frac.numerator) / solution_frac.denominator)) < 1e-9) {
-                return "x = " + solution_frac.toString();
+                return "x = " + pretty::PrettyOutput::format(solution_frac);
             } else {
-                std::ostringstream oss;
-                oss << std::fixed << std::setprecision(10) << solution;
-                return "x = " + oss.str();
+                // 使用美化输出格式化解
+                ComplexNumber cn(solution, 0.0);
+                return "x = " + pretty::PrettyOutput::format(cn);
             }
         } else {
             // Two real solutions
@@ -939,25 +939,10 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             bool sol1_is_rational = std::fabs(solution1 - (static_cast<double>(solution1_frac.numerator) / solution1_frac.denominator)) < 1e-9;
             bool sol2_is_rational = std::fabs(solution2 - (static_cast<double>(solution2_frac.numerator) / solution2_frac.denominator)) < 1e-9;
 
-            if (sol1_is_rational && sol2_is_rational) {
-                return "x1 = " + solution1_frac.toString() + ", x2 = " + solution2_frac.toString();
-            } else {
-                std::ostringstream oss1, oss2;
-                oss1 << std::fixed << std::setprecision(10) << solution1;
-                oss2 << std::fixed << std::setprecision(10) << solution2;
-                
-                string solution1Str = oss1.str();
-                string solution2Str = oss2.str();
-                
-                // Remove trailing zeros and decimal point if not needed
-                solution1Str = solution1Str.substr(0, solution1Str.find_last_not_of('0') + 1);
-                if (solution1Str.back() == '.') solution1Str.pop_back();
-                
-                solution2Str = solution2Str.substr(0, solution2Str.find_last_not_of('0') + 1);
-                if (solution2Str.back() == '.') solution2Str.pop_back();
-                
-                return "x1 = " + solution1Str + ", x2 = " + solution2Str;
-            }
+            // 使用美化输出格式化解
+            ComplexNumber cn1(solution1, 0.0);
+            ComplexNumber cn2(solution2, 0.0);
+            return "x1 = " + pretty::PrettyOutput::format(cn1) + ", x2 = " + pretty::PrettyOutput::format(cn2);
         }
     }
     
@@ -1563,7 +1548,8 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             else {
                 // Regular expression evaluation
                 ComplexNumber result = evaluateExpression(input);
-                return result.toString();
+                // 使用美化输出
+                return pretty::PrettyOutput::format(result);
             }
         } catch (const std::exception& e) {
             return "Error: " + string(e.what());

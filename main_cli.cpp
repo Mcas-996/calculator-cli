@@ -45,6 +45,9 @@ int main(int argc, char* argv[]) {
         else if (arg == "--unicode" || arg == "-u") {
             pretty::PrettyConfig::getInstance().setPrettyLevel(pretty::PrettyLevel::UNICODE);
         }
+        else if (arg == "--latex" || arg == "-l") {
+            pretty::PrettyConfig::getInstance().setPrettyLevel(pretty::PrettyLevel::LATEX);
+        }
         else if (arg == "--ascii" || arg == "-a") {
             pretty::PrettyConfig::getInstance().setPrettyLevel(pretty::PrettyLevel::ASCII);
         }
@@ -55,6 +58,7 @@ int main(int argc, char* argv[]) {
             cout << "Options:" << endl;
             cout << "  --pretty, -p     Enable pretty output (auto-detect best format)" << endl;
             cout << "  --unicode, -u    Force Unicode math symbols output" << endl;
+            cout << "  --latex, -l      Force LaTeX output format" << endl;
             cout << "  --ascii, -a      Force ASCII output (default)" << endl;
             cout << "  --help, -h       Show this help message" << endl;
             cout << "  --version, -v    Show version information" << endl;
