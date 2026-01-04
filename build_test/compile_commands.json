@@ -1,0 +1,20 @@
+[
+{
+  "directory": "D:/allen's/code/repositories/cal_cli/calculator-cli/build_test",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -D_USE_MATH_DEFINES -I\"D:/allen's/code/repositories/cal_cli/calculator-cli\"  -fmodules -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @CMakeFiles\\calculator_core.dir\\string_processing.cpp.obj.modmap -o CMakeFiles\\calculator_core.dir\\string_processing.cpp.obj -c \"D:\\allen's\\code\\repositories\\cal_cli\\calculator-cli\\string_processing.cpp\"",
+  "file": "D:\\allen's\\code\\repositories\\cal_cli\\calculator-cli\\string_processing.cpp",
+  "output": "CMakeFiles\\calculator_core.dir\\string_processing.cpp.obj"
+},
+{
+  "directory": "D:/allen's/code/repositories/cal_cli/calculator-cli/build_test",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -D_USE_MATH_DEFINES -I\"D:/allen's/code/repositories/cal_cli/calculator-cli\"  -fmodules -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @CMakeFiles\\calculator.dir\\main_cli.cpp.obj.modmap -o CMakeFiles\\calculator.dir\\main_cli.cpp.obj -c \"D:\\allen's\\code\\repositories\\cal_cli\\calculator-cli\\main_cli.cpp\"",
+  "file": "D:\\allen's\\code\\repositories\\cal_cli\\calculator-cli\\main_cli.cpp",
+  "output": "CMakeFiles\\calculator.dir\\main_cli.cpp.obj"
+},
+{
+  "directory": "D:/allen's/code/repositories/cal_cli/calculator-cli/build_test",
+  "command": "C:\\PROGRA~1\\LLVM\\bin\\CLANG_~1.EXE -D_USE_MATH_DEFINES -I\"D:/allen's/code/repositories/cal_cli/calculator-cli\"  -fmodules -O0 -std=c++23 -D_DEBUG -D_DLL -D_MT -Xclang --dependent-lib=msvcrtd -g -Xclang -gcodeview @CMakeFiles\\calculator_tests_runner.dir\\calculator_tests.cpp.obj.modmap -o CMakeFiles\\calculator_tests_runner.dir\\calculator_tests.cpp.obj -c \"D:\\allen's\\code\\repositories\\cal_cli\\calculator-cli\\calculator_tests.cpp\"",
+  "file": "D:\\allen's\\code\\repositories\\cal_cli\\calculator-cli\\calculator_tests.cpp",
+  "output": "CMakeFiles\\calculator_tests_runner.dir\\calculator_tests.cpp.obj"
+}
+]

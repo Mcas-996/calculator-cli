@@ -1,6 +1,5 @@
 #include"string_processing.hpp"
-#include<string>
-#include<iostream>
+import std;
 using namespace std;
 
 int main(int argc, char* argv[]) {

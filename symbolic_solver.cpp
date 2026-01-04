@@ -2,9 +2,7 @@
 
 #include "fractions.hpp"
 
-#include <cctype>
-#include <cmath>
-#include <stdexcept>
+import std;
 #include <symengine/add.h>
 #include <symengine/basic.h>
 #include <symengine/functions.h>

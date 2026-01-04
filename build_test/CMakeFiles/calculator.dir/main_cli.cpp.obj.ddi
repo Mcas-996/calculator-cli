@@ -1,0 +1,23 @@
+{
+  "revision": 0,
+  "rules": [
+    {
+      "primary-output": "CMakeFiles\\calculator.dir\\main_cli.cpp.obj",
+      "requires": [
+        {
+          "logical-name": "std"
+        },
+        {
+          "logical-name": "std"
+        },
+        {
+          "logical-name": "std"
+        },
+        {
+          "logical-name": "std"
+        }
+      ]
+    }
+  ],
+  "version": 1
+}

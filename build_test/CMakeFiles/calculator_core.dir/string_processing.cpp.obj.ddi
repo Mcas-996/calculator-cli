@@ -1,0 +1,26 @@
+{
+  "revision": 0,
+  "rules": [
+    {
+      "primary-output": "CMakeFiles\\calculator_core.dir\\string_processing.cpp.obj",
+      "requires": [
+        {
+          "logical-name": "std"
+        },
+        {
+          "logical-name": "std"
+        },
+        {
+          "logical-name": "std"
+        },
+        {
+          "logical-name": "std"
+        },
+        {
+          "logical-name": "std"
+        }
+      ]
+    }
+  ],
+  "version": 1
+}

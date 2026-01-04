@@ -1,0 +1,9 @@
+# ninja log v7
+15	180	7837502478387020	CMakeFiles/calculator_core.dir/string_processing.cpp.obj.ddi	988dbf0a4c91686d
+31	188	7837502478524701	CMakeFiles/calculator.dir/main_cli.cpp.obj.ddi	858d15c4450fc706
+180	290	7837502481058751	CMakeFiles/calculator_core.dir/CXX.dd	6ee9f37080bd245f
+180	290	7837502481058751	D:/allen's/code/repositories/cal_cli/calculator-cli/build_test/CMakeFiles/calculator_core.dir/CXXModules.json	6ee9f37080bd245f
+180	290	7837502481058751	CMakeFiles/calculator_core.dir/string_processing.cpp.obj.modmap	6ee9f37080bd245f
+188	313	7837502481058751	CMakeFiles/calculator.dir/CXX.dd	3444cedda1c5af77
+188	313	7837502481058751	D:/allen's/code/repositories/cal_cli/calculator-cli/build_test/CMakeFiles/calculator.dir/CXXModules.json	3444cedda1c5af77
+188	313	7837502481058751	CMakeFiles/calculator.dir/main_cli.cpp.obj.modmap	3444cedda1c5af77

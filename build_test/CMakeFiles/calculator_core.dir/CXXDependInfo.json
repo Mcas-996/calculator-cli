@@ -1,0 +1,30 @@
+{
+	"bmi-installation" : null,
+	"compiler-frontend-variant" : "GNU",
+	"compiler-id" : "Clang",
+	"compiler-simulate-id" : "MSVC",
+	"config" : "Debug",
+	"cxx-modules" : {},
+	"database-info" : null,
+	"dir-cur-bld" : "D:/allen's/code/repositories/cal_cli/calculator-cli/build_test",
+	"dir-cur-src" : "D:/allen's/code/repositories/cal_cli/calculator-cli",
+	"dir-top-bld" : "D:/allen's/code/repositories/cal_cli/calculator-cli/build_test",
+	"dir-top-src" : "D:/allen's/code/repositories/cal_cli/calculator-cli",
+	"exports" : [],
+	"forward-modules-from-target-dirs" : [],
+	"include-dirs" : 
+	[
+		"D:\\allen's\\code\\repositories\\cal_cli\\calculator-cli"
+	],
+	"language" : "CXX",
+	"linked-target-dirs" : [],
+	"module-dir" : "D:/allen's/code/repositories/cal_cli/calculator-cli/build_test/CMakeFiles/calculator_core.dir",
+	"sources" : 
+	{
+		"CMakeFiles/calculator_core.dir/string_processing.cpp.obj" : 
+		{
+			"language" : "CXX",
+			"source" : "D:/allen's/code/repositories/cal_cli/calculator-cli/string_processing.cpp"
+		}
+	}
+}

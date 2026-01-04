@@ -1,8 +1,9 @@
 #ifndef STRING_PROCESSING_HPP
 #define STRING_PROCESSING_HPP
 
-#include <string>
+import std;
 #include "complex_number.hpp" // Include the ComplexNumber class
+using std::string;
 
 namespace sp {
     // Function to evaluate middle school math expressions

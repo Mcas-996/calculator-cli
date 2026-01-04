@@ -2,12 +2,7 @@
 #ifndef FRACTIONS_HPP
 #define FRACTIONS_HPP
 
-#include <numeric>   // For std::gcd
-#include <string>
-#include <sstream>   // For std::ostringstream
-#include <cmath>     // For std::fabs, std::round
-#include <utility>   // For std::swap
-#include <iomanip>   // For std::fixed, std::setprecision
+import std;
 
 class Fraction {
 public: // Make all members public, as they were in a struct

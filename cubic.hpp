@@ -2,13 +2,11 @@
 
 #include <vector>
 #include <cmath>
-#include <stdexcept>
 #include <algorithm>
-#include <numeric>
-#include <complex>
+#include <numbers>
+#include <stdexcept>
 
 using std::vector;
-using std::acos;
 
 // A small epsilon value for floating-point comparisons
 const double CUBIC_EPSILON = 1e-9;
@@ -21,9 +19,8 @@ inline vector<double> solve_cubic(double a, double b, double c, double d) {
         throw std::invalid_argument("Coefficient 'a' cannot be zero in a cubic equation.");
     }
 
-    // Define PI if not available
-    #ifndef std::numbers::pi
-    #endif
+    // Define PI
+    constexpr double PI = 3.14159265358979323846;
 
     // Normalize to x^3 + Bx^2 + Cx + D = 0
     double B = b / a;
@@ -65,8 +62,8 @@ inline vector<double> solve_cubic(double a, double b, double c, double d) {
             double phi = acos(acos_arg);
 
             roots.push_back(term1 * std::cos(phi / 3.0) + offset);
-            roots.push_back(term1 * std::cos((phi + 2.0 * numbers::pi) / 3.0) + offset);
-            roots.push_back(term1 * std::cos((phi - 2.0 * numbers::pi) / 3.0) + offset);
+            roots.push_back(term1 * std::cos((phi + 2.0 * PI) / 3.0) + offset);
+            roots.push_back(term1 * std::cos((phi - 2.0 * PI) / 3.0) + offset);
         }
     }
     

@@ -1,20 +1,6 @@
 #include "string_processing.hpp"
 #include "symbolic_solver.hpp"
-#include <stack>
-#include <cctype>
-#include <stdexcept>
-#include <cmath>
-#include <string>
-#include <vector>
-#include <map>
-#include <set>
-#include <algorithm>
-#include <iostream>
-#include <iomanip> // For std::fixed, std::setprecision
-#include <numeric> // For std::gcd
-#include <numbers>
-#include <functional>
-#include <complex>
+import std;
 
 using std::string;
 using std::vector;
