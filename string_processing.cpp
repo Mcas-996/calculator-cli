@@ -1237,18 +1237,10 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
                 realRoots[i] = 0.0;
             }
             
-            Fraction root_frac = Fraction::fromDouble(realRoots[i]);
-            if (std::fabs(realRoots[i] - (static_cast<double>(root_frac.numerator) / root_frac.denominator)) < 1e-9) {
-                result += "x" + to_string(rootIndex) + " = " + root_frac.toString();
-            } else {
-                std::ostringstream oss;
-                oss << std::fixed << std::setprecision(10) << realRoots[i];
-                string rootStr = oss.str();
-                // Remove trailing zeros and decimal point if not needed
-                rootStr = rootStr.substr(0, rootStr.find_last_not_of('0') + 1);
-                if (rootStr.back() == '.') rootStr.pop_back();
-                result += "x" + to_string(rootIndex) + " = " + rootStr;
-            }
+            // 使用美化输出格式化
+            ComplexNumber cn(realRoots[i], 0.0);
+            string var = "x" + pretty::PrettyOutput::formatSubscript(rootIndex);
+            result += var + " = " + pretty::PrettyOutput::format(cn);
             rootIndex++;
         }
         
@@ -1263,54 +1255,10 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             if (abs(realPart) < 1e-10) realPart = 0.0;
             if (abs(imaginaryPart) < 1e-10) imaginaryPart = 0.0;
             
-            std::ostringstream oss_real, oss_imag;
-            oss_real << std::fixed << std::setprecision(10) << realPart;
-            oss_imag << std::fixed << std::setprecision(10) << abs(imaginaryPart);
-            
-            string realStr = oss_real.str();
-            string imagStr = oss_imag.str();
-            
-            // Remove trailing zeros for cleaner output
-            realStr = realStr.substr(0, realStr.find_last_not_of('0') + 1);
-            if (realStr.back() == '.') realStr.pop_back();
-            
-            imagStr = imagStr.substr(0, imagStr.find_last_not_of('0') + 1);
-            if (imagStr.back() == '.') imagStr.pop_back();
-            
-            // Format complex number
-            if (abs(realPart) < 1e-10) {
-                // Pure imaginary
-                if (abs(abs(imaginaryPart) - 1.0) < 1e-10) {
-                    if (imaginaryPart >= 0) {
-                        result += "x" + to_string(rootIndex) + " = i";
-                    } else {
-                        result += "x" + to_string(rootIndex) + " = -i";
-                    }
-                } else {
-                    if (imaginaryPart >= 0) {
-                        result += "x" + to_string(rootIndex) + " = " + imagStr + "i";
-                    } else {
-                        result += "x" + to_string(rootIndex) + " = -" + imagStr + "i";
-                    }
-                }
-            } else {
-                // Complex number with both real and imaginary parts
-                string formattedRoot = realStr;
-                if (imaginaryPart >= 0) {
-                    if (abs(abs(imaginaryPart) - 1.0) < 1e-10) {
-                        formattedRoot += " + i";
-                    } else {
-                        formattedRoot += " + " + imagStr + "i";
-                    }
-                } else {
-                    if (abs(abs(imaginaryPart) - 1.0) < 1e-10) {
-                        formattedRoot += " - i";
-                    } else {
-                        formattedRoot += " - " + imagStr + "i";
-                    }
-                }
-                result += "x" + to_string(rootIndex) + " = " + formattedRoot;
-            }
+            // 使用美化输出格式化复数
+            ComplexNumber cn(realPart, imaginaryPart);
+            string var = "x" + pretty::PrettyOutput::formatSubscript(rootIndex);
+            result += var + " = " + pretty::PrettyOutput::format(cn);
             rootIndex++;
         }
         

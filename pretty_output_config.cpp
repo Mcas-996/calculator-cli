@@ -2,6 +2,8 @@
 #include <cstdlib>
 #include <iostream>
 #include <string>
+#include <algorithm>
+#include <cctype>
 
 namespace pretty {
 
@@ -65,7 +67,9 @@ void PrettyConfig::detectTerminalCapabilities() {
     const char* termProgram = std::getenv("TERM_PROGRAM");
     if (termProgram) {
         std::string termProg(termProgram);
-        if (termProg == "wezterm" || termProg == "kitty" || termProg == "iTerm.app") {
+        // 转换为小写进行比较
+        std::transform(termProg.begin(), termProg.end(), termProg.begin(), ::tolower);
+        if (termProg == "wezterm" || termProg == "kitty" || termProg == "iterm.app") {
             supportsKitty_ = true;
             return;
         }
@@ -75,6 +79,8 @@ void PrettyConfig::detectTerminalCapabilities() {
     const char* term = std::getenv("TERM");
     if (term) {
         std::string termStr(term);
+        // 转换为小写进行比较
+        std::transform(termStr.begin(), termStr.end(), termStr.begin(), ::tolower);
         if (termStr.find("kitty") != std::string::npos ||
             termStr.find("wezterm") != std::string::npos) {
             supportsKitty_ = true;
@@ -94,13 +100,13 @@ void PrettyConfig::detectTerminalCapabilities() {
 }
 
 void PrettyConfig::detectLaTeXAvailability() {
-    // 检查 pdflatex 命令是否存在
+    // 检查 xelatex 命令是否存在
 #ifdef _WIN32
     // Windows 平台
-    hasLaTeX_ = (system("where pdflatex >nul 2>&1") == 0);
+    hasLaTeX_ = (system("where xelatex >nul 2>&1") == 0);
 #else
     // Linux/macOS 平台
-    hasLaTeX_ = (system("which pdflatex > /dev/null 2>&1") == 0);
+    hasLaTeX_ = (system("which xelatex > /dev/null 2>&1") == 0);
 #endif
 }
 

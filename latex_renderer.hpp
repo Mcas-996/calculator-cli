@@ -19,7 +19,7 @@ public:
     static std::string generateLatexSource(const std::string& expr);
     
     // 渲染为图片文件
-    static bool renderToImage(const std::string& latex, std::string& imagePath);
+    static bool renderToImage(const std::string& latex, std::string& imagePath, int dpi = 300);
     
     // 编码图片为 Kitty 协议格式
     static std::string encodeImageForKitty(const std::string& imagePath);
@@ -28,7 +28,10 @@ public:
     static std::string renderExpression(const std::string& expr);
     
     // 渲染复数
-    static std::string renderComplex(const ComplexNumber& cn);
+    static std::string renderComplex(const ComplexNumber& cn, bool tryRender = false);
+    
+    // 渲染复数为 LaTeX 代码文本（不尝试渲染）
+    static std::string renderComplexCode(const ComplexNumber& cn);
     
     // 渲染方程（lhs = rhs）
     static std::string renderEquation(const std::string& lhs, const std::string& rhs);
@@ -51,6 +54,15 @@ private:
     
     // 将 ASCII 表达式转换为 LaTeX 格式
     static std::string asciiToLatex(const std::string& expr);
+    
+    // 将复数转换为 LaTeX 格式
+    static std::string complexToLatex(const ComplexNumber& cn);
+    
+    // 将数字转换为 LaTeX 格式
+    static std::string numberToLatex(double value);
+    
+    // 简化根式
+    static std::string simplifyRadical(double value);
     
     // 临时文件计数器
     static int tempFileCounter_;

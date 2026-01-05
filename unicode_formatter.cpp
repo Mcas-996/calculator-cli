@@ -112,7 +112,8 @@ std::string UnicodeFormatter::formatExpression(const std::string& expr) {
 std::string UnicodeFormatter::formatSubscript(int index) {
     const std::string subscripts = "₀₁₂₃₄₅₆₇₈₉";
     if (index >= 0 && index <= 9) {
-        return std::string(1, subscripts[index]);
+        // 每个 Unicode 字符占用 3 个字节（UTF-8 编码）
+        return subscripts.substr(index * 3, 3);
     }
     // 对于多位数字，逐位转换
     std::string result;
@@ -120,7 +121,7 @@ std::string UnicodeFormatter::formatSubscript(int index) {
     for (char c : str) {
         int digit = c - '0';
         if (digit >= 0 && digit <= 9) {
-            result += subscripts[digit];
+            result += subscripts.substr(digit * 3, 3);
         }
     }
     return result;
@@ -129,7 +130,8 @@ std::string UnicodeFormatter::formatSubscript(int index) {
 std::string UnicodeFormatter::formatSuperscript(int index) {
     const std::string superscripts = "⁰¹²³⁴⁵⁶⁷⁸⁹";
     if (index >= 0 && index <= 9) {
-        return std::string(1, superscripts[index]);
+        // 每个 Unicode 字符占用 3 个字节（UTF-8 编码）
+        return superscripts.substr(index * 3, 3);
     }
     // 对于多位数字，逐位转换
     std::string result;
@@ -137,7 +139,7 @@ std::string UnicodeFormatter::formatSuperscript(int index) {
     for (char c : str) {
         int digit = c - '0';
         if (digit >= 0 && digit <= 9) {
-            result += superscripts[digit];
+            result += superscripts.substr(digit * 3, 3);
         }
     }
     return result;
@@ -158,7 +160,8 @@ std::string UnicodeFormatter::formatComplex(const ComplexNumber& cn) {
         Fraction frac = Fraction::fromDouble(value);
         double fracValue = static_cast<double>(frac.numerator) / frac.denominator;
         if (std::fabs(value - fracValue) < 1e-9 && frac.denominator <= 100) {
-            return frac.toString();
+            // 使用 Unicode 分数符号
+            return formatFraction(frac);
         }
         
         // 3. 否则使用小数
@@ -197,7 +200,7 @@ std::string UnicodeFormatter::formatComplex(const ComplexNumber& cn) {
     if (imagStr == "1") {
         imagStr = "";
     }
-    return realStr + sign + (imagStr.empty() ? "i" : imagStr + "i");
+    return realStr + sign + (imagStr.empty() ? "i" : imagStr + " i");
 }
 
 std::string UnicodeFormatter::formatFraction(const Fraction& frac) {
@@ -206,23 +209,37 @@ std::string UnicodeFormatter::formatFraction(const Fraction& frac) {
     }
     // 使用 Unicode 分数符号（仅支持常见分数）
     if (frac.numerator == 1 && frac.denominator == 2) return "½";
+    if (frac.numerator == -1 && frac.denominator == 2) return "-½";
     if (frac.numerator == 1 && frac.denominator == 3) return "⅓";
     if (frac.numerator == 2 && frac.denominator == 3) return "⅔";
+    if (frac.numerator == -1 && frac.denominator == 3) return "-⅓";
+    if (frac.numerator == -2 && frac.denominator == 3) return "-⅔";
     if (frac.numerator == 1 && frac.denominator == 4) return "¼";
     if (frac.numerator == 3 && frac.denominator == 4) return "¾";
+    if (frac.numerator == -1 && frac.denominator == 4) return "-¼";
+    if (frac.numerator == -3 && frac.denominator == 4) return "-¾";
     if (frac.numerator == 1 && frac.denominator == 5) return "⅕";
     if (frac.numerator == 2 && frac.denominator == 5) return "⅖";
     if (frac.numerator == 3 && frac.denominator == 5) return "⅗";
     if (frac.numerator == 4 && frac.denominator == 5) return "⅘";
     if (frac.numerator == 1 && frac.denominator == 6) return "⅙";
     if (frac.numerator == 5 && frac.denominator == 6) return "⅚";
+    if (frac.numerator == -1 && frac.denominator == 6) return "-⅙";
+    if (frac.numerator == -5 && frac.denominator == 6) return "-⅚";
     if (frac.numerator == 1 && frac.denominator == 7) return "⅐";
+    if (frac.numerator == -1 && frac.denominator == 7) return "-⅐";
     if (frac.numerator == 1 && frac.denominator == 8) return "⅛";
     if (frac.numerator == 3 && frac.denominator == 8) return "⅜";
     if (frac.numerator == 5 && frac.denominator == 8) return "⅝";
     if (frac.numerator == 7 && frac.denominator == 8) return "⅞";
+    if (frac.numerator == -1 && frac.denominator == 8) return "-⅛";
+    if (frac.numerator == -3 && frac.denominator == 8) return "-⅜";
+    if (frac.numerator == -5 && frac.denominator == 8) return "-⅝";
+    if (frac.numerator == -7 && frac.denominator == 8) return "-⅞";
     if (frac.numerator == 1 && frac.denominator == 9) return "⅑";
+    if (frac.numerator == -1 && frac.denominator == 9) return "-⅑";
     if (frac.numerator == 1 && frac.denominator == 10) return "⅒";
+    if (frac.numerator == -1 && frac.denominator == 10) return "-⅒";
     
     // 其他分数使用小数
     std::ostringstream oss;
@@ -312,14 +329,14 @@ std::string UnicodeFormatter::simplifyRadical(double value) {
         }
     }
     
-    // 如果没有找到整数系数，尝试分数系数
+    // 如果没有找到整数系数，尝试简单分数系数（分母 <= 10）
     for (const auto& rad : radicals) {
         double coeff = value / rad.factor;
         
         // 检查是否为简单分数
         Fraction frac = Fraction::fromDouble(coeff);
         double fracValue = static_cast<double>(frac.numerator) / frac.denominator;
-        if (std::fabs(coeff - fracValue) < 1e-6) {
+        if (std::fabs(coeff - fracValue) < 1e-6 && frac.denominator <= 10) {
             if (frac.denominator == 1) {
                 if (std::abs(frac.numerator) == 1) {
                     return (frac.numerator > 0 ? "" : "-") + rad.symbol;
@@ -327,8 +344,13 @@ std::string UnicodeFormatter::simplifyRadical(double value) {
                     return std::to_string(frac.numerator) + rad.symbol;
                 }
             }
-            // 简单分数系数
-            return frac.toString() + rad.symbol;
+            // 简单分数系数（如 1/2, 3/2 等）
+            std::string sign = (frac.numerator > 0 ? "" : "-");
+            if (std::abs(frac.numerator) == 1) {
+                return sign + "√" + std::to_string(rad.base) + "/" + std::to_string(frac.denominator);
+            } else {
+                return std::to_string(frac.numerator) + "√" + std::to_string(rad.base) + "/" + std::to_string(frac.denominator);
+            }
         }
     }
     

@@ -19,6 +19,9 @@ public:
     // 格式化复数
     static std::string format(const ComplexNumber& cn);
     
+    // 格式化复数为 LaTeX 代码文本（不尝试渲染）
+    static std::string formatLatexCode(const ComplexNumber& cn);
+    
     // 格式化分数
     static std::string format(const Fraction& frac);
     

@@ -1,10 +1,12 @@
 #include"string_processing.hpp"
 #include"pretty_output_config.hpp"
+#include "latex_renderer.hpp"
 #include <iostream>
 #include <string>
 using namespace std;
 
 int main(int argc, char* argv[]) {
+    bool outputLatexCode = false;
     if (argc == 1) {
         cout << "Interactive mode (Ctrl+D to exit)" << endl;
         string line;
@@ -46,7 +48,9 @@ int main(int argc, char* argv[]) {
             pretty::PrettyConfig::getInstance().setPrettyLevel(pretty::PrettyLevel::UNICODE);
         }
         else if (arg == "--latex" || arg == "-l") {
-            pretty::PrettyConfig::getInstance().setPrettyLevel(pretty::PrettyLevel::LATEX);
+            pretty::PrettyConfig::getInstance().setPrettyLevel(pretty::PrettyLevel::UNICODE);
+            // 标记需要输出 LaTeX 代码
+            outputLatexCode = true;
         }
         else if (arg == "--ascii" || arg == "-a") {
             pretty::PrettyConfig::getInstance().setPrettyLevel(pretty::PrettyLevel::ASCII);
@@ -120,6 +124,13 @@ int main(int argc, char* argv[]) {
     
     // Evaluate the expression
     string result = sp::processInput(expression);
+    
+    // 如果需要输出 LaTeX 代码，将结果转换为 LaTeX 格式
+    if (outputLatexCode) {
+        // 将结果包装在 LaTeX 数学模式中
+        result = "\\[" + result + "\\]";
+    }
+    
     cout << result << endl;
     
     // Check if the result starts with "Error:" to determine exit code

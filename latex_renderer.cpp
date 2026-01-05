@@ -5,6 +5,9 @@
 #include <filesystem>
 #include <vector>
 #include <cstdint>
+#include <cmath>
+#include <iomanip>
+#include <algorithm>
 
 namespace pretty {
 
@@ -21,7 +24,7 @@ std::string LatexRenderer::generateLatexSource(const std::string& expr) {
     return oss.str();
 }
 
-bool LatexRenderer::renderToImage(const std::string& latex, std::string& imagePath) {
+bool LatexRenderer::renderToImage(const std::string& latex, std::string& imagePath, int dpi) {
     // 检查 LaTeX 是否可用
     if (!isAvailable()) {
         return false;
@@ -40,7 +43,7 @@ bool LatexRenderer::renderToImage(const std::string& latex, std::string& imagePa
     }
     
     // 编译为 PDF
-    std::string compileCmd = "pdflatex -interaction=nonstopmode -output-directory=" + 
+    std::string compileCmd = "xelatex -interaction=nonstopmode -output-directory=" + 
                             std::filesystem::path(texFile).parent_path().string() + 
                             " " + texFile + " > /dev/null 2>&1";
     
@@ -53,7 +56,9 @@ bool LatexRenderer::renderToImage(const std::string& latex, std::string& imagePa
     }
     
     // 转换 PDF 为 PNG
-    std::string convertCmd = "convert -density 300 " + pdfFile + " -quality 100 " + pngFile + " > /dev/null 2>&1";
+    // 使用 pdftoppm 替代 ImageMagick 的 convert
+    std::string ppmFile = pdfFile.substr(0, pdfFile.length() - 4);
+    std::string convertCmd = "pdftoppm -png -singlefile -r " + std::to_string(dpi) + " " + pdfFile + " " + ppmFile + " > /dev/null 2>&1";
     result = system(convertCmd.c_str());
     
     // 清理临时文件
@@ -91,7 +96,7 @@ std::string LatexRenderer::renderExpression(const std::string& expr) {
     std::string latex = generateLatexSource(expr);
     std::string imagePath;
     
-    if (!renderToImage(latex, imagePath)) {
+    if (!renderToImage(latex, imagePath, 600)) {
         // 渲染失败，返回 Unicode 格式
         return asciiToLatex(expr);
     }
@@ -102,10 +107,39 @@ std::string LatexRenderer::renderExpression(const std::string& expr) {
     return kittyData;
 }
 
-std::string LatexRenderer::renderComplex(const ComplexNumber& cn) {
-    // 将复数转换为字符串，然后渲染
-    std::string expr = cn.toString();
-    return renderExpression(expr);
+std::string LatexRenderer::renderComplexCode(const ComplexNumber& cn) {
+    // 将复数转换为 LaTeX 格式
+    std::string latex = complexToLatex(cn);
+    
+    // 返回 LaTeX 代码文本
+    return "\\[" + latex + "\\]";
+}
+
+std::string LatexRenderer::renderComplex(const ComplexNumber& cn, bool tryRender) {
+    // 将复数转换为 LaTeX 格式
+    std::string latex = complexToLatex(cn);
+    
+    if (tryRender) {
+        // 尝试渲染为图片
+        std::ostringstream oss;
+        oss << "\\documentclass[preview, fontsize=20pt]{standalone}\n";
+        oss << "\\usepackage{amsmath}\n";
+        oss << "\\usepackage{amssymb}\n";
+        oss << "\\begin{document}\n";
+        oss << "\\[ \\Large " << latex << " \\]\n";
+        oss << "\\end{document}\n";
+        std::string latexSource = oss.str();
+        
+        std::string imagePath;
+        if (renderToImage(latexSource, imagePath, 600)) {
+            std::string kittyData = encodeImageForKitty(imagePath);
+            cleanupTempFile(imagePath);
+            return kittyData;
+        }
+    }
+    
+    // 渲染失败或不尝试渲染，返回 LaTeX 代码文本
+    return "\\[" + latex + "\\]";
 }
 
 std::string LatexRenderer::renderEquation(const std::string& lhs, const std::string& rhs) {
@@ -292,6 +326,108 @@ std::string LatexRenderer::asciiToLatex(const std::string& expr) {
     }
     
     return result;
+}
+
+std::string LatexRenderer::complexToLatex(const ComplexNumber& cn) {
+    const double epsilon = 1e-9;
+    bool realZero = std::fabs(cn.real) < epsilon;
+    bool imagZero = std::fabs(cn.imag) < epsilon;
+
+    if (realZero && imagZero) return "0";
+    if (imagZero) return numberToLatex(cn.real);
+    if (realZero) {
+        double imagMag = std::fabs(cn.imag);
+        if (std::fabs(imagMag - 1.0) < epsilon) {
+            return cn.imag < 0 ? "-i" : "i";
+        }
+        return numberToLatex(cn.imag) + "i";
+    }
+
+    std::string realStr = numberToLatex(cn.real);
+    std::string imagStr = numberToLatex(std::fabs(cn.imag));
+    std::string sign = cn.imag >= 0 ? "+" : "-";
+    
+    if (std::fabs(std::fabs(cn.imag) - 1.0) < epsilon) {
+        imagStr = "";
+    }
+    
+    return realStr + " " + sign + " " + (imagStr.empty() ? "i" : imagStr + "i");
+}
+
+std::string LatexRenderer::numberToLatex(double value) {
+    // 检查是否为整数
+    double roundedInt = std::round(value);
+    if (std::fabs(value - roundedInt) < 1e-9) {
+        return std::to_string(static_cast<long long>(roundedInt));
+    }
+    
+    // 检查是否可以表示为根式（优先级高于分数）
+    std::string radical = simplifyRadical(value);
+    if (!radical.empty()) {
+        return radical;
+    }
+    
+    // 检查是否为简单分数
+    Fraction frac = Fraction::fromDouble(value);
+    double fracValue = static_cast<double>(frac.numerator) / frac.denominator;
+    if (std::fabs(value - fracValue) < 1e-9) {
+        if (frac.denominator == 1) {
+            return std::to_string(frac.numerator);
+        }
+        return "\\frac{" + std::to_string(frac.numerator) + "}{" + std::to_string(frac.denominator) + "}";
+    }
+    
+    // 小数表示
+    std::ostringstream oss;
+    oss << std::fixed << std::setprecision(10) << value;
+    std::string str = oss.str();
+    while (!str.empty() && str.back() == '0') {
+        str.pop_back();
+    }
+    if (!str.empty() && str.back() == '.') {
+        str.pop_back();
+    }
+    return str;
+}
+
+std::string LatexRenderer::simplifyRadical(double value) {
+    const double epsilon = 1e-9;
+    
+    // 处理负数
+    bool isNegative = value < 0;
+    double absValue = std::fabs(value);
+    
+    // 尝试找到整数 n 和 m，使得 absValue = n * sqrt(m)
+    for (int m = 2; m <= 100; ++m) {
+        double sqrtM = std::sqrt(m);
+        if (std::fabs(sqrtM * sqrtM - m) > epsilon) continue;
+        
+        double n = absValue / sqrtM;
+        double nRounded = std::round(n);
+        
+        if (std::fabs(n - nRounded) < epsilon) {
+            int nInt = static_cast<int>(nRounded);
+            std::string result;
+            
+            if (isNegative) {
+                if (nInt == 1) {
+                    result = "-\\sqrt{" + std::to_string(m) + "}";
+                } else {
+                    result = "-" + std::to_string(nInt) + "\\sqrt{" + std::to_string(m) + "}";
+                }
+            } else {
+                if (nInt == 1) {
+                    result = "\\sqrt{" + std::to_string(m) + "}";
+                } else {
+                    result = std::to_string(nInt) + "\\sqrt{" + std::to_string(m) + "}";
+                }
+            }
+            
+            return result;
+        }
+    }
+    
+    return "";
 }
 
 } // namespace pretty

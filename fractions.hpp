@@ -119,8 +119,11 @@ public: // Make all members public, as they were in a struct
         std::ostringstream oss;
         if (denominator == 1) {
             oss << numerator;
+        } else if (denominator <= 10) {
+            // 对于简单的分数，使用分数表示
+            oss << numerator << "/" << denominator;
         } else {
-            // Convert to double for decimal representation
+            // 对于复杂的分数，使用小数表示
             oss << std::fixed << std::setprecision(10) << static_cast<double>(numerator) / denominator;
         }
         return oss.str();

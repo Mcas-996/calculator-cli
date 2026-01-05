@@ -12,19 +12,19 @@ PrettyConfig& PrettyOutput::config() {
 std::string PrettyOutput::format(const ComplexNumber& cn) {
     PrettyLevel level = config().getPrettyLevel();
     
-    switch (level) {
-        case PrettyLevel::LATEX:
-            if (config().supportsKittyProtocol() && config().isLaTeXAvailable()) {
-                return LatexRenderer::renderComplex(cn);
-            }
-            // 降级到 Unicode
-            [[fallthrough]];
-        case PrettyLevel::UNICODE:
-            return UnicodeFormatter::formatComplex(cn);
-        case PrettyLevel::ASCII:
-        default:
-            return cn.toString();
+    if (level == PrettyLevel::LATEX) {
+        // 尝试渲染为图片，失败则返回 LaTeX 代码文本
+        return LatexRenderer::renderComplex(cn, true);
+    } else if (level == PrettyLevel::UNICODE) {
+        return UnicodeFormatter::formatComplex(cn);
+    } else {
+        return cn.toString();
     }
+}
+
+std::string PrettyOutput::formatLatexCode(const ComplexNumber& cn) {
+    // 返回 LaTeX 代码文本（不尝试渲染）
+    return LatexRenderer::renderComplexCode(cn);
 }
 
 std::string PrettyOutput::format(const Fraction& frac) {
