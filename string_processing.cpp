@@ -824,6 +824,11 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
                     i++;
                 }
                 
+                // 跳过空格
+                while (i < leftSide.length() && leftSide[i] == ' ') {
+                    i++;
+                }
+                
                 // Parse integer part
                 while (i < leftSide.length() && isdigit(leftSide[i])) {
                     num = num * 10 + (leftSide[i] - '0');
@@ -912,9 +917,9 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             
             // Special case: if imaginary part is 1 or -1, don't show the coefficient
             if (imagStr == "1" || imagStr == "1.0") {
-                return "x1 = " + realStr + " + i, x2 = " + realStr + " - i";
+                return "x" + pretty::PrettyOutput::formatSubscript(1) + " = " + realStr + " + i, x" + pretty::PrettyOutput::formatSubscript(2) + " = " + realStr + " - i";
             } else {
-                return "x1 = " + realStr + " + " + imagStr + "i, x2 = " + realStr + " - " + imagStr + "i";
+                return "x" + pretty::PrettyOutput::formatSubscript(1) + " = " + realStr + " + " + imagStr + "i, x" + pretty::PrettyOutput::formatSubscript(2) + " = " + realStr + " - " + imagStr + "i";
             }
         } else if (discriminant == 0) {
             // One real solution
@@ -942,7 +947,17 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             // 使用美化输出格式化解
             ComplexNumber cn1(solution1, 0.0);
             ComplexNumber cn2(solution2, 0.0);
-            return "x1 = " + pretty::PrettyOutput::format(cn1) + ", x2 = " + pretty::PrettyOutput::format(cn2);
+            string var1 = "x" + pretty::PrettyOutput::formatSubscript(1);
+            string var2 = "x" + pretty::PrettyOutput::formatSubscript(2);
+            // 在构建方程字符串时，使用 Unicode 格式化
+            string result = var1 + " = " + pretty::UnicodeFormatter::formatComplex(cn1) + ", " + var2 + " = " + pretty::UnicodeFormatter::formatComplex(cn2);
+            
+            // 如果是 LaTeX 模式，渲染整个结果字符串为 LaTeX 图片
+            if (pretty::PrettyConfig::getInstance().getPrettyLevel() == pretty::PrettyLevel::LATEX) {
+                return pretty::LatexRenderer::renderExpression(result);
+            }
+            
+            return result;
         }
     }
     
@@ -1107,6 +1122,11 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
                     i++;
                 }
                 
+                // 跳过空格
+                while (i < leftSide.length() && leftSide[i] == ' ') {
+                    i++;
+                }
+                
                 // Parse integer part
                 while (i < leftSide.length() && isdigit(leftSide[i])) {
                     num = num * 10 + (leftSide[i] - '0');
@@ -1126,20 +1146,24 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
                 // Check if this number is multiplied by x^3
                 if (i + 2 < leftSide.length() && leftSide[i] == 'x' && leftSide[i + 1] == '^' && leftSide[i + 2] == '3') {
                     hasX3 = true;
-                    a += isNegative ? -num : num;
+                    double value = isNegative ? -num : num;
+                    a += value;
                     i += 3; // Skip x^3
                 }
                 // Check if this number is multiplied by x^2
                 else if (i + 2 < leftSide.length() && leftSide[i] == 'x' && leftSide[i + 1] == '^' && leftSide[i + 2] == '2') {
-                    b += isNegative ? -num : num;
+                    double value = isNegative ? -num : num;
+                    b += value;
                     i += 3; // Skip x^2
                 }
                 // Check if this number is multiplied by x
                 else if (i < leftSide.length() && leftSide[i] == 'x' && (i + 1 >= leftSide.length() || (leftSide[i + 1] != '^' && leftSide[i + 1] != '3' && leftSide[i + 1] != '2'))) {
-                    c += isNegative ? -num : num;
+                    double value = isNegative ? -num : num;
+                    c += value;
                     i++; // Skip x
                 } else {
-                    d += isNegative ? -num : num;
+                    double value = isNegative ? -num : num;
+                    d += value;
                 }
             }
             else {
@@ -1228,6 +1252,9 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
         string result;
         int rootIndex = 1;
         
+        // 对实数根进行排序
+        std::sort(realRoots.begin(), realRoots.end());
+        
         // Add real roots to result
         for (size_t i = 0; i < realRoots.size(); i++) {
             if (rootIndex > 1) result += ", ";
@@ -1240,7 +1267,9 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             // 使用美化输出格式化
             ComplexNumber cn(realRoots[i], 0.0);
             string var = "x" + pretty::PrettyOutput::formatSubscript(rootIndex);
-            result += var + " = " + pretty::PrettyOutput::format(cn);
+            // 在构建方程字符串时，使用 Unicode 格式化
+            string value = pretty::UnicodeFormatter::formatComplex(cn);
+            result += var + " = " + value;
             rootIndex++;
         }
         
@@ -1258,8 +1287,15 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
             // 使用美化输出格式化复数
             ComplexNumber cn(realPart, imaginaryPart);
             string var = "x" + pretty::PrettyOutput::formatSubscript(rootIndex);
-            result += var + " = " + pretty::PrettyOutput::format(cn);
+            // 在构建方程字符串时，使用 Unicode 格式化
+            string value = pretty::UnicodeFormatter::formatComplex(cn);
+            result += var + " = " + value;
             rootIndex++;
+        }
+        
+        // 如果是 LaTeX 模式，渲染整个结果字符串为 LaTeX 图片
+        if (pretty::PrettyConfig::getInstance().getPrettyLevel() == pretty::PrettyLevel::LATEX) {
+            return pretty::LatexRenderer::renderExpression(result);
         }
         
         return result;
@@ -1448,16 +1484,17 @@ ComplexNumber degreesToRadians(const ComplexNumber& degrees) {
                 Fraction sol_frac = Fraction::fromDouble(solutions[i]);
                 valueStr = pretty::PrettyOutput::format(sol_frac);
             } else {
-                std::ostringstream oss;
-                oss << std::fixed << std::setprecision(10) << solutions[i];
-                valueStr = oss.str();
-                // Remove trailing zeros and decimal point if not needed
-                valueStr = valueStr.substr(0, valueStr.find_last_not_of('0') + 1);
-                if (valueStr.back() == '.') valueStr.pop_back();
+                ComplexNumber cn(solutions[i], 0.0);
+                valueStr = pretty::UnicodeFormatter::formatComplex(cn);
             }
             
             char varName = varList[i];
             result += string(1, varName) + " = " + valueStr;
+        }
+        
+        // 如果是 LaTeX 模式，渲染整个结果字符串为 LaTeX 图片
+        if (pretty::PrettyConfig::getInstance().getPrettyLevel() == pretty::PrettyLevel::LATEX) {
+            return pretty::LatexRenderer::renderExpression(result);
         }
         
         return result;

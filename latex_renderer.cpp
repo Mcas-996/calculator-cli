@@ -18,8 +18,10 @@ std::string LatexRenderer::generateLatexSource(const std::string& expr) {
     oss << "\\documentclass[preview]{standalone}\n";
     oss << "\\usepackage{amsmath}\n";
     oss << "\\usepackage{amssymb}\n";
+    oss << "\\usepackage{unicode-math}\n";
+    oss << "\\setmainfont{Latin Modern Math}\n";
     oss << "\\begin{document}\n";
-    oss << "\\[ " << asciiToLatex(expr) << " \\]\n";
+    oss << "\\[ " << expr << " \\]\n";
     oss << "\\end{document}\n";
     return oss.str();
 }
@@ -96,7 +98,7 @@ std::string LatexRenderer::renderExpression(const std::string& expr) {
     std::string latex = generateLatexSource(expr);
     std::string imagePath;
     
-    if (!renderToImage(latex, imagePath, 600)) {
+    if (!renderToImage(latex, imagePath, 400)) {
         // 渲染失败，返回 Unicode 格式
         return asciiToLatex(expr);
     }
@@ -122,16 +124,25 @@ std::string LatexRenderer::renderComplex(const ComplexNumber& cn, bool tryRender
     if (tryRender) {
         // 尝试渲染为图片
         std::ostringstream oss;
-        oss << "\\documentclass[preview, fontsize=20pt]{standalone}\n";
+        oss << "\\documentclass[preview, fontsize=14pt]{standalone}\n";
         oss << "\\usepackage{amsmath}\n";
         oss << "\\usepackage{amssymb}\n";
+        oss << "\\usepackage{graphicx}\n";
         oss << "\\begin{document}\n";
-        oss << "\\[ \\Large " << latex << " \\]\n";
+        // 根据内容长度计算缩放因子
+        double scale = 1.0;
+        int latexLen = latex.length();
+        if (latexLen > 50) scale = 0.7;
+        else if (latexLen > 30) scale = 0.85;
+        else if (latexLen > 20) scale = 1.0;
+        else scale = 1.2;
+        // 将 scalebox 包裹整个数学块
+        oss << "\\scalebox{" << scale << "}[1.0]{$\\displaystyle " << latex << "$}\n";
         oss << "\\end{document}\n";
         std::string latexSource = oss.str();
         
         std::string imagePath;
-        if (renderToImage(latexSource, imagePath, 600)) {
+        if (renderToImage(latexSource, imagePath, 400)) {
             std::string kittyData = encodeImageForKitty(imagePath);
             cleanupTempFile(imagePath);
             return kittyData;
