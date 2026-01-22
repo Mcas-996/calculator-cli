@@ -1,53 +1,44 @@
-# Prerequisites
-*.d
+# Rust
+target/
+**/*.rs.bk
+Cargo.lock
 
-# Compiled Object files
-*.slo
-*.lo
-*.o
-*.obj
-
-# Precompiled Headers
-*.gch
-*.pch
-
-# Linker files
-*.ilk
-
-# Debugger Files
-*.pdb
-
-# Compiled Dynamic libraries
-*.so
-*.dylib
-*.dll
-
-# Fortran module files
-*.mod
-*.smod
-
-# Compiled Static libraries
-*.lai
-*.la
-*.a
-*.lib
-
-# Executables
-*.exe
-*.out
-*.app
-
-# debug information files
-*.dwo
-
+# IDEs
 .vs
+.vscode/
+.idea/
+*.iml
 
+# OS
+.DS_Store
+Thumbs.db
+
+# Environment
+.env
+.env.local
+
+# Editor backups
+*.swp
+*.swo
+*~
+*.bak
+
+# PDF files
 *.pdf
-*.zip
+
+# Build directories
 build
-run
-test
 debug
 P-release
-README.pdf
-README_zh.pdf
+
+# Test executables
+test_frac
+test_frac2
+test_latex
+test_radical
+test_size
+test_subscript
+
+# Old binaries
+calculator
+llvm-installer.exe

@@ -1,0 +1,31 @@
+[package]
+name = "calculator"
+version = "2.0.0"
+edition = "2021"
+rust-version = "1.70.0"
+description = "A command-line calculator with symbolic math support"
+license = "MIT"
+repository = "https://github.com/anomalyco/calculator-cli"
+authors = ["Allen <anomalyco@github.com>"]
+
+[dependencies]
+clap = { version = "4.5", features = ["derive"] }
+anyhow = "1.0"
+thiserror = "1.0"
+num-rational = "0.4"
+num-traits = "0.2"
+regex = "1.10"
+
+[profile.release]
+opt-level = 3
+lto = true
+codegen-units = 1
+strip = true
+
+[profile.dev]
+opt-level = 0
+
+[workspace.lints.clippy]
+all = "warn"
+pedantic = "warn"
+nursery = "warn"
