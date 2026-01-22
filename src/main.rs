@@ -1,11 +1,11 @@
 use clap::Parser;
 use std::io::{self, Write};
 
-use calculator::output::{PrettyConfig, PrettyLevel, Formatter};
+use calculator::output::{Formatter, PrettyConfig, PrettyLevel};
 use calculator::parser::parse_expression;
 use calculator::solver::{
-    solve_linear_equation, solve_quadratic_equation, solve_cubic_equation,
-    solve_quartic_equation, solve_quintic_equation, solve_2x2_system, solve_3x3_system,
+    solve_2x2_system, solve_3x3_system, solve_cubic_equation, solve_linear_equation,
+    solve_quadratic_equation, solve_quartic_equation, solve_quintic_equation,
 };
 
 /// A command-line calculator with symbolic math support
@@ -72,17 +72,15 @@ fn process_expression(input: &str, formatter: &dyn Formatter) {
     } else {
         // It's an expression
         match parse_expression(input) {
-            Ok(expr) => {
-                match expr.evaluate() {
-                    Ok(result) => {
-                        println!("{}", formatter.format_complex(&result));
-                    }
-                    Err(e) => {
-                        eprintln!("Error: {}", e);
-                        std::process::exit(1);
-                    }
+            Ok(expr) => match expr.evaluate() {
+                Ok(result) => {
+                    println!("{}", formatter.format_complex(&result));
                 }
-            }
+                Err(e) => {
+                    eprintln!("Error: {}", e);
+                    std::process::exit(1);
+                }
+            },
             Err(e) => {
                 eprintln!("Error: {}", e);
                 std::process::exit(1);
@@ -95,15 +93,17 @@ fn process_expression(input: &str, formatter: &dyn Formatter) {
 fn process_equation(input: &str, formatter: &dyn Formatter) {
     // Check if it's a system of equations
     if input.contains(',') {
-        let equations: Vec<String> = input.split(',')
-            .map(|s| s.trim().to_string())
-            .collect();
+        let equations: Vec<String> = input.split(',').map(|s| s.trim().to_string()).collect();
 
         if equations.len() == 2 {
             match solve_2x2_system(&equations) {
                 Ok(solutions) => {
                     for (var, value) in solutions {
-                        println!("{}", formatter.format_equation_solution(&var, &formatter.format_complex(&value)));
+                        println!(
+                            "{}",
+                            formatter
+                                .format_equation_solution(&var, &formatter.format_complex(&value))
+                        );
                     }
                 }
                 Err(e) => {
@@ -115,7 +115,11 @@ fn process_equation(input: &str, formatter: &dyn Formatter) {
             match solve_3x3_system(&equations) {
                 Ok(solutions) => {
                     for (var, value) in solutions {
-                        println!("{}", formatter.format_equation_solution(&var, &formatter.format_complex(&value)));
+                        println!(
+                            "{}",
+                            formatter
+                                .format_equation_solution(&var, &formatter.format_complex(&value))
+                        );
                     }
                 }
                 Err(e) => {
@@ -148,7 +152,10 @@ fn process_equation(input: &str, formatter: &dyn Formatter) {
                     } else {
                         format!("x{}", i + 1)
                     };
-                    println!("{}", formatter.format_equation_solution(&var, &formatter.format_complex(sol)));
+                    println!(
+                        "{}",
+                        formatter.format_equation_solution(&var, &formatter.format_complex(sol))
+                    );
                 }
             }
             Err(e) => {
@@ -162,7 +169,7 @@ fn process_equation(input: &str, formatter: &dyn Formatter) {
 /// Determine the degree of an equation
 fn determine_equation_degree(input: &str) -> usize {
     let input_lower = input.to_lowercase();
-    
+
     if input_lower.contains("^5") || input_lower.contains("⁵") {
         5
     } else if input_lower.contains("^4") || input_lower.contains("⁴") {
@@ -181,7 +188,7 @@ fn determine_equation_degree(input: &str) -> usize {
 /// Run interactive mode
 fn run_interactive_mode(formatter: &dyn Formatter) {
     let prompt = formatter.format_prompt();
-    
+
     println!("Calculator CLI v2.0.0 (Rust)");
     println!("Type 'exit' or 'quit' to exit");
     println!();
@@ -199,7 +206,7 @@ fn run_interactive_mode(formatter: &dyn Formatter) {
             }
             Ok(_) => {
                 let input = input.trim();
-                
+
                 if input.is_empty() {
                     continue;
                 }

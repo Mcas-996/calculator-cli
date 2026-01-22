@@ -26,10 +26,7 @@ impl ComplexNumber {
 
     /// Create from real and imaginary doubles
     pub fn from_doubles(real: f64, imag: f64) -> Self {
-        Self::new(
-            Fraction::from_double(real),
-            Fraction::from_double(imag),
-        )
+        Self::new(Fraction::from_double(real), Fraction::from_double(imag))
     }
 
     /// Check if approximately real (imaginary part is very small)
@@ -41,12 +38,9 @@ impl ComplexNumber {
     pub fn sqrt(&self) -> Self {
         let r = (self.real * self.real + self.imag * self.imag).sqrt();
         let sqrt_r = r.sqrt();
-        
+
         if self.real >= Fraction::new(0, 1) {
-            ComplexNumber::new(
-                sqrt_r,
-                Fraction::new(1, 2) * self.imag / sqrt_r,
-            )
+            ComplexNumber::new(sqrt_r, Fraction::new(1, 2) * self.imag / sqrt_r)
         } else {
             ComplexNumber::new(
                 self.imag.abs() / (Fraction::new(2, 1) * r.sqrt()),
@@ -63,11 +57,11 @@ impl ComplexNumber {
         if n < 0 {
             return self.pow(-n).inverse();
         }
-        
+
         let mut result = ComplexNumber::from_real(Fraction::new(1, 1));
         let mut base = self.clone();
         let mut exp = n;
-        
+
         while exp > 0 {
             if exp % 2 == 1 {
                 result = &result * &base;
@@ -75,7 +69,7 @@ impl ComplexNumber {
             base = &base * &base;
             exp /= 2;
         }
-        
+
         result
     }
 
@@ -85,10 +79,7 @@ impl ComplexNumber {
         if denom == Fraction::new(0, 1) {
             panic!("Cannot invert zero");
         }
-        ComplexNumber::new(
-            self.real / denom,
-            -self.imag / denom,
-        )
+        ComplexNumber::new(self.real / denom, -self.imag / denom)
     }
 
     /// Sine (using Taylor series approximation)
@@ -96,16 +87,13 @@ impl ComplexNumber {
         // sin(z) = sin(a+bi) = sin(a)cosh(b) + i*cos(a)sinh(b)
         let a = self.real;
         let b = self.imag;
-        
+
         let sin_a = a.sin();
         let cos_a = a.cos();
         let sinh_b = b.sinh();
         let cosh_b = b.cosh();
-        
-        ComplexNumber::new(
-            sin_a * cosh_b,
-            cos_a * sinh_b,
-        )
+
+        ComplexNumber::new(sin_a * cosh_b, cos_a * sinh_b)
     }
 
     /// Cosine (using Taylor series approximation)
@@ -113,16 +101,13 @@ impl ComplexNumber {
         // cos(z) = cos(a+bi) = cos(a)cosh(b) - i*sin(a)sinh(b)
         let a = self.real;
         let b = self.imag;
-        
+
         let sin_a = a.sin();
         let cos_a = a.cos();
         let sinh_b = b.sinh();
         let cosh_b = b.cosh();
-        
-        ComplexNumber::new(
-            cos_a * cosh_b,
-            -sin_a * sinh_b,
-        )
+
+        ComplexNumber::new(cos_a * cosh_b, -sin_a * sinh_b)
     }
 
     /// Convert to string representation
@@ -154,29 +139,23 @@ impl ComplexNumber {
 // Implement arithmetic operators
 impl Add for ComplexNumber {
     type Output = Self;
-    
+
     fn add(self, other: Self) -> Self {
-        ComplexNumber::new(
-            self.real + other.real,
-            self.imag + other.imag,
-        )
+        ComplexNumber::new(self.real + other.real, self.imag + other.imag)
     }
 }
 
 impl Sub for ComplexNumber {
     type Output = Self;
-    
+
     fn sub(self, other: Self) -> Self {
-        ComplexNumber::new(
-            self.real - other.real,
-            self.imag - other.imag,
-        )
+        ComplexNumber::new(self.real - other.real, self.imag - other.imag)
     }
 }
 
 impl Mul for ComplexNumber {
     type Output = Self;
-    
+
     fn mul(self, other: Self) -> Self {
         ComplexNumber::new(
             self.real * other.real - self.imag * other.imag,
@@ -187,7 +166,7 @@ impl Mul for ComplexNumber {
 
 impl<'a, 'b> Mul<&'b ComplexNumber> for &'a ComplexNumber {
     type Output = ComplexNumber;
-    
+
     fn mul(self, other: &'b ComplexNumber) -> Self::Output {
         ComplexNumber::new(
             self.real * other.real - self.imag * other.imag,
@@ -198,7 +177,7 @@ impl<'a, 'b> Mul<&'b ComplexNumber> for &'a ComplexNumber {
 
 impl Div for ComplexNumber {
     type Output = Self;
-    
+
     fn div(self, other: Self) -> Self {
         let denom = other.real * other.real + other.imag * other.imag;
         if denom == Fraction::new(0, 1) {
@@ -213,7 +192,7 @@ impl Div for ComplexNumber {
 
 impl Neg for ComplexNumber {
     type Output = Self;
-    
+
     fn neg(self) -> Self {
         ComplexNumber::new(-self.real, -self.imag)
     }
@@ -221,7 +200,7 @@ impl Neg for ComplexNumber {
 
 impl<'a> Neg for &'a ComplexNumber {
     type Output = ComplexNumber;
-    
+
     fn neg(self) -> Self::Output {
         ComplexNumber::new(-self.real, -self.imag)
     }
@@ -229,18 +208,15 @@ impl<'a> Neg for &'a ComplexNumber {
 
 impl<'a, 'b> Sub<&'b ComplexNumber> for &'a ComplexNumber {
     type Output = ComplexNumber;
-    
+
     fn sub(self, other: &'b ComplexNumber) -> Self::Output {
-        ComplexNumber::new(
-            self.real - other.real,
-            self.imag - other.imag,
-        )
+        ComplexNumber::new(self.real - other.real, self.imag - other.imag)
     }
 }
 
 impl<'a> Div<ComplexNumber> for &'a ComplexNumber {
     type Output = ComplexNumber;
-    
+
     fn div(self, other: ComplexNumber) -> Self::Output {
         let denom = other.real * other.real + other.imag * other.imag;
         if denom == Fraction::new(0, 1) {
@@ -300,7 +276,7 @@ mod tests {
     fn test_is_approximately_real() {
         let c1 = ComplexNumber::from_real(Fraction::new(5, 1));
         assert!(c1.is_approximately_real());
-        
+
         let c2 = ComplexNumber::new(Fraction::new(5, 1), Fraction::new(1, 2));
         assert!(!c2.is_approximately_real());
     }

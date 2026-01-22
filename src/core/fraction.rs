@@ -16,15 +16,24 @@ impl Fraction {
         if value == 0.0 {
             return Fraction(Rational64::new(0, 1));
         }
-        
+
         // Try simple fractions first
         let simple_fractions = vec![
-            (0.5, 1, 2), (0.25, 1, 4), (0.75, 3, 4),
-            (0.125, 1, 8), (0.375, 3, 8), (0.625, 5, 8), (0.875, 7, 8),
-            (0.3333333333333333, 1, 3), (0.6666666666666666, 2, 3),
-            (0.2, 1, 5), (0.4, 2, 5), (0.6, 3, 5), (0.8, 4, 5),
+            (0.5, 1, 2),
+            (0.25, 1, 4),
+            (0.75, 3, 4),
+            (0.125, 1, 8),
+            (0.375, 3, 8),
+            (0.625, 5, 8),
+            (0.875, 7, 8),
+            (0.3333333333333333, 1, 3),
+            (0.6666666666666666, 2, 3),
+            (0.2, 1, 5),
+            (0.4, 2, 5),
+            (0.6, 3, 5),
+            (0.8, 4, 5),
         ];
-        
+
         let abs_value = value.abs();
         for (frac_val, num, den) in simple_fractions {
             if (abs_value - frac_val).abs() < 1e-10 {
@@ -35,18 +44,18 @@ impl Fraction {
                 return result;
             }
         }
-        
+
         // Use continued fraction approximation for other values
         let mut x = abs_value;
         let max_denominator = 10000i64;
-        
+
         // Continued fraction approximation
         let mut a = x.floor() as i64;
         let mut h1 = 1i64;
         let mut k2 = 1i64;
         let mut h = a;
         let mut k = 1i64;
-        
+
         while x.fract() != 0.0 && k.abs() <= max_denominator {
             x = 1.0 / (x.fract());
             a = x.floor() as i64;
@@ -57,14 +66,14 @@ impl Fraction {
             k = a * k + k2;
             k2 = temp;
         }
-        
+
         let mut result = Fraction(Rational64::new(h, k));
         if value < 0.0 {
             result = -result;
         }
         result
     }
-    
+
     /// Convert to string representation
     pub fn to_string(&self) -> String {
         if *self.0.denom() == 1 {
@@ -138,7 +147,7 @@ impl Fraction {
 // Implement arithmetic operators
 impl std::ops::Add for Fraction {
     type Output = Self;
-    
+
     fn add(self, other: Self) -> Self {
         Fraction(self.0 + other.0)
     }
@@ -146,7 +155,7 @@ impl std::ops::Add for Fraction {
 
 impl std::ops::Sub for Fraction {
     type Output = Self;
-    
+
     fn sub(self, other: Self) -> Self {
         Fraction(self.0 - other.0)
     }
@@ -154,7 +163,7 @@ impl std::ops::Sub for Fraction {
 
 impl std::ops::Mul for Fraction {
     type Output = Self;
-    
+
     fn mul(self, other: Self) -> Self {
         Fraction(self.0 * other.0)
     }
@@ -162,7 +171,7 @@ impl std::ops::Mul for Fraction {
 
 impl std::ops::Div for Fraction {
     type Output = Self;
-    
+
     fn div(self, other: Self) -> Self {
         Fraction(self.0 / other.0)
     }
@@ -170,7 +179,7 @@ impl std::ops::Div for Fraction {
 
 impl std::ops::Neg for Fraction {
     type Output = Self;
-    
+
     fn neg(self) -> Self {
         Fraction(-self.0)
     }
@@ -232,7 +241,7 @@ mod tests {
     fn test_arithmetic() {
         let a = Fraction::new(1, 2);
         let b = Fraction::new(1, 3);
-        
+
         assert_eq!(a + b, Fraction::new(5, 6));
         assert_eq!(a - b, Fraction::new(1, 6));
         assert_eq!(a * b, Fraction::new(1, 6));

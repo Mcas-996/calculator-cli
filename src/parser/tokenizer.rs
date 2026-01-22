@@ -6,7 +6,7 @@ use std::str::Chars;
 #[derive(Debug, Clone, PartialEq)]
 pub enum Token {
     Number(f64),
-    Fraction(i64, i64),  // numerator, denominator
+    Fraction(i64, i64), // numerator, denominator
     Variable(String),
     Function(FunctionName),
     BinaryOp(BinaryOperator),
@@ -14,8 +14,8 @@ pub enum Token {
     LeftParen,
     RightParen,
     Comma,
-    Percent,  // % sign
-    Equal,    // = sign
+    Percent, // % sign
+    Equal,   // = sign
     EOF,
 }
 
@@ -86,7 +86,7 @@ impl<'a> Tokenizer<'a> {
         if let Some(&'/') = self.peek() {
             self.next(); // consume '/'
             let mut denom_str = String::new();
-            
+
             while let Some(&c) = self.peek() {
                 if c.is_ascii_digit() {
                     denom_str.push(c);
@@ -100,9 +100,13 @@ impl<'a> Tokenizer<'a> {
                 return Err("Invalid fraction: missing denominator".to_string());
             }
 
-            let num: i64 = num_str.parse().map_err(|_| "Invalid fraction numerator".to_string())?;
-            let denom: i64 = denom_str.parse().map_err(|_| "Invalid fraction denominator".to_string())?;
-            
+            let num: i64 = num_str
+                .parse()
+                .map_err(|_| "Invalid fraction numerator".to_string())?;
+            let denom: i64 = denom_str
+                .parse()
+                .map_err(|_| "Invalid fraction denominator".to_string())?;
+
             if denom == 0 {
                 return Err("Division by zero in fraction".to_string());
             }
@@ -111,7 +115,9 @@ impl<'a> Tokenizer<'a> {
         }
 
         // Parse as float
-        let value: f64 = num_str.parse().map_err(|_| "Invalid number format".to_string())?;
+        let value: f64 = num_str
+            .parse()
+            .map_err(|_| "Invalid number format".to_string())?;
         Ok(Token::Number(value))
     }
 
@@ -153,7 +159,10 @@ impl<'a> Tokenizer<'a> {
                         if c == '-' {
                             // Look ahead to see if this is a negative number
                             let next_char = self.chars.clone().nth(1);
-                            if next_char.map(|n| n.is_ascii_digit() || n == '.').unwrap_or(false) {
+                            if next_char
+                                .map(|n| n.is_ascii_digit() || n == '.')
+                                .unwrap_or(false)
+                            {
                                 self.tokenize_number()
                             } else {
                                 self.next();
@@ -199,9 +208,7 @@ impl<'a> Tokenizer<'a> {
                         self.next();
                         Ok(Token::Equal)
                     }
-                    'a'..='z' | 'A'..='Z' | '_' => {
-                        self.tokenize_identifier()
-                    }
+                    'a'..='z' | 'A'..='Z' | '_' => self.tokenize_identifier(),
                     _ => Err(format!("Unexpected character: '{}'", c)),
                 }
             }
@@ -211,7 +218,7 @@ impl<'a> Tokenizer<'a> {
     /// Tokenize entire input into a vector of tokens
     pub fn tokenize(&mut self) -> Result<Vec<Token>, String> {
         let mut tokens = Vec::new();
-        
+
         loop {
             let token = self.next_token()?;
             if token == Token::EOF {
@@ -219,7 +226,7 @@ impl<'a> Tokenizer<'a> {
             }
             tokens.push(token);
         }
-        
+
         Ok(tokens)
     }
 }
@@ -255,23 +262,44 @@ mod tests {
     #[test]
     fn test_tokenize_variable() {
         let mut tokenizer = Tokenizer::new("x");
-        assert_eq!(tokenizer.next_token().unwrap(), Token::Variable("x".to_string()));
+        assert_eq!(
+            tokenizer.next_token().unwrap(),
+            Token::Variable("x".to_string())
+        );
     }
 
     #[test]
     fn test_tokenize_function() {
         let mut tokenizer = Tokenizer::new("sin");
-        assert_eq!(tokenizer.next_token().unwrap(), Token::Function(FunctionName::Sin));
+        assert_eq!(
+            tokenizer.next_token().unwrap(),
+            Token::Function(FunctionName::Sin)
+        );
     }
 
     #[test]
     fn test_tokenize_operators() {
         let mut tokenizer = Tokenizer::new("+ - * / ^");
-        assert_eq!(tokenizer.next_token().unwrap(), Token::BinaryOp(BinaryOperator::Add));
-        assert_eq!(tokenizer.next_token().unwrap(), Token::BinaryOp(BinaryOperator::Subtract));
-        assert_eq!(tokenizer.next_token().unwrap(), Token::BinaryOp(BinaryOperator::Multiply));
-        assert_eq!(tokenizer.next_token().unwrap(), Token::BinaryOp(BinaryOperator::Divide));
-        assert_eq!(tokenizer.next_token().unwrap(), Token::BinaryOp(BinaryOperator::Power));
+        assert_eq!(
+            tokenizer.next_token().unwrap(),
+            Token::BinaryOp(BinaryOperator::Add)
+        );
+        assert_eq!(
+            tokenizer.next_token().unwrap(),
+            Token::BinaryOp(BinaryOperator::Subtract)
+        );
+        assert_eq!(
+            tokenizer.next_token().unwrap(),
+            Token::BinaryOp(BinaryOperator::Multiply)
+        );
+        assert_eq!(
+            tokenizer.next_token().unwrap(),
+            Token::BinaryOp(BinaryOperator::Divide)
+        );
+        assert_eq!(
+            tokenizer.next_token().unwrap(),
+            Token::BinaryOp(BinaryOperator::Power)
+        );
     }
 
     #[test]

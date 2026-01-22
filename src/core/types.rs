@@ -5,12 +5,12 @@ use std::fmt;
 /// Binary operators
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BinaryOperator {
-    Add,        // +
-    Subtract,   // -
-    Multiply,   // *
-    Divide,     // /
-    Power,      // ^
-    Modulo,     // %
+    Add,      // +
+    Subtract, // -
+    Multiply, // *
+    Divide,   // /
+    Power,    // ^
+    Modulo,   // %
 }
 
 impl BinaryOperator {
@@ -39,7 +39,7 @@ impl BinaryOperator {
 /// Unary operators
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum UnaryOperator {
-    Negate,     // -
+    Negate, // -
 }
 
 impl UnaryOperator {
@@ -58,8 +58,8 @@ pub enum FunctionName {
     Abs,
     Sin,
     Cos,
-    Sind,   // sin with degrees
-    Cosd,   // cos with degrees
+    Sind, // sin with degrees
+    Cosd, // cos with degrees
 }
 
 impl FunctionName {
@@ -146,14 +146,12 @@ impl Expression {
     pub fn evaluate(&self) -> Result<ComplexNumber, String> {
         match self {
             Expression::Constant(value) => Ok(value.clone()),
-            Expression::Variable(name) => {
-                match name.as_str() {
-                    "pi" => Ok(ComplexNumber::from_double(std::f64::consts::PI)),
-                    "e" => Ok(ComplexNumber::from_double(std::f64::consts::E)),
-                    "i" => Ok(ComplexNumber::new(Fraction::new(0, 1), Fraction::new(1, 1))),
-                    _ => Err(format!("Unknown variable: {}", name)),
-                }
-            }
+            Expression::Variable(name) => match name.as_str() {
+                "pi" => Ok(ComplexNumber::from_double(std::f64::consts::PI)),
+                "e" => Ok(ComplexNumber::from_double(std::f64::consts::E)),
+                "i" => Ok(ComplexNumber::new(Fraction::new(0, 1), Fraction::new(1, 1))),
+                _ => Err(format!("Unknown variable: {}", name)),
+            },
             Expression::BinaryOp { left, op, right } => {
                 let left_val = left.evaluate()?;
                 let right_val = right.evaluate()?;
@@ -164,8 +162,12 @@ impl Expression {
                     BinaryOperator::Divide => Ok(left_val / right_val),
                     BinaryOperator::Power => Ok(left_val.pow(right_val.real.to_f64() as i32)),
                     BinaryOperator::Modulo => {
-                        if left_val.imag != Fraction::new(0, 1) || right_val.imag != Fraction::new(0, 1) {
-                            return Err("Modulo operation not supported for complex numbers".to_string());
+                        if left_val.imag != Fraction::new(0, 1)
+                            || right_val.imag != Fraction::new(0, 1)
+                        {
+                            return Err(
+                                "Modulo operation not supported for complex numbers".to_string()
+                            );
                         }
                         let left_f = left_val.real.to_f64();
                         let right_f = right_val.real.to_f64();
@@ -184,7 +186,11 @@ impl Expression {
             }
             Expression::Function { name, args } => {
                 if args.len() != 1 {
-                    return Err(format!("Function {} expects 1 argument, got {}", name.as_str(), args.len()));
+                    return Err(format!(
+                        "Function {} expects 1 argument, got {}",
+                        name.as_str(),
+                        args.len()
+                    ));
                 }
                 let arg = args[0].evaluate()?;
                 match name {
@@ -223,10 +229,15 @@ impl fmt::Display for Expression {
                 write!(f, "({}{})", op.symbol(), operand)
             }
             Expression::Function { name, args } => {
-                write!(f, "{}({})", name.as_str(), args.iter()
-                    .map(|a| a.to_string())
-                    .collect::<Vec<_>>()
-                    .join(", "))
+                write!(
+                    f,
+                    "{}({})",
+                    name.as_str(),
+                    args.iter()
+                        .map(|a| a.to_string())
+                        .collect::<Vec<_>>()
+                        .join(", ")
+                )
             }
         }
     }

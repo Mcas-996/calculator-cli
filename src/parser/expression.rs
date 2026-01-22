@@ -11,10 +11,7 @@ pub struct ExpressionParser {
 
 impl ExpressionParser {
     pub fn new(tokens: Vec<Token>) -> Self {
-        ExpressionParser {
-            tokens,
-            current: 0,
-        }
+        ExpressionParser { tokens, current: 0 }
     }
 
     /// Parse tokens into an expression
@@ -62,7 +59,9 @@ impl ExpressionParser {
                 // Handle percentage: "50%" -> 0.5
                 if self.current < self.tokens.len() && self.tokens[self.current] == Token::Percent {
                     self.current += 1;
-                    Ok(Expression::Constant(ComplexNumber::from_double(value / 100.0)))
+                    Ok(Expression::Constant(ComplexNumber::from_double(
+                        value / 100.0,
+                    )))
                 } else {
                     Ok(Expression::Constant(ComplexNumber::from_double(value)))
                 }
@@ -75,7 +74,9 @@ impl ExpressionParser {
                 // Handle special constants
                 match name.as_str() {
                     "pi" | "π" => Ok(Expression::Constant(ComplexNumber::from_double(PI))),
-                    "e" => Ok(Expression::Constant(ComplexNumber::from_double(std::f64::consts::E))),
+                    "e" => Ok(Expression::Constant(ComplexNumber::from_double(
+                        std::f64::consts::E,
+                    ))),
                     "i" => Ok(Expression::Constant(ComplexNumber::new(
                         Fraction::new(0, 1),
                         Fraction::new(1, 1),
@@ -83,12 +84,12 @@ impl ExpressionParser {
                     _ => Ok(Expression::Variable(name)),
                 }
             }
-            Token::Function(func_name) => {
-                self.parse_function_call(func_name)
-            }
+            Token::Function(func_name) => self.parse_function_call(func_name),
             Token::LeftParen => {
                 let expr = self.parse_expression(0)?;
-                if self.current >= self.tokens.len() || self.tokens[self.current] != Token::RightParen {
+                if self.current >= self.tokens.len()
+                    || self.tokens[self.current] != Token::RightParen
+                {
                     return Err("Missing closing parenthesis".to_string());
                 }
                 self.current += 1;
@@ -108,7 +109,10 @@ impl ExpressionParser {
     /// Parse function call
     fn parse_function_call(&mut self, func_name: FunctionName) -> Result<Expression, String> {
         if self.current >= self.tokens.len() || self.tokens[self.current] != Token::LeftParen {
-            return Err(format!("Expected '(' after function {}", func_name.as_str()));
+            return Err(format!(
+                "Expected '(' after function {}",
+                func_name.as_str()
+            ));
         }
         self.current += 1;
 
@@ -126,7 +130,10 @@ impl ExpressionParser {
         }
 
         if self.current >= self.tokens.len() || self.tokens[self.current] != Token::RightParen {
-            return Err(format!("Missing closing parenthesis for function {}", func_name.as_str()));
+            return Err(format!(
+                "Missing closing parenthesis for function {}",
+                func_name.as_str()
+            ));
         }
         self.current += 1;
 
@@ -148,12 +155,12 @@ pub fn parse_expression(input: &str) -> Result<Expression, String> {
     let tokens = tokenizer.tokenize()?;
     let mut parser = ExpressionParser::new(tokens);
     let expr = parser.parse()?;
-    
+
     // Ensure we consumed all tokens
     if parser.has_more() {
         return Err("Unexpected extra tokens at end of input".to_string());
     }
-    
+
     Ok(expr)
 }
 

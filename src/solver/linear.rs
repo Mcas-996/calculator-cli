@@ -30,39 +30,21 @@ pub fn solve_linear_equation(equation: &str) -> Result<Vec<ComplexNumber>, Strin
 
 /// Parse coefficients from linear equation string
 fn parse_linear_coefficients(equation: &str) -> Result<Vec<ComplexNumber>, String> {
-    // Simplified parsing: look for pattern like "ax + b = 0"
-    // This is a basic implementation - a full parser would be more sophisticated
-    
-    let eq_lower = equation.to_lowercase();
-    
-    // Remove spaces and normalize
-    let eq = eq_lower.replace(" ", "");
-    
-    // Split by "="
-    let parts: Vec<&str> = eq.split('=').collect();
-    if parts.len() != 2 {
-        return Err("Invalid equation format".to_string());
-    }
-    
-    // Check if RHS is 0
-    if parts[1] != "0" {
-        return Err("Only equations in the form '... = 0' are supported".to_string());
-    }
-    
+    // Normalize equation to LHS = 0
+    let lhs = crate::solver::normalize_equation(equation)?;
+
     // Parse LHS to extract coefficients
-    let lhs = parts[0];
-    
     // Look for terms with x and constant term
     let mut a = Fraction::new(0, 1);
     let mut b = Fraction::new(0, 1);
-    
+
     // Split by + or -
     let mut current_sign = 1i64;
     let mut i = 0;
-    
+
     while i < lhs.len() {
         let c = lhs.chars().nth(i).unwrap();
-        
+
         if c == '+' {
             current_sign = 1;
             i += 1;
@@ -79,9 +61,9 @@ fn parse_linear_coefficients(equation: &str) -> Result<Vec<ComplexNumber>, Strin
                 }
                 term_end += 1;
             }
-            
+
             let term = &lhs[i..term_end];
-            
+
             if term.contains('x') {
                 // This is the 'a' coefficient
                 let coef_str = term.replace('x', "").replace("*", "");
@@ -96,11 +78,11 @@ fn parse_linear_coefficients(equation: &str) -> Result<Vec<ComplexNumber>, Strin
                 let coef = Fraction::from_double(term.parse::<f64>().unwrap_or(0.0));
                 b = b + coef * Fraction::new(current_sign, 1);
             }
-            
+
             i = term_end;
         }
     }
-    
+
     Ok(vec![
         ComplexNumber::from_real(a),
         ComplexNumber::from_real(b),
@@ -127,6 +109,17 @@ mod tests {
         let solutions = solve_linear_equation("2x - 6 = 0").unwrap();
         assert_eq!(solutions.len(), 1);
         assert!((solutions[0].real.to_f64() - 3.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_solve_linear_flexible_format() {
+        let solutions = solve_linear_equation("2x = 6").unwrap();
+        assert_eq!(solutions.len(), 1);
+        assert!((solutions[0].real.to_f64() - 3.0).abs() < 1e-10);
+
+        let solutions2 = solve_linear_equation("x + 5 = 10").unwrap();
+        assert_eq!(solutions2.len(), 1);
+        assert!((solutions2[0].real.to_f64() - 5.0).abs() < 1e-10);
     }
 
     #[test]
