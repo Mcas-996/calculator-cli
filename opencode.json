@@ -1,0 +1,17 @@
+{
+    "agent": {
+        "plan": {
+            "prompt": "You are currently in PLAN mode. You have permission to write to 'openspec/changes/' to create proposals. Important: Writing a proposal DOES NOT mean the user has approved it. You must stay in plan mode until the user explicitly says 'Approved' or 'Start building'.",
+            "permission": {
+                "edit": {
+                    "openspec/changes/*": "allow"
+                },
+                "write": {
+                    "openspec/changes/*": "allow"
+                }
+            },
+            "options": {}
+        }
+    },
+    "$schema": "https://opencode.ai/config.json"
+}
