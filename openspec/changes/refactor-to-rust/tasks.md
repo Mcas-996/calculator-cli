@@ -1,0 +1,276 @@
+# Tasks: Rust Refactor Implementation
+
+## 1. Project Setup
+- [ ] 1.1 Initialize Cargo.toml with project metadata and dependencies
+  - Dependencies: clap, anyhow, thiserror, num-rational, symbolica, regex
+  - Edition: 2021
+  - MSRV: 1.70.0
+- [ ] 1.2 Create directory structure for Rust source code
+  - src/core/, src/parser/, src/solver/, src/output/, src/utils/
+  - tests/, examples/, benches/
+- [ ] 1.3 Set up build configuration
+  - Release profile optimizations
+  - Lint configuration (clippy warnings)
+  - Test configuration
+- [ ] 1.4 Verify build with empty project
+
+## 2. Core Data Types
+- [ ] 2.1 Implement Fraction type using num-rational
+  - Fraction alias for Rational64
+  - from_double() conversion method
+  - Simplification on construction
+  - Arithmetic operators (+, -, *, /)
+  - Inverse operation
+  - String formatting (toString)
+- [ ] 2.2 Implement ComplexNumber type
+  - Fields: real, imag as Fractions
+  - Arithmetic operators (+, -, *, /)
+  - pow() operation
+  - sqrtPrincipal()
+  - sin(), cos() operations
+  - isApproximatelyReal() helper
+  - toString() with fraction support
+- [ ] 2.3 Implement Expression AST
+  - Expression enum: Constant, Variable, BinaryOp, UnaryOp, Function
+  - BinaryOperator enum: +, -, *, /, ^, %
+  - UnaryOperator enum: - (negation)
+  - Function names: sqrt, abs, sin, cos, sind, cosd
+  - Expression evaluation to ComplexNumber
+- [ ] 2.4 Implement utility functions
+  - gcd() for fraction simplification
+  - double approximation to fraction
+  - Constants: pi, e
+
+## 3. Expression Parser
+- [ ] 3.1 Implement tokenizer
+  - Tokenize numbers (integers, decimals, fractions)
+  - Tokenize operators and parentheses
+  - Tokenize functions and variables
+  - Handle whitespace
+  - Error handling for invalid tokens
+- [ ] 3.2 Implement expression parser (recursive descent)
+  - Parse atomic expressions (numbers, variables, functions, parentheses)
+  - Parse binary operations with precedence
+  - Handle unary minus
+  - Build Expression AST
+- [ ] 3.3 Add operator precedence logic
+  - ^ (exponentiation): highest
+  - * / %: middle
+  * + -: lowest
+- [ ] 3.4 Add function parsing
+  - sqrt(), abs(), sin(), cos(), sind(), cosd()
+  - Validate argument counts
+- [ ] 3.5 Add constant substitution
+  - pi → π value
+  - e → e value
+  - i → imaginary unit
+- [ ] 3.6 Add percentage handling
+  - Convert "50%" to 0.5
+- [ ] 3.7 Test parser with valid expressions
+  - Simple arithmetic
+  - Parentheses
+  - Functions
+  - Complex expressions
+- [ ] 3.8 Test parser error handling
+  - Invalid syntax
+  - Mismatched parentheses
+  - Unknown functions
+
+## 4. Equation Solvers
+- [ ] 4.1 Implement linear equation solver
+  - Parse equation format: "ax + b = 0"
+  - Extract coefficients
+  - Solve: x = -b/a
+  - Handle division by zero
+  - Return formatted solution
+- [ ] 4.2 Implement quadratic equation solver
+  - Parse format: "ax² + bx + c = 0"
+  - Extract coefficients a, b, c
+  - Apply quadratic formula: x = (-b ± √(b²-4ac)) / 2a
+  - Handle discriminant (real vs complex roots)
+  - Format single/double solutions
+- [ ] 4.3 Implement cubic equation solver
+  - Parse format: "ax³ + bx² + cx + d = 0"
+  - Apply Cardano's formula
+  - Handle three real roots vs one real + two complex
+  - Format solutions with subscripts (x₁, x₂, x₃)
+- [ ] 4.4 Implement quartic equation solver
+  - Parse format: "ax⁴ + bx³ + cx² + dx + e = 0"
+  - Apply Ferrari's formula
+  - Handle up to 4 roots
+  - Format symbolic roots (using sqrt, cbrt)
+  - Fallback to Durand-Kerner if needed
+- [ ] 4.5 Implement quintic equation solver with symbolica
+  - Parse polynomial of degree 5+
+  - Convert to symbolica expression
+  - Use symbolica for symbolic root finding
+  - Format as RootOf(polynomial, k) notation
+  - Include numeric approximations for reference
+- [ ] 4.6 Implement linear system solver
+  - Parse 2x2 system: "x+y=5, x-y=1"
+  - Parse 3x3 system: "x+y+z=6, x-y+z=2, 2x+y-z=3"
+  - Solve using Gaussian elimination
+  - Handle singular matrices (no solution or infinite solutions)
+  - Format solutions: "x = value, y = value, z = value"
+- [ ] 4.7 Implement equation detection and routing
+  - Detect input type: expression vs equation vs system
+  - Route to appropriate solver
+  - Validate equation format
+
+## 5. Output Formatting
+- [ ] 5.1 Define Formatter trait
+  - format_complex()
+  - format_fraction()
+  - format_expression()
+  - format_equation_solution()
+  - format_prompt()
+- [ ] 5.2 Implement AsciiFormatter
+  - Basic text output
+  - Complex numbers: "a + bi", "3i", "-i"
+  - Fractions: "1/3", "2"
+  - Square roots: "sqrt(x)"
+- [ ] 5.3 Implement UnicodeFormatter
+  - Use Unicode symbols: ×, ÷, π, √
+  - Superscripts: ², ³
+  - Subscripts: ₀, ₁, ₂, ₃, ₄, ₅
+  - Complex numbers with symbols
+- [ ] 5.4 Implement LatexFormatter
+  - Generate LaTeX source code
+  - Wrap in \[\] delimiters
+  - Use proper LaTeX math syntax
+  - Subscripts for equations: x_{1}, x_{2}
+  - Square roots: \sqrt{x}
+- [ ] 5.5 Implement PrettyConfig
+  - Singleton pattern
+  - Set/get pretty level (ASCII, Unicode, LaTeX)
+  - Detect terminal capabilities
+  - Auto-select best format
+- [ ] 5.6 Implement terminal detection
+  - Detect Kitty protocol support
+  - Detect pdflatex availability
+  - Fallback logic: LaTeX → Unicode → ASCII
+- [ ] 5.7 Implement LaTeX rendering (external tool)
+  - Generate LaTeX source
+  - Call pdflatex (if available)
+  - Convert PDF to PNG
+  - Base64 encode for Kitty protocol
+  - Display via terminal graphics
+
+## 6. CLI Integration
+- [ ] 6.1 Implement CLI argument parsing with clap
+  - --pretty/-p: Enable pretty output
+  - --unicode/-u: Force Unicode
+  - --latex/-l: Force LaTeX
+  - --ascii/-a: Force ASCII
+  - --help/-h: Show help
+  - --version/-v: Show version
+  - Positional argument: expression
+- [ ] 6.2 Implement main() function
+  - Parse arguments
+  - Handle --version
+  - Handle --help
+  - Configure output format based on flags
+  - Process expression or enter interactive mode
+- [ ] 6.3 Implement interactive mode
+  - REPL loop
+  - Prompt: ">>> " or pretty variant
+  - Read input line
+  - Process input
+  - Display result
+  - Handle Ctrl+D to exit
+- [ ] 6.4 Add error handling
+  - Catch and display CalculatorError messages
+  - Return appropriate exit codes (0 for success, 1 for error)
+  - Format "Error:" prefix for error messages
+- [ ] 6.5 Add locale handling
+  - Support LC_ALL=C for consistent parsing
+  - Handle comma vs decimal point
+
+## 7. Testing
+- [ ] 7.1 Port C++ arithmetic tests to Rust
+  - Basic operations: +, -, *, /
+  - Complex number arithmetic
+  - Fraction operations
+  - Function evaluation: sqrt, sin, cos
+- [ ] 7.2 Port C++ equation solver tests
+  - Linear equations
+  - Quadratic equations (real and complex roots)
+  - Cubic equations
+  - Quartic equations
+  - Quintic equations (symbolic)
+  - Linear systems (2x2, 3x3)
+- [ ] 7.3 Add parser tests
+  - Valid expressions
+  - Invalid expressions
+  - Operator precedence
+  - Function parsing
+- [ ] 7.4 Add output formatter tests
+  - ASCII output
+  - Unicode output
+  - LaTeX generation
+  - Pretty output configuration
+- [ ] 7.5 Add integration tests
+  - Full CLI workflows
+  - Command-line arguments
+  - Interactive mode
+  - Error cases
+- [ ] 7.6 Add property-based tests
+  - Fraction arithmetic properties
+  - Complex number algebraic properties
+  - Expression evaluation edge cases
+- [ ] 7.7 Add benchmarks
+  - Expression parsing performance
+  - Equation solving performance
+  - Output formatting performance
+- [ ] 7.8 Run all tests and ensure 100% pass rate
+
+## 8. Validation & Cleanup
+- [ ] 8.1 Compare output with C++ implementation
+  - Test all examples from README
+  - Compare equation solutions
+  - Verify formatting matches exactly
+- [ ] 8.2 Performance validation
+  - Benchmark against C++ version
+  - Ensure no significant regressions
+- [ ] 8.3 Cross-platform testing
+  - Linux build and test
+  - macOS build and test
+  - Windows build and test
+- [ ] 8.4 Remove C++ code
+  - Delete all .cpp files
+  - Delete all .hpp files
+  - Delete CMakeLists.txt
+  - Delete third-part/symengine/ directory
+- [ ] 8.5 Remove CI/CD
+  - Delete .github/workflows/c-cpp.yml
+  - Remove GitHub Actions configuration
+- [ ] 8.6 Update documentation
+  - Update README.md for Rust
+  - Update build instructions
+  - Remove C++-specific notes
+  - Add Cargo usage examples
+- [ ] 8.7 Final validation
+  - Run full test suite
+  - Test CLI manually with all options
+  - Verify all features work as expected
+  - Check binary size and build time
+- [ ] 8.8 Commit and tag release
+  - Commit changes with descriptive message
+  - Tag version (e.g., v2.0.0)
+  - Prepare release notes
+
+## Dependencies Between Tasks
+
+**Critical path (sequential)**:
+- 1 → 2 → 3 → 7.3 (Parser tests)
+- 2 → 4 → 7.2 (Solver tests)
+- 2 → 5 → 7.4 (Formatter tests)
+- 1 → 6 → 7.5 (Integration tests)
+- All testing → 8 (Validation & cleanup)
+
+**Parallelizable tasks**:
+- 4.1, 4.2, 4.3, 4.4 can be done in parallel
+- 5.2, 5.3, 5.4 can be done in parallel
+- 7.1, 7.2, 7.3, 7.4 can be done in parallel
+
+**Estimated total time**: 7 weeks (as outlined in migration plan)
