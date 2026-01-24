@@ -42,7 +42,7 @@ test_subscript
 
 # Old binaries
 calculator
-*.exe
+# *.exe
 
 debug*
 *test*

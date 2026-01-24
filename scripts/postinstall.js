@@ -1,36 +1,27 @@
 #!/usr/bin/env node
-/*
- * Post-install script for calculator-cli npm package
- * Ensures proper execution permissions and creates symlinks
- */
 
-const fs = require('fs');
-const path = require('path');
-const os = require('os');
+const path = require("path");
+const fs = require("fs");
+const os = require("os");
 
+console.log("🔍 Validating calculator-cli installation...");
+
+// Platform detection
 const platform = os.platform();
-const calculatorBinary = platform === 'win32' ? 'calculator.exe' : 'calculator';
-const binaryPath = path.join(__dirname, '..', 'bin', calculatorBinary);
+const expectedBinary =
+    platform === "win32"
+        ? "calculator_windows-x86-64.exe"
+        : "calculator_linux-x64";
 
-try {
-    // Verify the binary exists
-    if (!fs.existsSync(binaryPath)) {
-        console.error('❌ Calculator binary not found after installation');
-        process.exit(1);
-    }
+const binaryPath = path.join(__dirname, "..", "bin", expectedBinary);
 
-    // On Unix systems, ensure executable permissions
-    if (platform !== 'win32') {
-        try {
-            fs.chmodSync(binaryPath, '755');
-            console.log('✅ Set executable permissions');
-        } catch (err) {
-            console.warn(`⚠️  Could not set executable permissions: ${err.message}`);
-        }
-    }
-
-    console.log('✅ Calculator CLI ready to use!');
-} catch (error) {
-    console.error(`❌ Post-installation failed: ${error.message}`);
+if (!fs.existsSync(binaryPath)) {
+    console.error(`❌ Required binary not found: ${expectedBinary}`);
     process.exit(1);
 }
+
+if (!os.arch().includes("64")) {
+    console.warn("⚠️ Warning: 64-bit architecture recommended");
+}
+
+console.log("✅ Calculator CLI v0.1.0 is ready!");

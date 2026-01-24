@@ -35,6 +35,12 @@ If you want to build for platforms other than your current one:
   # Ubuntu/Debian
   sudo apt-get install mingw-w64
   
+  # If the above doesn't work, try:
+  sudo apt-get install gcc-mingw-w64-x86-64
+  
+  # For WSL environments, also try:
+  sudo apt-get install mingw-w64-x86-64-dev
+  
   # macOS
   brew install mingw-w64
   ```
@@ -45,6 +51,39 @@ If you want to build for platforms other than your current one:
 - **For Linux on Windows**: Use WSL
   - Install Ubuntu from Microsoft Store
   - Install Rust and other tools in WSL
+
+#### Building in WSL (Windows Subsystem for Linux)
+If you're using WSL, you have a special advantage for building Windows binaries:
+
+1. **Install mingw-w64 in WSL**:
+   ```bash
+   sudo apt-get update
+   sudo apt-get install mingw-w64
+   ```
+
+2. **Set environment variables** (if needed):
+   ```bash
+   export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc
+   ```
+
+3. **Access Windows binaries directly**:
+   After building, Windows binaries are accessible from Windows Explorer:
+   ```
+   \\wsl$\Ubuntu\mnt\c\path\to\project\bin\calculator-win32-x64.exe
+   ```
+
+4. **Test in Windows**:
+   Open Command Prompt or PowerShell and run:
+   ```
+   \\wsl$\Ubuntu\...calculator-win32-x64.exe "1+1"
+   ```
+
+5. **WSL Performance Tip**: For better build performance, copy the project to WSL's native filesystem:
+   ```bash
+   cp -r /mnt/c/path/to/project ~/calculator-cli
+   cd ~/calculator-cli
+   npm run build-binaries
+   ```
 
 ## Build Process
 
@@ -116,7 +155,7 @@ If you want to build for platforms other than your current one:
 
 ## Platform-Specific Instructions
 
-### Building on Linux
+#### Building on Linux
 
 Linux is the most straightforward platform for cross-compilation:
 
@@ -125,9 +164,19 @@ Linux is the most straightforward platform for cross-compilation:
 sudo apt-get update
 sudo apt-get install build-essential mingw-w64
 
+# If regular mingw-w64 doesn't work, try:
+sudo apt-get install gcc-mingw-w64-x86-64
+sudo apt-get install mingw-w64-x86-64-dev
+
 # Add targets
 rustup target add x86_64-unknown-linux-gnu
 rustup target add x86_64-pc-windows-gnu
+
+# If in WSL, additional steps:
+if [ -f /proc/version ] && grep -q Microsoft /proc/version; then
+    echo "Detected WSL environment"
+    export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc
+fi
 
 # Build (macOS binary will be skipped)
 npm run build-binaries

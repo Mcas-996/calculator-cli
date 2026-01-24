@@ -46,7 +46,7 @@ if (!fs.existsSync(path.join(projectRoot, "Cargo.toml"))) {
     process.exit(1);
 }
 
-// Detect current platform
+// Detect current platform and WSL environment
 const detectCurrentPlatform = () => {
     const platform = process.platform;
     if (platform === "linux") return "linux";
@@ -55,8 +55,26 @@ const detectCurrentPlatform = () => {
     return "unknown";
 };
 
+// Check if running in WSL
+const isWSL = () => {
+    try {
+        return (
+            fs
+                .readFileSync("/proc/version", "utf8")
+                .toLowerCase()
+                .includes("microsoft") ||
+            process.env.WSL_DISTRO_NAME !== undefined
+        );
+    } catch (e) {
+        return false;
+    }
+};
+
 const currentPlatform = detectCurrentPlatform();
-console.log(`📍 Detected current platform: ${currentPlatform}\n`);
+const inWSL = currentPlatform === "linux" && isWSL();
+console.log(
+    `📍 Detected current platform: ${currentPlatform}${inWSL ? " (in WSL)" : ""}\n`,
+);
 
 // Helper function to check if a command is available
 const commandExists = (command) => {
@@ -125,10 +143,23 @@ try {
         // Check if the target is installed
         if (!isTargetInstalled(platform.target)) {
             console.log(`❌ Rust target '${platform.target}' not installed`);
-            console.log(
-                `💡 To install: rustup target add ${platform.target}\n`,
-            );
-            continue;
+            console.log(`💡 Installing target now...`);
+
+            try {
+                execSync(`rustup target add ${platform.target}`, {
+                    stdio: "inherit",
+                    maxBuffer: 10 * 1024 * 1024,
+                });
+                console.log(
+                    `✅ Target '${platform.target}' installed successfully\n`,
+                );
+            } catch (error) {
+                console.log(`❌ Failed to install target: ${error.message}`);
+                console.log(
+                    `💡 Please install manually: rustup target add ${platform.target}\n`,
+                );
+                continue;
+            }
         }
 
         // Check for required tools
@@ -165,6 +196,7 @@ try {
             const env = { ...process.env };
 
             // Configure environment for cross-compilation
+            const env = { ...process.env };
             if (
                 platform.target === "x86_64-pc-windows-gnu" &&
                 currentPlatform !== "windows"
@@ -174,16 +206,36 @@ try {
                     "x86_64-w64-mingw32-gcc";
                 env.CC_x86_64_pc_windows_gnu = "x86_64-w64-mingw32-gcc";
                 env.CXX_x86_64_pc_windows_gnu = "x86_64-w64-mingw32-g++";
+
+                // WSL-specific settings
+                if (inWSL) {
+                    console.log(
+                        "   🐧 Applying WSL-specific settings for Windows target",
+                    );
+                    // Additional linker flags for WSL
+                    env.CARGO_TARGET_X86_64_PC_WINDOWS_GNU_RUSTFLAGS =
+                        "-C link-arg=-Wl,--subsystem,console -C link-arg=-static";
+
+                    // Try alternative linking strategy for WSL
+                    if (process.env.USE_MSVC_TOOLCHAIN) {
+                        console.log(
+                            "   Using MSVC toolchain for Windows target",
+                        );
+                        env.RUSTUP_TOOLCHAIN = "stable-x86_64-pc-windows-msvc";
+                    }
+                }
             }
 
             // Build the binary
             const buildCmd = `cargo build --release --target ${platform.target}`;
             console.log(`   Running: ${buildCmd}`);
 
+            // Use inherit stdio and increased buffer to avoid ENOBUFS errors
             execSync(buildCmd, {
-                stdio: "pipe",
+                stdio: "inherit",
                 env,
                 cwd: projectRoot,
+                maxBuffer: 10 * 1024 * 1024, // 10MB buffer
             });
 
             // Copy the binary to the bin directory
@@ -240,50 +292,101 @@ try {
             // Provide specific help for common errors
             if (
                 error.message.includes("E0425") ||
-                error.message.includes("linker")
+                error.message.includes("E0431") ||
+                error.message.includes("linker") ||
+                error.message.includes("undefined reference")
             ) {
                 console.log("");
                 console.log(
-                    "💡 This appears to be a linker (E0425) error. Solutions:",
+                    "💡 This appears to be a linker error (E0425/E0431). Solutions:",
                 );
 
                 if (platform.target.includes("windows")) {
-                    console.log("1. Install mingw-w64:");
-                    if (currentPlatform === "linux") {
+                    console.log("1. For WSL MinGW issues, try these steps:");
+                    if (inWSL) {
+                        console.log("   🐧 WSL-specific solutions:");
+                        console.log("   a) Install complete MinGW toolchain:");
+                        console.log(
+                            "      sudo apt-get update && sudo apt-get install mingw-w64 gcc-mingw-w64-x86-64",
+                        );
+                        console.log("");
+                        console.log("   b) Set environment variables for WSL:");
+                        console.log(
+                            "      export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc",
+                        );
+                        console.log(
+                            "      export CC_x86_64_pc_windows_gnu=x86_64-w64-mingw32-gcc",
+                        );
+                        console.log(
+                            "      export CXX_x86_64_pc_windows_gnu=x86_64-w64-mingw32-g++",
+                        );
+                        console.log("");
+                        console.log(
+                            "   c) Alternative: Use Windows native Rust:",
+                        );
+                        console.log(
+                            "      rustup toolchain install stable-x86_64-pc-windows-msvc",
+                        );
+                        console.log(
+                            "      rustup default stable-x86_64-pc-windows-msvc",
+                        );
+                        console.log(
+                            "      rustup target add x86_64-pc-windows-msvc",
+                        );
+                        console.log("");
+                        console.log(
+                            "   d) For persistent configuration, add to ~/.bashrc:",
+                        );
+                        console.log("      [target.x86_64-pc-windows-gnu]");
+                        console.log("      linker = 'x86_64-w64-mingw32-gcc'");
+                        console.log("      ");
+                        console.log("      [target.x86_64-pc-windows-msvc]");
+                        console.log("      linker = 'lld-link'");
+                    } else {
                         console.log(
                             "   sudo apt-get update && sudo apt-get install mingw-w64",
                         );
-                        console.log(
-                            "   # Also try: sudo apt-get install gcc-mingw-w64-x86-64",
-                        );
-                    } else if (currentPlatform === "macos") {
-                        console.log("   brew install mingw-w64");
                     }
 
                     console.log("");
-                    console.log("2. Try reinstalling the Windows target:");
                     console.log(
-                        "   rustup target remove x86_64-pc-windows-gnu",
+                        "2. Try reinstalling and reconfiguring Rust targets:",
                     );
-                    console.log("   rustup target add x86_64-pc-windows-gnu");
+                    console.log(
+                        "   rustup target remove --toolchain stable x86_64-pc-windows-gnu",
+                    );
+                    console.log(
+                        "   rustup target add --toolchain stable x86_64-pc-windows-gnu",
+                    );
+                    console.log("   # Or try MSVC target:");
+                    console.log("   rustup target add x86_64-pc-windows-msvc");
+
+                    if (inWSL) {
+                        console.log("");
+                        console.log("🐧 WSL Specific Tips:");
+                        console.log(
+                            "   - WSL MinGW builds can be tricky. Consider using:",
+                        );
+                        console.log(
+                            "   * Windows Subsystem for Linux with Windows Rust installed in Windows",
+                        );
+                        console.log(
+                            "   * The MSVC target which might be more stable in WSL",
+                        );
+                        console.log(
+                            "   * Running the build directly in Windows instead of WSL",
+                        );
+                    }
 
                     console.log("");
-                    console.log("3. Use alternative approach:");
-                    console.log("   - Build on Windows if possible");
-                    console.log("   - Use a CI service like GitHub Actions");
+                    console.log("3. Alternative approaches:");
+                    console.log("   - Build in native Windows environment");
+                    console.log(
+                        "   - Use GitHub Actions or another CI service",
+                    );
                     console.log(
                         "   - Focus on platforms that build successfully",
                     );
-                } else {
-                    console.log(
-                        "1. Verify you have the right target installed:",
-                    );
-                    console.log(
-                        `   rustup target list --installed | grep ${platform.target}`,
-                    );
-                    console.log("");
-                    console.log("2. Update Rust toolchain:");
-                    console.log("   rustup update stable");
                 }
             } else if (error.message.includes("could not find")) {
                 console.log("");
@@ -346,10 +449,32 @@ try {
         console.log(
             "\n💡 Remember to update the version number in Cargo.toml before publishing!",
         );
+
+        if (inWSL) {
+            console.log("\n🐧 WSL-Specific Tips:");
+            console.log("- Windows binaries are accessible from Windows at:");
+            console.log(
+                `  \\\\wsl$\\$(hostname)\\${path
+                    .resolve(projectRoot)
+                    .replace(/^\/mnt\//, "")
+                    .replace(/\//g, "\\")}\\bin`,
+            );
+            console.log(
+                "- Test Windows binaries directly in Windows Command Prompt or PowerShell",
+            );
+        }
     } else {
         console.log("1. Fix the build issues shown above");
         console.log("2. Try building for fewer platforms");
         console.log("3. Consider building only for your current platform");
+
+        if (inWSL) {
+            console.log("\n🐧 WSL-Specific Tips:");
+            console.log("- Ensure you have the latest mingw-w64 packages");
+            console.log(
+                "- Try running the build script from /mnt/c/ to avoid WSL path limitations",
+            );
+        }
     }
 } catch (error) {
     console.error(`❌ Build process failed: ${error.message}`);

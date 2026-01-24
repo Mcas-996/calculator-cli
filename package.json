@@ -1,18 +1,15 @@
 {
-    "name": "calculator-cli",
-    "version": "2.0.0",
+    "name": "mathcalc-cli",
+    "version": "0.1.0",
     "description": "A command-line calculator with symbolic math support",
     "main": "index.js",
     "bin": {
-        "calculator": "bin/calculator"
+        "calculator": "bin/calculator_linux-x64"
     },
     "scripts": {
         "preinstall": "node scripts/install.js",
         "postinstall": "node scripts/postinstall.js",
-        "test": "node scripts/test.js",
-        "build-binaries": "node scripts/build-binaries.js",
-        "prepare-package": "node scripts/build-binaries.js && npm pack",
-        "local-test": "npm pack && npm install -g calculator-cli-*.tgz && npm test"
+        "test": "node scripts/test.js"
     },
     "repository": {
         "type": "git",
@@ -23,13 +20,11 @@
         "math",
         "cli",
         "command-line",
-        "equations",
-        "expressions"
+        "equations"
     ],
     "author": "Allen <anomalyco@github.com>",
     "license": "MIT",
     "os": [
-        "darwin",
         "linux",
         "win32"
     ],
@@ -38,22 +33,9 @@
     ],
     "files": [
         "bin/",
-        "scripts/",
-        "README.md",
-        "README_zh.md"
+        "scripts/"
     ],
     "engines": {
         "node": ">=12.0.0"
-    },
-    "dependencies": {
-        "@iflow-ai/iflow-cli": "^0.4.16"
-    },
-    "directories": {
-        "test": "tests"
-    },
-    "devDependencies": {},
-    "bugs": {
-        "url": "https://github.com/anomalyco/calculator-cli/issues"
-    },
-    "homepage": "https://github.com/anomalyco/calculator-cli#readme"
+    }
 }
