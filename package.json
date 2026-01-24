@@ -11,7 +11,8 @@
         "postinstall": "node scripts/postinstall.js",
         "test": "node scripts/test.js",
         "build-binaries": "node scripts/build-binaries.js",
-        "prepublishOnly": "npm run build-binaries"
+        "prepare-package": "node scripts/build-binaries.js && npm pack",
+        "local-test": "npm pack && npm install -g calculator-cli-*.tgz && npm test"
     },
     "repository": {
         "type": "git",

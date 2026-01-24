@@ -135,13 +135,14 @@ To install calculator-cli on ARM:
 For more information, visit: https://github.com/anomalyco/calculator-cli#installation
 ```
 
-#### CI Workflow Steps
-1. Trigger on tag push matching pattern `v*`
-2. Separate build jobs for x64 platforms (linux, macos, windows)
-3. Compile Rust release binary for each platform
-4. Upload build artifacts between stages
-5. Publish stage downloads all artifacts and publishes to npm
-6. Update package.json version to match the tag
+#### Local Build Workflow Steps
+1. Developer prepares new release by updating Cargo.toml version
+2. Build binaries locally for each x64 platform using appropriate toolchains
+3. Run tests to verify functionality on available platforms
+4. Update package.json version to match Cargo.toml
+5. Create npm package using `npm pack`
+6. Test package installation locally
+7. Publish to npm manually with `npm publish`
 
 ### Migration Plan
 1. Prepare all CI configuration and scripts in a feature branch
@@ -161,7 +162,8 @@ For more information, visit: https://github.com/anomalyco/calculator-cli#install
   - **Mitigation:** Use established patterns from other npm packages
 
 ### Open Questions
-- Should we provide a simple wrapper npm script that automates cargo install for ARM users?
+- Should we create a comprehensive script to automate the local build process?
 - How should we handle version synchronization between Cargo.toml and package.json?
-- Should we implement npm version updates to automatically trigger new releases?
+- Should we document the build process for maintainers in a separate guide?
 - Should we add a check for Rust availability in the install script for ARM platforms?
+- What testing procedures should be established before publishing?

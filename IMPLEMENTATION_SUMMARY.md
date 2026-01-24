@@ -24,11 +24,12 @@ calculator-cli/
 │   ├── install.js       # Platform detection and binary setup
 │   ├── postinstall.js   # Post-installation setup
 │   ├── test.js          # Functionality testing
-│   └── build-binaries.js # Build automation
+│   └── build-binaries.js # Local build automation
 └── documentation
     ├── README.md        # Updated with npm instructions
     ├── README_zh.md     # Chinese documentation updates
-    └── NPM_README.md    # npm-specific documentation
+    ├── NPM_README.md    # npm-specific documentation
+    └── LOCAL_BUILD_GUIDE.md # Local build guide for maintainers
 ```
 
 ### 3. Installation Scripts
@@ -62,10 +63,10 @@ calculator-cli/
 - Maintained accessibility despite platform limitations
 
 ### For Maintainers
-- Automated build and release process
-- Reduced maintenance overhead through GitHub Actions
-- Centralized package management through npm
-- Clear separation of supported platforms
+- Full control over build process and binary verification
+- Manual build process with comprehensive local build guide
+- Local testing before publishing ensures quality
+- Simple npm publishing workflow with pre-built binaries
 
 ## Technical Decisions
 

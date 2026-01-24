@@ -12,13 +12,12 @@
 - [x] 2.4 Create fallback flow for ARM platforms that provides cargo build instructions
 - [x] 2.5 Design user-friendly error messages for ARM platform installation
 
-## 3. Set up GitLab CI/CD workflow
-- [x] 3.1 Create GitLab CI configuration for x64 platform builds only
-- [x] 3.2 Configure separate jobs for Windows, macOS, and Linux (x64)
-- [x] 3.3 Set up artifact generation and upload for each x64 platform
-- [x] 3.4 Configure npm publishing step with proper authentication
-- [x] 3.5 Optimize CI workflow to not build ARM binaries
-- [x] 3.6 Remove GitHub Actions workflow files
+## 3. Set up Local Build Workflow
+- [x] 3.1 Remove CI/CD pipeline configuration files
+- [x] 3.2 Update build script for local cross-platform compilation
+- [x] 3.3 Add local testing and validation scripts
+- [x] 3.4 Create package preparation script for npm publishing
+- [x] 3.5 Optimize build process for local development workflow
 
 ## 4. Update documentation with platform-specific instructions
 - [x] 4.1 Add npm installation instructions for x64 platforms to README.md
