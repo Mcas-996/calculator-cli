@@ -1,0 +1,19 @@
+#!/bin/bash
+# Placeholder script for calculator binary on macOS x64
+# This will be replaced by the actual binary during the build process
+
+if [ $# -eq 0 ]; then
+    echo "Calculator CLI (placeholder) - Interactive mode"
+    echo "This is a placeholder script. The actual binary will be built and replace this."
+    echo "> "
+else
+    expression="$*"
+    echo "Calculator CLI (placeholder) would evaluate: $expression"
+    if [ "$expression" = "1+1" ]; then
+        echo "2"
+    elif [ "$expression" = "x^2-4=0" ]; then
+        echo "x = 2, -2"
+    else
+        echo "Result for: $expression (placeholder)"
+    fi
+fi

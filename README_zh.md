@@ -8,6 +8,43 @@
 2. 配置并编译 Release 版本：`cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel`。
 3. 立即体验：`./build/calculator "equation(x^2-5x+6=0)"`。
 
+## NPM 安装方式
+
+### 对于 x64 系统（Windows、macOS Intel、Linux x64）
+最简单的安装方式是通过 npm：
+
+```bash
+npm install -g calculator-cli
+```
+
+安装完成后，您可以运行：
+
+```bash
+calculator "2 + 2"
+calculator "x^2-5x+6=0"
+```
+
+### 对于 ARM 系统（Apple Silicon、ARM64 Linux）
+npm 包仅包含 x64 系统的预编译二进制文件。对于 ARM 系统：
+
+```bash
+# 1. 如果尚未安装 Rust：
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.cargo/env
+
+# 2. 从源码安装 calculator-cli：
+cargo install calculator
+```
+
+### 平台支持
+| 平台 | 架构 | 安装方式 |
+|------|------|----------|
+| Windows | x64 | npm install |
+| macOS | x64 (Intel) | npm install |
+| macOS | ARM (Apple Silicon) | cargo install |
+| Linux | x64 | npm install |
+| Linux | ARM64 | cargo install |
+
 ## 功能特性
 
 ### 表达式引擎

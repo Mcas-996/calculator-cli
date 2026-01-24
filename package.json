@@ -1,0 +1,58 @@
+{
+    "name": "calculator-cli",
+    "version": "2.0.0",
+    "description": "A command-line calculator with symbolic math support",
+    "main": "index.js",
+    "bin": {
+        "calculator": "bin/calculator"
+    },
+    "scripts": {
+        "preinstall": "node scripts/install.js",
+        "postinstall": "node scripts/postinstall.js",
+        "test": "node scripts/test.js",
+        "build-binaries": "node scripts/build-binaries.js",
+        "prepublishOnly": "npm run build-binaries"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/anomalyco/calculator-cli.git"
+    },
+    "keywords": [
+        "calculator",
+        "math",
+        "cli",
+        "command-line",
+        "equations",
+        "expressions"
+    ],
+    "author": "Allen <anomalyco@github.com>",
+    "license": "MIT",
+    "os": [
+        "darwin",
+        "linux",
+        "win32"
+    ],
+    "cpu": [
+        "x64"
+    ],
+    "files": [
+        "bin/",
+        "scripts/",
+        "README.md",
+        "README_zh.md"
+    ],
+    "engines": {
+        "node": ">=12.0.0"
+    },
+    "dependencies": {
+        "@iflow-ai/iflow-cli": "^0.4.16"
+    },
+    "directories": {
+        "test": "tests"
+    },
+    "devDependencies": {},
+    "bugs": {
+        "url": "https://github.com/anomalyco/calculator-cli/issues"
+    },
+    "homepage": "https://github.com/anomalyco/calculator-cli#readme"
+}

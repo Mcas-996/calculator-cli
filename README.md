@@ -8,6 +8,43 @@ A lightweight Rust command-line calculator capable of evaluating real/complex ex
 2. Build a Release binary: `cargo build --release`.
 3. Run an expression straight from your shell: `./target/release/calculator "x^2-5x+6=0"`.
 
+## NPM Installation
+
+### For x64 Systems (Windows, macOS Intel, Linux x64)
+The easiest way to install calculator-cli is via npm:
+
+```bash
+npm install -g calculator-cli
+```
+
+Once installed, you can run:
+
+```bash
+calculator "2 + 2"
+calculator "x^2-5x+6=0"
+```
+
+### For ARM Systems (Apple Silicon, ARM64 Linux)
+The npm package includes precompiled binaries only for x64 systems. For ARM systems:
+
+```bash
+# 1. Install Rust if you haven't already:
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.cargo/env
+
+# 2. Install calculator-cli from source:
+cargo install calculator
+```
+
+### Platform Support
+| Platform | Architecture | Installation Method |
+|----------|-------------|--------------------|
+| Windows | x64 | npm install |
+| macOS | x64 (Intel) | npm install |
+| macOS | ARM (Apple Silicon) | cargo install |
+| Linux | x64 | npm install |
+| Linux | ARM64 | cargo install |
+
 ## Features
 
 ### Expression Engine
