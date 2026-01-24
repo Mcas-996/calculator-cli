@@ -1,6 +1,6 @@
 {
     "name": "mathcalc-cli",
-    "version": "0.1.0",
+    "version": "0.2.0",
     "description": "A command-line calculator with symbolic math support",
     "main": "index.js",
     "bin": {
@@ -13,7 +13,7 @@
     },
     "repository": {
         "type": "git",
-        "url": "git+https://github.com/anomalyco/calculator-cli.git"
+        "url": "git+https://github.com/Mcas-996/calculator-cli.git"
     },
     "keywords": [
         "calculator",
