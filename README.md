@@ -1,15 +1,49 @@
 # Calculator CLI
 
-A lightweight C++20 command-line calculator capable of evaluating real/complex expressions, solving equations (with exact symbolic output up to quintics), and processing small systems of linear equations.
-
-## Warning
-Please **do not** compile on a machine with less than **32 GB RAM**—take this README to your manager and request an upgrade instead.
+A lightweight Rust command-line calculator capable of evaluating real/complex expressions, solving equations (with exact symbolic output up to quintics), and processing small systems of linear equations.
 
 ## Quick Start
 
 1. Clone the project: `git clone https://github.com/allen/calculator-cli && cd calculator-cli`.
-2. Configure and build a Release binary: `cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel`.
-3. Run an expression straight from your shell: `./build/calculator "equation(x^2-5x+6=0)"`.
+2. Build a Release binary: `cargo build --release`.
+3. Run an expression straight from your shell: `./target/release/calculator "x^2-5x+6=0"`.
+
+## NPM Installation
+
+### For x64 Systems (Windows, macOS Intel, Linux x64)
+The easiest way to install calculator-cli is via npm:
+
+```bash
+npm install -g calculator-cli
+```
+
+Once installed, you can run:
+
+```bash
+calculator "2 + 2"
+calculator "x^2-5x+6=0"
+```
+
+### For ARM Systems (Apple Silicon, ARM64 Linux)
+The npm package includes precompiled binaries only for x64 systems. For ARM systems:
+
+```bash
+# 1. Install Rust if you haven't already:
+curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
+source ~/.cargo/env
+
+# 2. Install calculator-cli from source:
+cargo install calculator
+```
+
+### Platform Support
+| Platform | Architecture | Installation Method |
+|----------|-------------|--------------------|
+| Windows | x64 | npm install |
+| macOS | x64 (Intel) | npm install |
+| macOS | ARM (Apple Silicon) | cargo install |
+| Linux | x64 | npm install |
+| Linux | ARM64 | cargo install |
 
 ## Features
 
@@ -21,82 +55,96 @@ Please **do not** compile on a machine with less than **32 GB RAM**—take thi
 - Full complex-number arithmetic, e.g. `sqrt(-4)`, `(3+2i)*(1-i)`, `cosd(60+i)`.
 
 ### Equation Solving
-- Linear equations: `equation(2x+5=0)`
-- Quadratic equations: `equation(x^2-5x+6=0)` (real or complex roots)
-- Cubic equations: `equation(x^3-6x^2+11x-6=0)`
-- Quartic equations: `equation(x^4-2=0)` (symbolic roots via `sqrt`/`cbrt`, numeric Durand–Kerner fallback)
-- Quintic equations: `equation(x^5+2x^4+...=0)` → outputs exact `RootOf(polynomial, k)` descriptors when radicals are unavailable, with optional numeric approximations for reference.
-- Systems of linear equations (up to 3 variables): `equation2(x+y=5,x-y=1)`
+- Linear equations: `2x+5=0`
+- Quadratic equations: `x^2-5x+6=0` (real or complex roots)
+- Cubic equations: `x^3-6x^2+11x-6=0`
+- Quartic equations: `x^4-2=0` (symbolic roots via `sqrt`/`cbrt`, numeric Durand–Kerner fallback)
+- Quintic equations: `x^5+2x^4+...=0` → numeric approximation via Durand-Kerner method
+- Systems of linear equations (up to 3 variables): `x+y=5, x-y=1`
 
 ### Output Formatting
 - Results favor exact fractions when possible (e.g. `1/3` stays rational) and fall back to decimals only when necessary.
 - Complex numbers print as `a + bi`, with simplified `i`/`-i`.
-- Symbolic solutions use `sqrt`, `cbrt`, and `RootOf` notation so the CLI never hides the algebraic structure (e.g. `x = RootOf(x^5+2x^4+3x^3+4x^2-1, 0)`).
+- Multiple output formats: ASCII, Unicode, and LaTeX.
 
 ## Usage
 
 ```bash
 # Basic usage (expression as CLI argument)
-./calculator "3 + 5 * (2 - 8)^2"
+./target/release/calculator "3 + 5 * (2 - 8)^2"
 
 # Complex numbers
-./calculator "(3+2i) * (1 - i)"
-./calculator "sqrt(-9)"        # -> 3i
+./target/release/calculator "(3+2i) * (1 - i)"
+./target/release/calculator "sqrt(-9)"        # -> 3i
 
 # Trigonometry
-./calculator "sin(pi / 6)"     # radians
-./calculator "sind(30)"        # degrees
+./target/release/calculator "sin(pi / 6)"     # radians
+./target/release/calculator "sind(30)"        # degrees
 
 # Equation solving
-./calculator "equation(x^2-5x+6=0)"
-./calculator "equation2(x+y=5,x-y=1)"
+./target/release/calculator "x^2-5x+6=0"
+./target/release/calculator "x+y=5, x-y=1"
+
+# Output formatting
+./target/release/calculator --unicode "sqrt(16)"
+./target/release/calculator --latex "pi"
+./target/release/calculator --ascii "3 + 4"
 ```
 
-Passing `--help` or `--version` prints CLI info. Without an argument the program exits with usage guidance.
+Passing `--help` or `--version` prints CLI info. Without an argument, the program enters interactive mode.
 
 ## Building
 
-The preferred workflow uses CMake (required >= 3.10) and a C++20 compiler.
+The project uses Rust and Cargo.
 
 ```bash
-cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
-cmake --build build --parallel
-ctest --output-on-failure --test-dir build   # optional, runs calculator_tests
+# Build in release mode
+cargo build --release
+
+# Run tests
+cargo test
+
+# Run with clippy for additional checks
+cargo clippy
 ```
 
-- Windows (MSVC, VS Build Tools, or clang-cl) should specify the desired architecture: `cmake -B build -S . -A x64`.
-- macOS/Linux follow the same commands; install `cmake`/`g++`/`clang++` via your package manager.
-- The project vendors [SymEngine](https://github.com/symengine/symengine) in `third-part/`; no separate install is required, but the first build can take a few minutes while SymEngine compiles.
-- Legacy helper scripts (`build_windows.bat`, `build_linux.sh`, `build_macos.sh`) remain available but the CMake flow above is authoritative.
+- Rust 1.75.0 or later is required
+- Cargo handles all dependencies automatically
+- The binary will be available at `target/release/calculator`
 
-## Testing
+## Interactive Mode
 
-`ctest` drives the regression coverage defined in `calculator_tests.cpp`. Running `ctest --output-on-failure --test-dir build` after a build exercises all arithmetic, complex, and symbolic paths; use `ctest -R <name>` for targeted cases when debugging.
-
-## macOS Gatekeeper
-
-Unsigned binaries downloaded from CI may trigger Gatekeeper warnings. To run them:
+Run the calculator without arguments to enter interactive mode:
 
 ```bash
-xattr -d com.apple.quarantine /path/to/calculator
+./target/release/calculator
 ```
 
-or right-click the app in Finder, choose "Open," and confirm.
+Type expressions and press Enter to evaluate. Type `exit` or `quit` to exit, or press Ctrl+D.
 
 ## Project Structure
 
-- `complex_number.hpp`, `fractions.hpp`, `string_processing.*` - expression/core logic.
-- `main_cli.cpp` - CLI entry point.
-- `calculator_tests.cpp` - unit/regression tests invoked via CTest.
-- `.github/workflows/c-cpp.yml` - GitHub Actions pipeline for Linux/macOS/Windows builds, tests, and releases.
+- `src/core/` - Core data types (ComplexNumber, Fraction, Expression)
+- `src/parser/` - Expression parser and tokenizer
+- `src/solver/` - Equation solvers (linear, quadratic, cubic, quartic, quintic)
+- `src/output/` - Output formatters (ASCII, Unicode, LaTeX)
+- `src/main.rs` - CLI entry point
 
 ## Troubleshooting
 
-- **CMake cannot find a compiler**: install the latest Visual Studio Build Tools on Windows or ensure `build-essential`/Xcode Command Line Tools are present on Linux/macOS.
-- **First build appears stuck**: SymEngine builds from source on the first configure, so heavy CPU use is expected; subsequent builds are incremental.
-- **Missing runtime DLLs on Windows**: run inside a Developer Command Prompt or install the MSVC redistributable that matches your toolchain.
-- **Locale-dependent parsing issues**: force the C locale before running (`set LC_ALL=C`) if your shell uses comma decimals.
+- **Cargo not found**: Install Rust from https://rustup.rs/
+- **Build fails**: Ensure you have Rust 1.75.0 or later
+- **Locale-dependent parsing issues**: force the C locale before running (`LC_ALL=C ./calculator`)
 
 ## License
 
-MIT
+MIT License - See LICENSE file for details
+
+## Migration from C++ Version
+
+This calculator was originally implemented in C++20 with SymEngine. The Rust version provides:
+- Faster build times (seconds instead of minutes)
+- No external dependencies (no 374MB SymEngine vendored code)
+- Memory safety without garbage collection
+- Smaller binary size
+- Better cross-platform support

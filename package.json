@@ -1,0 +1,41 @@
+{
+    "name": "mathcalc-cli",
+    "version": "0.1.0",
+    "description": "A command-line calculator with symbolic math support",
+    "main": "index.js",
+    "bin": {
+        "calculator": "bin/calculator_linux-x64"
+    },
+    "scripts": {
+        "preinstall": "node scripts/install.js",
+        "postinstall": "node scripts/postinstall.js",
+        "test": "node scripts/test.js"
+    },
+    "repository": {
+        "type": "git",
+        "url": "git+https://github.com/anomalyco/calculator-cli.git"
+    },
+    "keywords": [
+        "calculator",
+        "math",
+        "cli",
+        "command-line",
+        "equations"
+    ],
+    "author": "Allen <anomalyco@github.com>",
+    "license": "MIT",
+    "os": [
+        "linux",
+        "win32"
+    ],
+    "cpu": [
+        "x64"
+    ],
+    "files": [
+        "bin/",
+        "scripts/"
+    ],
+    "engines": {
+        "node": ">=12.0.0"
+    }
+}
