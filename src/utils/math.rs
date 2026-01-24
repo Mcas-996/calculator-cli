@@ -4,13 +4,13 @@ use crate::core::Fraction;
 pub fn gcd(a: i64, b: i64) -> i64 {
     let mut a = a.abs();
     let mut b = b.abs();
-    
+
     while b != 0 {
         let temp = b;
         b = a % b;
         a = temp;
     }
-    
+
     a
 }
 
@@ -20,16 +20,16 @@ pub fn approx_double_to_fraction(value: f64, max_denominator: i64) -> Fraction {
     if value == 0.0 {
         return Fraction::new(0, 1);
     }
-    
+
     let mut x = value.abs();
-    
+
     // Continued fraction approximation
     let mut a = x.floor() as i64;
     let mut h1 = 1i64;
     let mut k2 = 1i64;
     let mut h = a;
     let mut k = 1i64;
-    
+
     while x.fract() != 0.0 && k.abs() <= max_denominator {
         x = 1.0 / (x.fract());
         a = x.floor() as i64;
@@ -40,7 +40,7 @@ pub fn approx_double_to_fraction(value: f64, max_denominator: i64) -> Fraction {
         k = a * k + k2;
         k2 = temp;
     }
-    
+
     let mut result = Fraction::new(h, k);
     if value < 0.0 {
         result = -result;
@@ -64,6 +64,9 @@ mod tests {
     fn test_approx_double_to_fraction() {
         assert_eq!(approx_double_to_fraction(0.5, 100), Fraction::new(1, 2));
         assert_eq!(approx_double_to_fraction(0.75, 100), Fraction::new(3, 4));
-        assert_eq!(approx_double_to_fraction(0.333333, 1000), Fraction::new(1, 3));
+        assert_eq!(
+            approx_double_to_fraction(0.333333, 1000),
+            Fraction::new(1, 3)
+        );
     }
 }

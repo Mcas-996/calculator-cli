@@ -1,7 +1,7 @@
 use num_rational::Rational64;
 
 /// Wrapper for Fraction using num-rational's Rational64
-#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Ord)]
 pub struct Fraction(pub Rational64);
 
 impl Fraction {
@@ -46,28 +46,24 @@ impl Fraction {
         }
 
         // Use continued fraction approximation for other values
-        let mut x = abs_value;
-        let max_denominator = 10000i64;
+        // Use a simple rational approximation with a limited denominator
 
-        // Continued fraction approximation
-        let mut a = x.floor() as i64;
-        let mut h1 = 1i64;
-        let mut k2 = 1i64;
-        let mut h = a;
-        let mut k = 1i64;
+        // Use a simple rational approximation with a limited denominator
+        let mut best_num = 0;
+        let mut best_den = 1;
+        let mut best_error = abs_value;
 
-        while x.fract() != 0.0 && k.abs() <= max_denominator {
-            x = 1.0 / (x.fract());
-            a = x.floor() as i64;
-            let temp = h;
-            h = a * h + h1;
-            h1 = temp;
-            let temp = k;
-            k = a * k + k2;
-            k2 = temp;
+        for den in 1..10000 {
+            let num = (abs_value * den as f64).round() as i64;
+            let error = (abs_value - num as f64 / den as f64).abs();
+            if error < best_error {
+                best_error = error;
+                best_num = num;
+                best_den = den;
+            }
         }
 
-        let mut result = Fraction(Rational64::new(h, k));
+        let mut result = Fraction(Rational64::new(best_num, best_den));
         if value < 0.0 {
             result = -result;
         }
@@ -142,6 +138,84 @@ impl Fraction {
             *self
         }
     }
+
+    /// Check if this fraction is a perfect square (i.e., can be written as (a/b)² for integers a, b)
+    pub fn is_perfect_square(&self) -> bool {
+        if self.0.numer() < &0 {
+            return false; // Negative numbers can't be perfect squares in real domain
+        }
+        let numer = self.0.numer().abs();
+        let denom = self.0.denom().abs();
+
+        let sqrt_numer = (numer as f64).sqrt().round() as i64;
+        let sqrt_denom = (denom as f64).sqrt().round() as i64;
+
+        sqrt_numer * sqrt_numer == numer && sqrt_denom * sqrt_denom == denom
+    }
+
+    /// Get the square root as a fraction if it's a perfect square, or approximate it
+    pub fn sqrt_exact(&self) -> (bool, Self) {
+        if self.is_perfect_square() {
+            let numer = self.0.numer().abs();
+            let denom = self.0.denom().abs();
+
+            let sqrt_numer = (numer as f64).sqrt().round() as i64;
+            let sqrt_denom = (denom as f64).sqrt().round() as i64;
+
+            let result = Fraction::new(sqrt_numer, sqrt_denom);
+            if *self < Fraction::new(0, 1) {
+                (true, -result) // This case shouldn't occur if is_perfect_square returned true for negative number
+            } else {
+                (true, result)
+            }
+        } else {
+            // Not a perfect square, return approximate value
+            (false, self.sqrt())
+        }
+    }
+
+    /// Check if this fraction is a perfect nth power (i.e., can be written as (a/b)^n for integers a, b)
+    pub fn is_perfect_power(&self, n: u32) -> bool {
+        if self.0.numer() < &0 && n % 2 == 0 {
+            return false; // Even roots of negative numbers are not real
+        }
+
+        let numer = self.0.numer().abs();
+        let denom = self.0.denom().abs();
+
+        let n_root_numer = (numer as f64).powf(1.0 / n as f64).round() as i64;
+        let n_root_denom = (denom as f64).powf(1.0 / n as f64).round() as i64;
+
+        n_root_numer.pow(n) == numer && n_root_denom.pow(n) == denom
+    }
+
+    /// Get the nth root as a fraction if it's a perfect nth power, or approximate it
+    pub fn nth_root_exact(&self, n: u32) -> (bool, Self) {
+        if self.is_perfect_power(n) {
+            let numer = self.0.numer().abs();
+            let denom = self.0.denom().abs();
+
+            let n_root_numer = (numer as f64).powf(1.0 / n as f64).round() as i64;
+            let n_root_denom = (denom as f64).powf(1.0 / n as f64).round() as i64;
+
+            let result = Fraction::new(n_root_numer, n_root_denom);
+            if *self < Fraction::new(0, 1) && n % 2 == 1 {
+                // Odd root of negative number is negative
+                (true, -result)
+            } else if *self < Fraction::new(0, 1) {
+                // Even root of negative number is complex (return as positive for real part)
+                (true, result)
+            } else {
+                (true, result)
+            }
+        } else {
+            // Not a perfect nth power, return approximate value
+            (
+                false,
+                Fraction::from_double(self.to_f64().powf(1.0 / n as f64)),
+            )
+        }
+    }
 }
 
 // Implement arithmetic operators
@@ -188,6 +262,12 @@ impl std::ops::Neg for Fraction {
 impl std::cmp::PartialEq<f64> for Fraction {
     fn eq(&self, other: &f64) -> bool {
         (self.to_f64() - other).abs() < 1e-10
+    }
+}
+
+impl std::cmp::PartialOrd for Fraction {
+    fn partial_cmp(&self, other: &Self) -> Option<std::cmp::Ordering> {
+        self.0.partial_cmp(&other.0)
     }
 }
 
@@ -246,5 +326,28 @@ mod tests {
         assert_eq!(a - b, Fraction::new(1, 6));
         assert_eq!(a * b, Fraction::new(1, 6));
         assert_eq!(a / b, Fraction::new(3, 2));
+    }
+
+    #[test]
+    fn test_partial_ord() {
+        let a = Fraction::new(1, 2);
+        let b = Fraction::new(2, 3);
+        let c = Fraction::new(3, 4);
+
+        assert!(a < b);
+        assert!(b < c);
+        assert!(a < c);
+        assert_eq!(a.partial_cmp(&a), Some(std::cmp::Ordering::Equal));
+
+        // Test negative fractions
+        let neg_a = Fraction::new(-1, 2);
+        let neg_b = Fraction::new(-2, 3);
+        assert!(neg_b < neg_a);
+        assert!(neg_a < a);
+
+        // Test same numerator different denominator
+        let d1 = Fraction::new(1, 2);
+        let d2 = Fraction::new(1, 4);
+        assert!(d2 < d1);
     }
 }

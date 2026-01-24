@@ -1,5 +1,5 @@
-use crate::core::{ComplexNumber, Fraction};
 use crate::core::types::Expression;
+use crate::core::{ComplexNumber, Fraction};
 
 /// LaTeX formatter for generating LaTeX source code
 pub struct LatexFormatter;
@@ -23,9 +23,17 @@ impl LatexFormatter {
             } else if num.imag == Fraction::new(-1, 1) {
                 format!("{} - i", self.format_fraction(&num.real))
             } else if num.imag > Fraction::new(0, 1) {
-                format!("{} + {}i", self.format_fraction(&num.real), self.format_fraction(&num.imag))
+                format!(
+                    "{} + {}i",
+                    self.format_fraction(&num.real),
+                    self.format_fraction(&num.imag)
+                )
             } else {
-                format!("{} - {}i", self.format_fraction(&num.real), self.format_fraction(&-num.imag))
+                format!(
+                    "{} - {}i",
+                    self.format_fraction(&num.real),
+                    self.format_fraction(&-num.imag)
+                )
             }
         }
     }
@@ -43,12 +51,10 @@ impl LatexFormatter {
     pub fn format_expression(&self, expr: &Expression) -> String {
         match expr {
             Expression::Constant(value) => self.format_complex(value),
-            Expression::Variable(name) => {
-                match name.as_str() {
-                    "pi" => "\\pi".to_string(),
-                    _ => name.clone(),
-                }
-            }
+            Expression::Variable(name) => match name.as_str() {
+                "pi" => "\\pi".to_string(),
+                _ => name.clone(),
+            },
             Expression::BinaryOp { left, op, right } => {
                 let op_latex = match op {
                     crate::core::types::BinaryOperator::Add => "+",
@@ -58,10 +64,12 @@ impl LatexFormatter {
                     crate::core::types::BinaryOperator::Power => "^",
                     crate::core::types::BinaryOperator::Modulo => "\\bmod",
                 };
-                format!("({} {} {})", 
+                format!(
+                    "({} {} {})",
                     self.format_expression(left),
                     op_latex,
-                    self.format_expression(right))
+                    self.format_expression(right)
+                )
             }
             Expression::UnaryOp { op, operand } => {
                 format!("({}{})", op.symbol(), self.format_expression(operand))
@@ -71,9 +79,8 @@ impl LatexFormatter {
                     crate::core::types::FunctionName::Sqrt => "\\sqrt",
                     _ => name.as_str(),
                 };
-                let args_str: Vec<String> = args.iter()
-                    .map(|a| self.format_expression(a))
-                    .collect();
+                let args_str: Vec<String> =
+                    args.iter().map(|a| self.format_expression(a)).collect();
                 if func_name == "\\sqrt" {
                     format!("{{{}}}", args_str.join(", "))
                 } else {

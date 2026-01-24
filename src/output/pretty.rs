@@ -24,19 +24,19 @@ impl Formatter for AsciiFormatter {
     fn format_complex(&self, num: &crate::core::ComplexNumber) -> String {
         self.format_complex(num)
     }
-    
+
     fn format_fraction(&self, frac: &crate::core::Fraction) -> String {
         self.format_fraction(frac)
     }
-    
+
     fn format_expression(&self, expr: &crate::core::types::Expression) -> String {
         self.format_expression(expr)
     }
-    
+
     fn format_equation_solution(&self, var: &str, value: &str) -> String {
         self.format_equation_solution(var, value)
     }
-    
+
     fn format_prompt(&self) -> String {
         self.format_prompt()
     }
@@ -46,19 +46,19 @@ impl Formatter for UnicodeFormatter {
     fn format_complex(&self, num: &crate::core::ComplexNumber) -> String {
         self.format_complex(num)
     }
-    
+
     fn format_fraction(&self, frac: &crate::core::Fraction) -> String {
         self.format_fraction(frac)
     }
-    
+
     fn format_expression(&self, expr: &crate::core::types::Expression) -> String {
         self.format_expression(expr)
     }
-    
+
     fn format_equation_solution(&self, var: &str, value: &str) -> String {
         self.format_equation_solution(var, value)
     }
-    
+
     fn format_prompt(&self) -> String {
         self.format_prompt()
     }
@@ -68,19 +68,19 @@ impl Formatter for LatexFormatter {
     fn format_complex(&self, num: &crate::core::ComplexNumber) -> String {
         self.format_complex(num)
     }
-    
+
     fn format_fraction(&self, frac: &crate::core::Fraction) -> String {
         self.format_fraction(frac)
     }
-    
+
     fn format_expression(&self, expr: &crate::core::types::Expression) -> String {
         self.format_expression(expr)
     }
-    
+
     fn format_equation_solution(&self, var: &str, value: &str) -> String {
         self.format_equation_solution(var, value)
     }
-    
+
     fn format_prompt(&self) -> String {
         self.format_prompt()
     }
@@ -96,21 +96,20 @@ impl PrettyConfig {
     /// Get the global instance
     pub fn instance() -> &'static Self {
         static INSTANCE: OnceLock<PrettyConfig> = OnceLock::new();
-        INSTANCE.get_or_init(|| {
-            PrettyConfig {
-                level: Self::detect_best_format(),
-            }
+        INSTANCE.get_or_init(|| PrettyConfig {
+            level: Self::detect_best_format(),
         })
     }
 
     /// Detect the best format based on terminal capabilities
     fn detect_best_format() -> PrettyLevel {
         // Check for pdflatex availability
-        if std::path::Path::new("/usr/bin/pdflatex").exists() 
-            || std::path::Path::new("/usr/local/bin/pdflatex").exists() {
+        if std::path::Path::new("/usr/bin/pdflatex").exists()
+            || std::path::Path::new("/usr/local/bin/pdflatex").exists()
+        {
             return PrettyLevel::Latex;
         }
-        
+
         // Default to Unicode for modern terminals
         PrettyLevel::Unicode
     }
@@ -142,19 +141,26 @@ mod tests {
     #[test]
     fn test_pretty_config_instance() {
         let config = PrettyConfig::instance();
-        assert!(matches!(config.get_level(), PrettyLevel::Ascii | PrettyLevel::Unicode | PrettyLevel::Latex));
+        assert!(matches!(
+            config.get_level(),
+            PrettyLevel::Ascii | PrettyLevel::Unicode | PrettyLevel::Latex
+        ));
     }
 
     #[test]
     fn test_set_level() {
-        let mut config = PrettyConfig { level: PrettyLevel::Ascii };
+        let mut config = PrettyConfig {
+            level: PrettyLevel::Ascii,
+        };
         config.set_level(PrettyLevel::Unicode);
         assert_eq!(config.get_level(), PrettyLevel::Unicode);
     }
 
     #[test]
     fn test_get_formatter() {
-        let config = PrettyConfig { level: PrettyLevel::Ascii };
+        let config = PrettyConfig {
+            level: PrettyLevel::Ascii,
+        };
         let formatter = config.get_formatter();
         assert_eq!(formatter.format_prompt(), ">>> ");
     }

@@ -36,17 +36,39 @@ impl ComplexNumber {
 
     /// Square root (principal value)
     pub fn sqrt(&self) -> Self {
-        let r = (self.real * self.real + self.imag * self.imag).sqrt();
-        let sqrt_r = r.sqrt();
-
-        if self.real >= Fraction::new(0, 1) {
-            ComplexNumber::new(sqrt_r, Fraction::new(1, 2) * self.imag / sqrt_r)
-        } else {
-            ComplexNumber::new(
-                self.imag.abs() / (Fraction::new(2, 1) * r.sqrt()),
-                self.imag.signum() * sqrt_r,
-            )
+        // Special case for pure real numbers
+        if self.imag == Fraction::new(0, 1) {
+            let real_value = self.real.to_f64();
+            if real_value >= 0.0 {
+                // For positive real numbers, return the square root as a pure real number
+                return ComplexNumber::from_double(real_value.sqrt());
+            } else {
+                // For negative real numbers, return as pure imaginary
+                let sqrt_abs = (-real_value).sqrt();
+                return ComplexNumber::new(Fraction::new(0, 1), Fraction::from_double(sqrt_abs));
+            }
         }
+
+        // Standard complex square root formula for general case
+        let magnitude_squared = self.real * self.real + self.imag * self.imag;
+        let magnitude = magnitude_squared.sqrt();
+
+        // For the special case of zero
+        if magnitude == Fraction::new(0, 1) {
+            return ComplexNumber::from_real(Fraction::new(0, 1));
+        }
+
+        let real_part = ((magnitude + self.real) / Fraction::new(2, 1)).sqrt();
+        let imag_part = ((magnitude - self.real) / Fraction::new(2, 1)).sqrt();
+
+        // The sign of the imaginary part follows the sign of the original imaginary part
+        let imag_sign = if self.imag >= Fraction::new(0, 1) {
+            Fraction::new(1, 1)
+        } else {
+            Fraction::new(-1, 1)
+        };
+
+        ComplexNumber::new(real_part, imag_sign * imag_part)
     }
 
     /// Power operation
@@ -279,5 +301,33 @@ mod tests {
 
         let c2 = ComplexNumber::new(Fraction::new(5, 1), Fraction::new(1, 2));
         assert!(!c2.is_approximately_real());
+    }
+
+    #[test]
+    fn test_sqrt() {
+        // Test sqrt of positive real number
+        let c1 = ComplexNumber::from_real(Fraction::new(4, 1));
+        let result1 = c1.sqrt();
+        assert!(result1.real > Fraction::new(1, 1) && result1.real < Fraction::new(3, 1));
+        assert_eq!(result1.imag, Fraction::new(0, 1));
+
+        // Test sqrt of i (0 + 1i) should be approximately (√2/2 + √2/2 i)
+        let c2 = ComplexNumber::new(Fraction::new(0, 1), Fraction::new(1, 1));
+        let result2 = c2.sqrt();
+        let sqrt_half = Fraction::from_double((2.0_f64).sqrt() / 2.0);
+        assert!((result2.real - sqrt_half).abs() < Fraction::from_double(0.01));
+        assert!((result2.imag - sqrt_half).abs() < Fraction::from_double(0.01));
+
+        // Test sqrt of -1 (should be i)
+        let c3 = ComplexNumber::from_real(Fraction::new(-1, 1));
+        let result3 = c3.sqrt();
+        assert_eq!(result3.real, Fraction::new(0, 1));
+        assert!(result3.imag > Fraction::new(0, 1));
+
+        // Test sqrt of -i (0 - 1i)
+        let c4 = ComplexNumber::new(Fraction::new(0, 1), Fraction::new(-1, 1));
+        let result4 = c4.sqrt();
+        assert!(result4.real > Fraction::new(0, 1));
+        assert!(result4.imag < Fraction::new(0, 1));
     }
 }

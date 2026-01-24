@@ -1,6 +1,6 @@
 use crate::core::{ComplexNumber, Fraction};
 
-/// Solve quadratic equation: ax² + bx + c = 0
+/// Solve quadratic equation: ax² + bx + c = 0, with option for exact radical representation
 pub fn solve_quadratic(coeffs: &[ComplexNumber]) -> Result<Vec<ComplexNumber>, String> {
     if coeffs.len() < 3 {
         return Err("Quadratic equation requires 3 coefficients (a, b, c)".to_string());

@@ -13,6 +13,7 @@ Cargo.lock
 .DS_Store
 Thumbs.db
 
+
 # Environment
 .env
 .env.local
@@ -41,4 +42,7 @@ test_subscript
 
 # Old binaries
 calculator
-llvm-installer.exe
+*.exe
+
+debug*
+*test*

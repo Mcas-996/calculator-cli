@@ -1,5 +1,5 @@
-use crate::core::{ComplexNumber, Fraction};
 use crate::core::types::Expression;
+use crate::core::{ComplexNumber, Fraction};
 
 /// ASCII formatter for basic text output
 pub struct AsciiFormatter;
@@ -21,18 +21,19 @@ impl AsciiFormatter {
             Expression::Constant(value) => self.format_complex(value),
             Expression::Variable(name) => name.clone(),
             Expression::BinaryOp { left, op, right } => {
-                format!("({} {} {})", 
+                format!(
+                    "({} {} {})",
                     self.format_expression(left),
                     op.symbol(),
-                    self.format_expression(right))
+                    self.format_expression(right)
+                )
             }
             Expression::UnaryOp { op, operand } => {
                 format!("({}{})", op.symbol(), self.format_expression(operand))
             }
             Expression::Function { name, args } => {
-                let args_str: Vec<String> = args.iter()
-                    .map(|a| self.format_expression(a))
-                    .collect();
+                let args_str: Vec<String> =
+                    args.iter().map(|a| self.format_expression(a)).collect();
                 format!("{}({})", name.as_str(), args_str.join(", "))
             }
         }
