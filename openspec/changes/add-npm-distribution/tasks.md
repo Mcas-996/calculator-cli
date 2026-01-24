@@ -18,6 +18,8 @@
 - [x] 3.3 Add local testing and validation scripts
 - [x] 3.4 Create package preparation script for npm publishing
 - [x] 3.5 Optimize build process for local development workflow
+- [x] 3.6 Add better error handling for E4025 linker errors
+- [x] 3.7 Provide specific solutions for cross-compilation issues
 
 ## 4. Update documentation with platform-specific instructions
 - [x] 4.1 Add npm installation instructions for x64 platforms to README.md

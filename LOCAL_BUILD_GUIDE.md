@@ -185,22 +185,55 @@ npm run build-binaries
 ### Common Issues
 
 1. **Target not found errors**:
-   ```bash
-   Error: could not find `x86_64-pc-windows-gnu`
+   ```
+   error: could not find `x86_64-pc-windows-gnu`
    ```
    Solution: Install the missing target with `rustup target add <target-name>`
 
-2. **Permission denied on script execution**:
+2. **Linker errors (E4025)**:
+   ```
+   error: linking with `linker` failed: exit code: 1
+   = note: /usr/bin/ld: cannot find -lgcc_s
+   ```
+   This error occurs when cross-compiling, especially for Windows targets. Solutions:
+   
+   **On Linux**:
+   ```bash
+   # Install mingw-w64 for Windows cross-compilation
+   sudo apt-get update
+   sudo apt-get install mingw-w64 gcc-mingw-w64-x86-64
+   
+   # Reinstall the Windows target
+   rustup target remove x86_64-pc-windows-gnu
+   rustup target add x86_64-pc-windows-gnu
+   ```
+   
+   **On macOS**:
+   ```bash
+   # Install mingw-w64 using Homebrew
+   brew install mingw-w64
+   
+   # Reinstall the Windows target
+   rustup target remove x86_64-pc-windows-gnu
+   rustup target add x86_64-pc-windows-gnu
+   ```
+   
+   **Alternative solutions**:
+   - Build on the native platform (Windows for Windows binaries)
+   - Use a CI service for specific platforms
+   - Focus on platforms that build successfully on your system
+
+3. **Permission denied on script execution**:
    ```bash
    chmod +x scripts/build-binaries.js
    ```
 
-3. **Binary not found after building**:
+4. **Binary not found after building**:
    - Check if you have the required Rust target installed
    - Verify the build completed successfully
    - Check the target directory: `target/<target-name>/release/`
 
-4. **Package size too large**:
+5. **Package size too large**:
    - Verify only the necessary files are in the `bin/` directory
    - Check `.npmignore` if you have one
    - Ensure `.gitignore` isn't affecting the build
