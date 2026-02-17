@@ -8,21 +8,35 @@ A lightweight Rust command-line calculator capable of evaluating real/complex ex
 2. Build a Release binary: `cargo build --release`.
 3. Run an expression straight from your shell: `./target/release/calculator "x^2-5x+6=0"`.
 
-## NPM Installation
+## 安装和使用
 
-### For x64 Systems (Windows, macOS Intel, Linux x64)
-The easiest way to install calculator-cli is via npm:
-
+### npm全局安装（推荐）
 ```bash
-npm install -g calculator-cli
+npm install -g mathcalc-cli
+mathcalc "2 + 2"
+mathcalc "x^2-5x+6=0"
 ```
 
-Once installed, you can run:
-
+### npx方式（无需全局安装）
 ```bash
-calculator "2 + 2"
-calculator "x^2-5x+6=0"
+npx mathcalc-cli "2 + 2"
+npx mathcalc-cli "x^2-5x+6=0"
 ```
+
+### 本地项目使用
+```bash
+npm install mathcalc-cli
+npx mathcalc-cli "2 + 2"
+```
+
+### 从GitHub Release下载
+```bash
+https://github.com/Mcas-996/calculator-cli/releases
+```
+
+下载对应平台的二进制文件
+```
+
 
 ### For ARM Systems (Apple Silicon, ARM64 Linux)
 The npm package includes precompiled binaries only for x64 systems. For ARM systems:

@@ -4,14 +4,14 @@ const path = require("path");
 const fs = require("fs");
 const os = require("os");
 
-console.log("🔍 Validating calculator-cli installation...");
+console.log("🔍 Validating mathcalc-cli installation...");
 
 // Platform detection
 const platform = os.platform();
 const expectedBinary =
     platform === "win32"
         ? "calculator_windows-x86-64.exe"
-        : "calculator_linux-x64";
+        : "calculator-linux-x64";
 
 const binaryPath = path.join(__dirname, "..", "bin", expectedBinary);
 
@@ -24,4 +24,4 @@ if (!os.arch().includes("64")) {
     console.warn("⚠️ Warning: 64-bit architecture recommended");
 }
 
-console.log("✅ Calculator CLI v0.1.0 is ready!");
+console.log("✅ MathCalc CLI v0.2.0 is ready!");
