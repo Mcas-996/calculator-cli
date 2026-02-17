@@ -1,10 +1,10 @@
 {
     "name": "mathcalc-cli",
-    "version": "0.2.0",
+    "version": "0.2.1",
     "description": "A command-line calculator with symbolic math support",
     "main": "index.js",
     "bin": {
-        "calculator": "bin/calculator_linux-x64"
+        "mathcalc": "index.js"
     },
     "scripts": {
         "preinstall": "node scripts/install.js",
@@ -22,11 +22,11 @@
         "command-line",
         "equations"
     ],
-    "author": "Allen <anomalyco@github.com>",
+    "author": "allen",
     "license": "MIT",
     "os": [
-        "linux",
-        "win32"
+        "win32",
+        "linux"
     ],
     "cpu": [
         "x64"
