@@ -5,8 +5,8 @@ edition = "2021"
 rust-version = "1.70.0"
 description = "A command-line calculator with symbolic math support"
 license = "MIT"
-repository = "https://github.com/anomalyco/calculator-cli"
-authors = ["Allen <anomalyco@github.com>"]
+repository = "https://github.com/Mcas-996/calculator-cli"
+authors = ["Allen"]
 
 [[bin]]
 name = "calctui"
