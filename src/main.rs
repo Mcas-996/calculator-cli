@@ -1,13 +1,13 @@
 use clap::Parser;
 use std::io::{self, Write};
 
-use calculator::output::{Formatter, PrettyConfig, PrettyLevel};
-use calculator::parser::parse_expression;
-use calculator::solver::{
+use calculator_tui::output::{Formatter, PrettyConfig, PrettyLevel};
+use calculator_tui::parser::parse_expression;
+use calculator_tui::solver::{
     solve_2x2_system, solve_3x3_system, solve_cubic_equation, solve_linear_equation,
     solve_quadratic_equation, solve_quartic_equation, solve_quintic_equation,
 };
-use calculator::tui::app::TuiApp;
+use calculator_tui::tui::app::TuiApp;
 
 /// A command-line calculator with symbolic math support
 #[derive(Parser, Debug)]
@@ -217,7 +217,7 @@ fn process_equation(input: &str, formatter: &dyn Formatter, show_decimal: bool, 
 
 /// Format a solution value based on the selected output mode
 fn format_solution_value(
-    value: &calculator::core::ComplexNumber,
+    value: &calculator_tui::core::ComplexNumber,
     show_decimal: bool,
     use_exact: bool,
     formatter: &dyn Formatter,
@@ -301,7 +301,7 @@ fn run_tui_mode() {
 }
 
 /// Format a complex number as a decimal approximation
-fn format_decimal_approximation(num: &calculator::core::ComplexNumber) -> String {
+fn format_decimal_approximation(num: &calculator_tui::core::ComplexNumber) -> String {
     let real_part = num.real.to_f64();
     let imag_part = num.imag.to_f64();
 

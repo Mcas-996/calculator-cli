@@ -45,7 +45,7 @@ curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
 source ~/.cargo/env
 
 # 2. 从源码安装calculator-cli：
-cargo install calculator
+cargo install calculator-tui
 ```
 
 ### 平台支持

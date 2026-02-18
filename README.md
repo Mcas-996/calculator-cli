@@ -12,7 +12,7 @@ A lightweight Rust command-line calculator capable of evaluating real/complex ex
 
 ### cargo install (推荐)
 ```bash
-cargo install calculator
+cargo install calculator-tui
 calculator "2 + 2"
 calculator "x^2-5x+6=0"
 ```
