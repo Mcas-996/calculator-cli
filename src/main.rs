@@ -48,6 +48,10 @@ struct Cli {
     )]
     exact: bool,
 
+    /// Use legacy CLI interactive mode (instead of TUI)
+    #[arg(long = "v1", help = "Use legacy CLI interactive mode instead of TUI")]
+    v1: bool,
+
     /// Expression or equation to evaluate
     expression: Option<String>,
 }
@@ -75,8 +79,11 @@ fn main() {
     if let Some(expr) = cli.expression {
         // Single expression mode
         process_expression(&expr, formatter.as_ref(), cli.decimal, cli.exact);
+    } else if cli.v1 {
+        // CLI interactive mode (legacy)
+        run_interactive_mode(formatter.as_ref(), cli.decimal, cli.exact);
     } else {
-        // Interactive mode - use TUI
+        // TUI mode (default)
         run_tui_mode();
     }
 }
