@@ -10,54 +10,43 @@ A lightweight Rust command-line calculator capable of evaluating real/complex ex
 
 ## 安装和使用
 
-### npm全局安装（推荐）
+### cargo install (推荐)
 ```bash
-npm install -g mathcalc-cli
-mathcalc "2 + 2"
-mathcalc "x^2-5x+6=0"
-```
-
-### npx方式（无需全局安装）
-```bash
-npx mathcalc-cli "2 + 2"
-npx mathcalc-cli "x^2-5x+6=0"
-```
-
-### 本地项目使用
-```bash
-npm install mathcalc-cli
-npx mathcalc-cli "2 + 2"
-```
-
-### 从GitHub Release下载
-```bash
-https://github.com/Mcas-996/calculator-cli/releases
-```
-
-下载对应平台的二进制文件
-```
-
-
-### For ARM Systems (Apple Silicon, ARM64 Linux)
-The npm package includes precompiled binaries only for x64 systems. For ARM systems:
-
-```bash
-# 1. Install Rust if you haven't already:
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source ~/.cargo/env
-
-# 2. Install calculator-cli from source:
 cargo install calculator
+calculator "2 + 2"
+calculator "x^2-5x+6=0"
+```
+
+### 从 GitHub Release 下载
+从以下地址下载对应平台的预编译二进制:
+https://github.com/Mcas-996/calculator-cli/releases
+
+```bash
+# Linux
+curl -L https://github.com/Mcas-996/calculator-cli/releases/latest/download/calculator-linux-x64 -o calculator
+chmod +x calculator
+./calculator "2 + 2"
+
+# Windows
+# 从 Releases 页面下载 calculator_windows-x86-64.exe
+```
+
+### 从源码构建
+```bash
+git clone https://github.com/Mcas-996/calculator-cli && cd calculator-cli
+cargo build --release
+./target/release/calculator "2 + 2"
 ```
 
 ### Platform Support
+
 | Platform | Architecture | Installation Method |
 |----------|-------------|--------------------|
-| Windows | x64 | npm install |
-| macOS | x64 (Intel) | npm install |
-| macOS | ARM (Apple Silicon) | cargo install |
-| Linux | x64 | npm install |
-| Linux | ARM64 | cargo install |
+| Windows | x64 | cargo install / GitHub Releases |
+| macOS | x64 (Intel) | cargo install / GitHub Releases |
+| macOS | ARM (Apple Silicon) | cargo install / GitHub Releases |
+| Linux | x64 | cargo install / GitHub Releases |
+| Linux | ARM64 | cargo install / GitHub Releases |
 
 ## Features
 
