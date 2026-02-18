@@ -10,54 +10,43 @@ A lightweight Rust command-line calculator capable of evaluating real/complex ex
 
 ## 安装和使用
 
-### npm全局安装（推荐）
+### cargo install (推荐)
 ```bash
-npm install -g mathcalc-cli
-mathcalc "2 + 2"
-mathcalc "x^2-5x+6=0"
-```
-
-### npx方式（无需全局安装）
-```bash
-npx mathcalc-cli "2 + 2"
-npx mathcalc-cli "x^2-5x+6=0"
-```
-
-### 本地项目使用
-```bash
-npm install mathcalc-cli
-npx mathcalc-cli "2 + 2"
-```
-
-### 从GitHub Release下载
-```bash
-https://github.com/Mcas-996/calculator-cli/releases
-```
-
-下载对应平台的二进制文件
-```
-
-
-### For ARM Systems (Apple Silicon, ARM64 Linux)
-The npm package includes precompiled binaries only for x64 systems. For ARM systems:
-
-```bash
-# 1. Install Rust if you haven't already:
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source ~/.cargo/env
-
-# 2. Install calculator-cli from source:
 cargo install calculator
+calculator "2 + 2"
+calculator "x^2-5x+6=0"
+```
+
+### 从 GitHub Release 下载
+从以下地址下载对应平台的预编译二进制:
+https://github.com/anomalyco/calculator-cli/releases
+
+```bash
+# Linux
+curl -L https://github.com/anomalyco/calculator-cli/releases/latest/download/calculator-linux-x64 -o calculator
+chmod +x calculator
+./calculator "2 + 2"
+
+# Windows
+# 从 Releases 页面下载 calculator_windows-x86-64.exe
+```
+
+### 从源码构建
+```bash
+git clone https://github.com/anomalyco/calculator-cli && cd calculator-cli
+cargo build --release
+./target/release/calculator "2 + 2"
 ```
 
 ### Platform Support
+
 | Platform | Architecture | Installation Method |
 |----------|-------------|--------------------|
-| Windows | x64 | npm install |
-| macOS | x64 (Intel) | npm install |
-| macOS | ARM (Apple Silicon) | cargo install |
-| Linux | x64 | npm install |
-| Linux | ARM64 | cargo install |
+| Windows | x64 | cargo install / GitHub Releases |
+| macOS | x64 (Intel) | cargo install / GitHub Releases |
+| macOS | ARM (Apple Silicon) | cargo install / GitHub Releases |
+| Linux | x64 | cargo install / GitHub Releases |
+| Linux | ARM64 | cargo install / GitHub Releases |
 
 ## Features
 
@@ -80,6 +69,17 @@ cargo install calculator
 - Results favor exact fractions when possible (e.g. `1/3` stays rational) and fall back to decimals only when necessary.
 - Complex numbers print as `a + bi`, with simplified `i`/`-i`.
 - Multiple output formats: ASCII, Unicode, and LaTeX.
+
+### TUI Mode (Interactive)
+Run without arguments to enter TUI mode:
+```bash
+./target/release/calculator
+```
+
+Use `--v1` flag for legacy CLI interactive mode:
+```bash
+./target/release/calculator --v1
+```
 
 ## Usage
 
@@ -105,7 +105,7 @@ cargo install calculator
 ./target/release/calculator --ascii "3 + 4"
 ```
 
-Passing `--help` or `--version` prints CLI info. Without an argument, the program enters interactive mode.
+Passing `--help` or `--version` prints CLI info. Without an argument, the program enters TUI mode. Use `--v1` for legacy CLI interactive mode.
 
 ## Building
 
@@ -122,19 +122,9 @@ cargo test
 cargo clippy
 ```
 
-- Rust 1.75.0 or later is required
+- Rust 1.70.0 or later is required
 - Cargo handles all dependencies automatically
 - The binary will be available at `target/release/calculator`
-
-## Interactive Mode
-
-Run the calculator without arguments to enter interactive mode:
-
-```bash
-./target/release/calculator
-```
-
-Type expressions and press Enter to evaluate. Type `exit` or `quit` to exit, or press Ctrl+D.
 
 ## Project Structure
 
@@ -142,23 +132,14 @@ Type expressions and press Enter to evaluate. Type `exit` or `quit` to exit, or 
 - `src/parser/` - Expression parser and tokenizer
 - `src/solver/` - Equation solvers (linear, quadratic, cubic, quartic, quintic)
 - `src/output/` - Output formatters (ASCII, Unicode, LaTeX)
+- `src/tui/` - Terminal UI components
 - `src/main.rs` - CLI entry point
 
 ## Troubleshooting
 
 - **Cargo not found**: Install Rust from https://rustup.rs/
-- **Build fails**: Ensure you have Rust 1.75.0 or later
-- **Locale-dependent parsing issues**: force the C locale before running (`LC_ALL=C ./calculator`)
+- **Build fails**: Ensure you have Rust 1.70.0 or later
 
 ## License
 
 MIT License - See LICENSE file for details
-
-## Migration from C++ Version
-
-This calculator was originally implemented in C++20 with SymEngine. The Rust version provides:
-- Faster build times (seconds instead of minutes)
-- No external dependencies (no 374MB SymEngine vendored code)
-- Memory safety without garbage collection
-- Smaller binary size
-- Better cross-platform support

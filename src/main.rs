@@ -7,6 +7,7 @@ use calculator::solver::{
     solve_2x2_system, solve_3x3_system, solve_cubic_equation, solve_linear_equation,
     solve_quadratic_equation, solve_quartic_equation, solve_quintic_equation,
 };
+use calculator::tui::app::TuiApp;
 
 /// A command-line calculator with symbolic math support
 #[derive(Parser, Debug)]
@@ -75,8 +76,8 @@ fn main() {
         // Single expression mode
         process_expression(&expr, formatter.as_ref(), cli.decimal, cli.exact);
     } else {
-        // Interactive mode
-        run_interactive_mode(formatter.as_ref(), cli.decimal, cli.exact);
+        // Interactive mode - use TUI
+        run_tui_mode();
     }
 }
 
@@ -281,6 +282,14 @@ fn run_interactive_mode(formatter: &dyn Formatter, show_decimal: bool, use_exact
                 break;
             }
         }
+    }
+}
+
+/// Run TUI mode
+fn run_tui_mode() {
+    let mut app = TuiApp::new();
+    if let Err(e) = app.run() {
+        eprintln!("Error running TUI: {}", e);
     }
 }
 
