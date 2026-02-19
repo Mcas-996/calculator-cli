@@ -82,36 +82,40 @@ impl<'a> Tokenizer<'a> {
             }
         }
 
-        // Check for fraction (e.g., "1/2" or "3/4")
+        // Check for fraction (e.g., "1/2" or "3/4").
+        // If denominator is zero, keep this as a normal division expression (1 / 0)
+        // so evaluation can return `undefined`.
         if let Some(&'/') = self.peek() {
-            self.next(); // consume '/'
+            let mut lookahead = self.chars.clone();
+            lookahead.next(); // consume '/'
             let mut denom_str = String::new();
 
-            while let Some(&c) = self.peek() {
+            while let Some(c) = lookahead.peek().copied() {
                 if c.is_ascii_digit() {
                     denom_str.push(c);
-                    self.next();
+                    lookahead.next();
                 } else {
                     break;
                 }
             }
 
-            if denom_str.is_empty() {
-                return Err("Invalid fraction: missing denominator".to_string());
+            if !denom_str.is_empty() {
+                let denom: i64 = denom_str
+                    .parse()
+                    .map_err(|_| "Invalid fraction denominator".to_string())?;
+
+                if denom != 0 {
+                    self.next(); // consume '/'
+                    for _ in 0..denom_str.len() {
+                        self.next();
+                    }
+
+                    let num: i64 = num_str
+                        .parse()
+                        .map_err(|_| "Invalid fraction numerator".to_string())?;
+                    return Ok(Token::Fraction(num, denom));
+                }
             }
-
-            let num: i64 = num_str
-                .parse()
-                .map_err(|_| "Invalid fraction numerator".to_string())?;
-            let denom: i64 = denom_str
-                .parse()
-                .map_err(|_| "Invalid fraction denominator".to_string())?;
-
-            if denom == 0 {
-                return Err("Division by zero in fraction".to_string());
-            }
-
-            return Ok(Token::Fraction(num, denom));
         }
 
         // Parse as float
@@ -329,5 +333,15 @@ mod tests {
         assert_eq!(tokens[0], Token::Function(FunctionName::Sqrt));
         assert_eq!(tokens[1], Token::LeftParen);
         assert_eq!(tokens[2], Token::Number(16.0));
+    }
+
+    #[test]
+    fn test_tokenize_division_by_zero_as_operator_expression() {
+        let mut tokenizer = Tokenizer::new("1/0");
+        let tokens = tokenizer.tokenize().unwrap();
+        assert_eq!(tokens.len(), 3);
+        assert_eq!(tokens[0], Token::Number(1.0));
+        assert_eq!(tokens[1], Token::BinaryOp(BinaryOperator::Divide));
+        assert_eq!(tokens[2], Token::Number(0.0));
     }
 }

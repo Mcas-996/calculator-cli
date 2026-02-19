@@ -107,8 +107,12 @@ fn process_expression(input: &str, formatter: &dyn Formatter, show_decimal: bool
                     }
                 }
                 Err(e) => {
-                    eprintln!("Error: {}", e);
-                    std::process::exit(1);
+                    if e == "undefined" {
+                        println!("undefined");
+                    } else {
+                        eprintln!("Error: {}", e);
+                        std::process::exit(1);
+                    }
                 }
             },
             Err(e) => {

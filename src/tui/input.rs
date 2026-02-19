@@ -203,7 +203,7 @@ impl InputArea {
                 code: KeyCode::Char('c'),
                 modifiers: KeyModifiers::CONTROL,
                 ..
-            } => InputAction::Interrupt,
+            } => InputAction::Quit,
             KeyEvent {
                 code: KeyCode::Char('d'),
                 modifiers: KeyModifiers::CONTROL,
@@ -470,7 +470,7 @@ impl Widget for InputArea {
         buf.get_mut(cursor_x, cursor_y)
             .set_style(Style::default().add_modifier(ratatui::style::Modifier::REVERSED));
 
-        let help_text = " [Ctrl+Enter: execute, Shift+Enter: newline] ";
+        let help_text = " [Ctrl+Enter: execute, Shift+Enter: newline, Ctrl+C: quit] ";
         let help_x = area.right().saturating_sub(help_text.len() as u16);
         for (i, c) in help_text.chars().enumerate() {
             let cell = buf.get_mut(help_x + i as u16, area.bottom() - 1);
@@ -488,4 +488,20 @@ pub enum InputAction {
     Quit,
     HistoryUp,
     HistoryDown,
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crossterm::event::KeyEvent;
+
+    #[test]
+    fn test_ctrl_c_quits() {
+        let mut input = InputArea::new("> ".to_string(), 80);
+        let action = input.handle_key_event(KeyEvent::new(
+            KeyCode::Char('c'),
+            KeyModifiers::CONTROL,
+        ));
+        assert_eq!(action, InputAction::Quit);
+    }
 }

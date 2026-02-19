@@ -94,6 +94,7 @@ impl TuiApp {
             "Commands:",
             "  Enter       - Calculate expression",
             "  Shift+Enter - New line",
+            "  Ctrl+C      - Exit the calculator",
             "  exit/quit   - Exit the calculator",
             "  clear       - Clear results",
             "  help        - Show this help",
@@ -182,6 +183,7 @@ impl TuiApp {
     fn show_help(&mut self) {
         let help = vec![
             "Commands:".to_string(),
+            "  Ctrl+C      - Exit the calculator".to_string(),
             "  exit/quit   - Exit the calculator".to_string(),
             "  clear       - Clear results".to_string(),
             "  help        - Show this help".to_string(),
@@ -209,7 +211,13 @@ impl TuiApp {
                         .push(ResultCard::from_complex(display, &result));
                 }
                 Err(e) => {
-                    self.results.push(ResultCard::error(display, e));
+                    if e == "undefined" {
+                        self.ans = None;
+                        self.results
+                            .push(ResultCard::new(display, vec!["undefined".to_string()]));
+                    } else {
+                        self.results.push(ResultCard::error(display, e));
+                    }
                 }
             },
             Err(e) => {
@@ -344,34 +352,28 @@ impl TuiApp {
                 .style(Style::default().fg(Color::DarkGray));
             f.render_widget(empty, results_area);
         } else {
-            let display_results = if self.results.len() > results_area.height as usize {
-                let start = self
-                    .results
-                    .len()
-                    .saturating_sub(results_area.height as usize);
-                &self.results[start..]
-            } else {
-                &self.results
-            };
+            let mut all_lines_rev: Vec<String> = Vec::new();
+            let max_lines = results_area.height as usize;
 
-            let mut all_lines: Vec<String> = Vec::new();
-
-            for result in display_results {
-                let _card_height = (result.height() as u16).min(results_area.width);
+            'outer: for result in self.results.iter().rev() {
                 let card_lines = result.render(results_area.width as usize);
 
-                for line in card_lines {
-                    if all_lines.len() < results_area.height as usize {
-                        all_lines.push(line);
+                for line in card_lines.iter().rev() {
+                    if all_lines_rev.len() >= max_lines {
+                        break 'outer;
                     }
+                    all_lines_rev.push(line.clone());
                 }
 
-                if all_lines.len() < results_area.height as usize {
-                    if !all_lines.is_empty() && !all_lines.last().map_or(false, |s| s.is_empty()) {
-                        all_lines.push(String::new());
-                    }
+                if all_lines_rev.len() < max_lines
+                    && !all_lines_rev.last().map_or(false, |s| s.is_empty())
+                {
+                    all_lines_rev.push(String::new());
                 }
             }
+
+            all_lines_rev.reverse();
+            let all_lines = all_lines_rev;
 
             let content: Vec<ListItem> = all_lines
                 .iter()
