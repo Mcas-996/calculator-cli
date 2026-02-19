@@ -1,6 +1,10 @@
 use crate::core::ComplexNumber;
 use crate::tui::latex::TuiLatexRenderer;
 
+pub(crate) fn format_complex_root(num: &ComplexNumber) -> String {
+    num.to_string()
+}
+
 #[derive(Clone, Debug)]
 pub struct ResultCard {
     pub expression: Option<String>,
@@ -26,9 +30,7 @@ impl ResultCard {
     }
 
     pub fn from_complex(expression: Option<String>, num: &ComplexNumber) -> Self {
-        let renderer = TuiLatexRenderer::new();
-        let result_lines = renderer.format_complex(num);
-        Self::new(expression, result_lines)
+        Self::new(expression, vec![format_complex_root(num)])
     }
 
     pub fn from_equation(
@@ -64,14 +66,7 @@ impl ResultCard {
                 )
             };
 
-            let sol_lines = renderer.format_complex(sol);
-            for (j, line) in sol_lines.iter().enumerate() {
-                if j == 0 {
-                    all_lines.push(format!("{} = {}", sol_var, line));
-                } else {
-                    all_lines.push(line.clone());
-                }
-            }
+            all_lines.push(format!("{} = {}", sol_var, format_complex_root(sol)));
         }
 
         Self::new(expression, all_lines)
@@ -130,5 +125,31 @@ impl ResultCard {
 impl Default for ResultCard {
     fn default() -> Self {
         Self::new(None, Vec::new())
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::core::Fraction;
+
+    #[test]
+    fn test_from_equation_solution_uses_single_line_complex_roots() {
+        let solutions = vec![
+            ComplexNumber::new(Fraction::new(-1, 2), Fraction::new(3, 2)),
+            ComplexNumber::new(Fraction::new(-1, 2), Fraction::new(-3, 2)),
+        ];
+        let card = ResultCard::from_equation_solution(None, "x", &solutions);
+
+        assert_eq!(card.result_lines.len(), 2);
+        assert_eq!(card.result_lines[0], "x₁ = -1/2 + 3/2i");
+        assert_eq!(card.result_lines[1], "x₂ = -1/2 - 3/2i");
+    }
+
+    #[test]
+    fn test_from_complex_uses_root_formatter() {
+        let value = ComplexNumber::new(Fraction::new(0, 1), Fraction::new(-1, 1));
+        let card = ResultCard::from_complex(Some("ans".to_string()), &value);
+        assert_eq!(card.result_lines, vec!["-i".to_string()]);
     }
 }

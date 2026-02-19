@@ -1,4 +1,4 @@
-## MODIFIED Requirements
+## ADDED Requirements
 ### Requirement: Fraction Numeric Comparison
 The Fraction struct SHALL provide numeric comparison operations using the PartialOrd trait.
 

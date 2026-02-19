@@ -41,68 +41,67 @@ pub fn solve_quadratic_equation(equation: &str) -> Result<Vec<ComplexNumber>, St
 
 /// Parse coefficients from quadratic equation string
 fn parse_quadratic_coefficients(equation: &str) -> Result<Vec<ComplexNumber>, String> {
-    // Normalize equation to LHS = 0
-    let normalized = crate::solver::normalize_equation(equation)?;
-    let lhs = normalized.replace("²", "^2");
-
-    let mut a = Fraction::new(0, 1);
-    let mut b = Fraction::new(0, 1);
-    let mut c = Fraction::new(0, 1);
-
-    let mut current_sign = 1i64;
-    let mut i = 0;
-
-    while i < lhs.len() {
-        let c_char = lhs.chars().nth(i).unwrap();
-
-        if c_char == '+' {
-            current_sign = 1;
-            i += 1;
-        } else if c_char == '-' {
-            current_sign = -1;
-            i += 1;
-        } else {
-            let mut term_end = i;
-            while term_end < lhs.len() {
-                let tc = lhs.chars().nth(term_end).unwrap();
-                if tc == '+' || tc == '-' {
-                    break;
-                }
-                term_end += 1;
-            }
-
-            let term = &lhs[i..term_end];
-
-            if term.contains("^2") || term.contains("²") {
-                let coef_str = term.replace("^2", "").replace("²", "").replace("*", "");
-                let coef = if coef_str.is_empty() {
-                    Fraction::new(1, 1)
-                } else {
-                    Fraction::from_double(coef_str.parse::<f64>().unwrap_or(1.0))
-                };
-                a = a + coef * Fraction::new(current_sign, 1);
-            } else if term.contains('x') {
-                let coef_str = term.replace('x', "").replace("*", "");
-                let coef = if coef_str.is_empty() {
-                    Fraction::new(1, 1)
-                } else {
-                    Fraction::from_double(coef_str.parse::<f64>().unwrap_or(1.0))
-                };
-                b = b + coef * Fraction::new(current_sign, 1);
-            } else {
-                let coef = Fraction::from_double(term.parse::<f64>().unwrap_or(0.0));
-                c = c + coef * Fraction::new(current_sign, 1);
-            }
-
-            i = term_end;
-        }
-    }
+    let (a, b, c) = parse_canonical_quadratic_coefficients(equation)?;
 
     Ok(vec![
         ComplexNumber::from_real(a),
         ComplexNumber::from_real(b),
         ComplexNumber::from_real(c),
     ])
+}
+
+fn parse_canonical_quadratic_coefficients(
+    equation: &str,
+) -> Result<(Fraction, Fraction, Fraction), String> {
+    let normalized = crate::solver::normalize_equation(equation)?;
+    let canonical = normalized
+        .replace("²", "^2")
+        .replace('−', "-")
+        .replace('–', "-")
+        .replace('—', "-")
+        .replace('*', "")
+        .replace(' ', "");
+
+    let mut a = Fraction::new(0, 1);
+    let mut b = Fraction::new(0, 1);
+    let mut c = Fraction::new(0, 1);
+
+    let mut terms = canonical.replace('-', "+-");
+    if terms.starts_with("+-") {
+        terms.remove(0);
+    } else if terms.starts_with('+') {
+        terms.remove(0);
+    }
+
+    for term in terms.split('+').filter(|term| !term.is_empty()) {
+        if term.contains("x^2") {
+            let coef = parse_term_coefficient(&term.replace("x^2", ""), true)?;
+            a = a + coef;
+        } else if term.contains('x') {
+            let coef = parse_term_coefficient(&term.replace('x', ""), true)?;
+            b = b + coef;
+        } else {
+            let coef = parse_term_coefficient(term, false)?;
+            c = c + coef;
+        }
+    }
+
+    Ok((a, b, c))
+}
+
+fn parse_term_coefficient(raw: &str, implicit_one_allowed: bool) -> Result<Fraction, String> {
+    if implicit_one_allowed {
+        if raw.is_empty() || raw == "+" {
+            return Ok(Fraction::new(1, 1));
+        }
+        if raw == "-" {
+            return Ok(Fraction::new(-1, 1));
+        }
+    }
+
+    raw.parse::<f64>()
+        .map(Fraction::from_double)
+        .map_err(|_| format!("Invalid coefficient: {}", raw))
 }
 
 #[cfg(test)]
@@ -145,5 +144,41 @@ mod tests {
 
         let solutions2 = solve_quadratic_equation("2x^2 + 3x = 5").unwrap();
         assert_eq!(solutions2.len(), 2);
+    }
+
+    #[test]
+    fn test_quadratic_regression_repeated_root() {
+        let solutions = solve_quadratic_equation("x^2 + 2x + 1 = 0").unwrap();
+        assert_eq!(solutions.len(), 1);
+        assert_eq!(solutions[0].real, Fraction::new(-1, 1));
+        assert_eq!(solutions[0].imag, Fraction::new(0, 1));
+    }
+
+    #[test]
+    fn test_quadratic_regression_complex_conjugates() {
+        let solutions = solve_quadratic_equation("x^2 + 2x + 10 = 0").unwrap();
+        assert_eq!(solutions.len(), 2);
+        assert!(solutions
+            .iter()
+            .any(|sol| { sol.real == Fraction::new(-1, 1) && sol.imag == Fraction::new(3, 1) }));
+        assert!(solutions
+            .iter()
+            .any(|sol| { sol.real == Fraction::new(-1, 1) && sol.imag == Fraction::new(-3, 1) }));
+    }
+
+    #[test]
+    fn test_quadratic_canonical_coefficients_standard_form() {
+        let (a, b, c) = parse_canonical_quadratic_coefficients("x^2 + 2x + 1 = 0").unwrap();
+        assert_eq!(a, Fraction::new(1, 1));
+        assert_eq!(b, Fraction::new(2, 1));
+        assert_eq!(c, Fraction::new(1, 1));
+    }
+
+    #[test]
+    fn test_quadratic_canonical_coefficients_non_zero_rhs() {
+        let (a, b, c) = parse_canonical_quadratic_coefficients("x^2 + 2x = -1").unwrap();
+        assert_eq!(a, Fraction::new(1, 1));
+        assert_eq!(b, Fraction::new(2, 1));
+        assert_eq!(c, Fraction::new(1, 1));
     }
 }

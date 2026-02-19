@@ -5,7 +5,7 @@ use crate::solver::{
     solve_quadratic_equation, solve_quartic_equation, solve_quintic_equation,
 };
 use crate::tui::input::{InputAction, InputArea};
-use crate::tui::result_card::ResultCard;
+use crate::tui::result_card::{format_complex_root, ResultCard};
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyEventKind},
     execute,
@@ -387,11 +387,7 @@ impl TuiApp {
             f.render_widget(list, results_area);
         }
 
-        let ans_text = if let Some(ans) = &self.ans {
-            format!(" ans = {}", ans.to_string())
-        } else {
-            " ans = (none)".to_string()
-        };
+        let ans_text = Self::format_last_result_text(self.ans.as_ref());
 
         let ans_widget = Paragraph::new(ans_text)
             .block(
@@ -412,10 +408,38 @@ impl TuiApp {
 
         f.render_widget(input_clone, input_area);
     }
+
+    fn format_last_result_text(ans: Option<&ComplexNumber>) -> String {
+        if let Some(value) = ans {
+            format!(" ans = {}", format_complex_root(value))
+        } else {
+            " ans = (none)".to_string()
+        }
+    }
 }
 
 impl Default for TuiApp {
     fn default() -> Self {
         Self::new()
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+    use crate::core::Fraction;
+
+    #[test]
+    fn test_last_result_summary_uses_complex_root_formatter() {
+        let value = ComplexNumber::new(Fraction::new(-1, 2), Fraction::new(3, 2));
+        assert_eq!(
+            TuiApp::format_last_result_text(Some(&value)),
+            " ans = -1/2 + 3/2i"
+        );
+    }
+
+    #[test]
+    fn test_last_result_summary_none() {
+        assert_eq!(TuiApp::format_last_result_text(None), " ans = (none)");
     }
 }
