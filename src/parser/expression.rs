@@ -270,4 +270,16 @@ mod tests {
         let result = parse_expression("3 @ 4");
         assert!(result.is_err());
     }
+
+    #[test]
+    fn test_parse_direct_division_by_zero_returns_undefined() {
+        let expr = parse_expression("1/0").unwrap();
+        assert_eq!(expr.evaluate(), Err("undefined".to_string()));
+    }
+
+    #[test]
+    fn test_parse_nested_division_by_zero_returns_undefined() {
+        let expr = parse_expression("1/(2*0)").unwrap();
+        assert_eq!(expr.evaluate(), Err("undefined".to_string()));
+    }
 }

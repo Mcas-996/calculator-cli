@@ -159,7 +159,14 @@ impl Expression {
                     BinaryOperator::Add => Ok(left_val + right_val),
                     BinaryOperator::Subtract => Ok(left_val - right_val),
                     BinaryOperator::Multiply => Ok(left_val * right_val),
-                    BinaryOperator::Divide => Ok(left_val / right_val),
+                    BinaryOperator::Divide => {
+                        if right_val.real == Fraction::new(0, 1)
+                            && right_val.imag == Fraction::new(0, 1)
+                        {
+                            return Err("undefined".to_string());
+                        }
+                        Ok(left_val / right_val)
+                    }
                     BinaryOperator::Power => Ok(left_val.pow(right_val.real.to_f64() as i32)),
                     BinaryOperator::Modulo => {
                         if left_val.imag != Fraction::new(0, 1)
@@ -280,5 +287,29 @@ mod tests {
         let expr = Expression::function(FunctionName::Sin, vec![arg]);
         let result = expr.evaluate().unwrap();
         assert!((result.real.to_f64() - 0.0).abs() < 1e-10);
+    }
+
+    #[test]
+    fn test_division_by_zero_returns_undefined() {
+        let expr = Expression::binary_op(
+            Expression::constant(ComplexNumber::from_double(1.0)),
+            BinaryOperator::Divide,
+            Expression::constant(ComplexNumber::from_double(0.0)),
+        );
+        assert_eq!(expr.evaluate(), Err("undefined".to_string()));
+    }
+
+    #[test]
+    fn test_nested_division_by_zero_returns_undefined() {
+        let expr = Expression::binary_op(
+            Expression::constant(ComplexNumber::from_double(1.0)),
+            BinaryOperator::Divide,
+            Expression::binary_op(
+                Expression::constant(ComplexNumber::from_double(2.0)),
+                BinaryOperator::Subtract,
+                Expression::constant(ComplexNumber::from_double(2.0)),
+            ),
+        );
+        assert_eq!(expr.evaluate(), Err("undefined".to_string()));
     }
 }

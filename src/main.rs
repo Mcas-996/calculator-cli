@@ -1,12 +1,13 @@
 use clap::Parser;
 use std::io::{self, Write};
 
-use calculator::output::{Formatter, PrettyConfig, PrettyLevel};
-use calculator::parser::parse_expression;
-use calculator::solver::{
+use calculator_tui::output::{Formatter, PrettyConfig, PrettyLevel};
+use calculator_tui::parser::parse_expression;
+use calculator_tui::solver::{
     solve_2x2_system, solve_3x3_system, solve_cubic_equation, solve_linear_equation,
     solve_quadratic_equation, solve_quartic_equation, solve_quintic_equation,
 };
+use calculator_tui::tui::app::TuiApp;
 
 /// A command-line calculator with symbolic math support
 #[derive(Parser, Debug)]
@@ -47,6 +48,10 @@ struct Cli {
     )]
     exact: bool,
 
+    /// Use legacy CLI interactive mode (instead of TUI)
+    #[arg(long = "v1", help = "Use legacy CLI interactive mode instead of TUI")]
+    v1: bool,
+
     /// Expression or equation to evaluate
     expression: Option<String>,
 }
@@ -74,9 +79,12 @@ fn main() {
     if let Some(expr) = cli.expression {
         // Single expression mode
         process_expression(&expr, formatter.as_ref(), cli.decimal, cli.exact);
-    } else {
-        // Interactive mode
+    } else if cli.v1 {
+        // CLI interactive mode (legacy)
         run_interactive_mode(formatter.as_ref(), cli.decimal, cli.exact);
+    } else {
+        // TUI mode (default)
+        run_tui_mode();
     }
 }
 
@@ -99,8 +107,12 @@ fn process_expression(input: &str, formatter: &dyn Formatter, show_decimal: bool
                     }
                 }
                 Err(e) => {
-                    eprintln!("Error: {}", e);
-                    std::process::exit(1);
+                    if e == "undefined" {
+                        println!("undefined");
+                    } else {
+                        eprintln!("Error: {}", e);
+                        std::process::exit(1);
+                    }
                 }
             },
             Err(e) => {
@@ -209,7 +221,7 @@ fn process_equation(input: &str, formatter: &dyn Formatter, show_decimal: bool, 
 
 /// Format a solution value based on the selected output mode
 fn format_solution_value(
-    value: &calculator::core::ComplexNumber,
+    value: &calculator_tui::core::ComplexNumber,
     show_decimal: bool,
     use_exact: bool,
     formatter: &dyn Formatter,
@@ -284,8 +296,16 @@ fn run_interactive_mode(formatter: &dyn Formatter, show_decimal: bool, use_exact
     }
 }
 
+/// Run TUI mode
+fn run_tui_mode() {
+    let mut app = TuiApp::new();
+    if let Err(e) = app.run() {
+        eprintln!("Error running TUI: {}", e);
+    }
+}
+
 /// Format a complex number as a decimal approximation
-fn format_decimal_approximation(num: &calculator::core::ComplexNumber) -> String {
+fn format_decimal_approximation(num: &calculator_tui::core::ComplexNumber) -> String {
     let real_part = num.real.to_f64();
     let imag_part = num.imag.to_f64();
 

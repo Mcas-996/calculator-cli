@@ -1,132 +1,141 @@
 # 计算器命令行工具
 
-一个用 C++20 编写的轻量级命令行计算器，支持实/复数混合运算、方程求解以及小型线性方程组处理。
+一个轻量级 Rust 命令行计算器，支持实数/复数表达式求值、方程求解和小型线性方程组计算。
 
 ## 快速上手
 
-1. 克隆仓库：`git clone https://github.com/allen/calculator-cli && cd calculator-cli`。
-2. 配置并编译 Release 版本：`cmake -B build -S . -DCMAKE_BUILD_TYPE=Release && cmake --build build --parallel`。
-3. 立即体验：`./build/calculator "equation(x^2-5x+6=0)"`。
+1. 克隆项目：`git clone https://github.com/Mcas-996/calculator-cli && cd calculator-cli`
+2. 直接运行计算：`cargo run -- "x^2-5x+6=0"`
+3. 构建 Release：`cargo build --release`
+4. 运行 Release 二进制：`./target/release/calctui "2 + 2"`
 
-## NPM 安装方式
+## 安装与使用
 
-### 对于 x64 系统（Windows、macOS Intel、Linux x64）
-最简单的安装方式是通过 npm：
+### 通过 crates.io 安装（推荐）
 
 ```bash
-npm install -g calculator-cli
+cargo install calculator-tui
+calctui "2 + 2"
+calctui "x^2-5x+6=0"
 ```
 
-安装完成后，您可以运行：
+### 从 GitHub Releases 下载
+
+从以下地址下载对应平台的预编译二进制：
+https://github.com/Mcas-996/calculator-cli/releases
+
+下载后直接运行可执行文件并传入表达式即可。
+
+### 从源码构建
 
 ```bash
-calculator "2 + 2"
-calculator "x^2-5x+6=0"
-```
-
-### 对于 ARM 系统（Apple Silicon、ARM64 Linux）
-npm 包仅包含 x64 系统的预编译二进制文件。对于 ARM 系统：
-
-```bash
-# 1. 如果尚未安装 Rust：
-curl --proto '=https' --tlsv1.2 -sSf https://sh.rustup.rs | sh
-source ~/.cargo/env
-
-# 2. 从源码安装 calculator-cli：
-cargo install calculator
+git clone https://github.com/Mcas-996/calculator-cli && cd calculator-cli
+cargo build --release
+./target/release/calctui "2 + 2"
 ```
 
 ### 平台支持
+
 | 平台 | 架构 | 安装方式 |
 |------|------|----------|
-| Windows | x64 | npm install |
-| macOS | x64 (Intel) | npm install |
-| macOS | ARM (Apple Silicon) | cargo install |
-| Linux | x64 | npm install |
-| Linux | ARM64 | cargo install |
+| Windows | x64 | cargo install / GitHub Releases |
+| macOS | x64 (Intel) | cargo install / GitHub Releases |
+| macOS | ARM (Apple Silicon) | cargo install / GitHub Releases |
+| Linux | x64 | cargo install / GitHub Releases |
+| Linux | ARM64 | cargo install / GitHub Releases |
 
 ## 功能特性
 
 ### 表达式引擎
-- 加、减、乘、除、乘方和括号。
-- 百分号（`50% * 200`）、一元负号。
-- 常量 `pi`、`e`、虚数单位 `i`，自动解析小数或分数（结果尽量以最简分数输出）。
-- `sqrt()`、`abs()`、弧度制三角函数 `sin()/cos()`，以及角度制的 `sind()/cosd()`。
-- 完整的复数运算，例如 `sqrt(-4)`、`(3+2i)*(1-i)`、`cosd(60+i)`。
+
+- 加减乘除与乘方
+- 百分号（`50% * 200`）、括号、一元负号
+- 常量 `pi`、`e`、虚数单位 `i`，支持小数与分数输入
+- 函数：`sqrt()`、`abs()`、`sin()`、`cos()`、`sind()`、`cosd()`
+- 复数运算，例如 `sqrt(-4)`、`(3+2i)*(1-i)`
 
 ### 方程求解
-- 一元一次方程：`equation(2x+5=0)`
-- 一元二次方程：`equation(x^2-5x+6=0)`（自动给出实数或复数根）
-- 一元三次方程：`equation(x^3-6x^2+11x-6=0)`
-- 线性方程组（最多 3 个变量）：`equation2(x+y=5,x-y=1)`
 
-### 输出格式
-- 若结果可表示为有理数则输出分数，否则回退到带指定精度的小数。
-- 复数固定输出为 `a + bi` 形式，并根据系数简化为 `i` 或 `-i`。
+- 一元一次：`2x+5=0`
+- 一元二次：`x^2-5x+6=0`
+- 一元三次：`x^3-6x^2+11x-6=0`
+- 一元四次：`x^4-2=0`
+- 五次及以上：使用 Durand-Kerner 进行数值近似
+- 线性方程组（最多 3 个变量）：`x+y=5, x-y=1`
 
-## 使用方法
+### 输出模式
+
+- 可在可能时保留分数等精确形式
+- `--decimal` 输出小数近似
+- 支持 ASCII / Unicode / LaTeX（`--ascii`、`--unicode`、`--latex`）
+
+### 交互模式
+
+- 默认：不传表达式时进入 TUI 模式
+- 兼容旧版交互 CLI：`--v1`
+
+## 使用示例
 
 ```bash
-# 直接在命令行传入表达式
-./calculator "3 + 5 * (2 - 8)^2"
+# 基本表达式
+calctui "3 + 5 * (2 - 8)^2"
 
 # 复数
-./calculator "(3+2i) * (1 - i)"
-./calculator "sqrt(-9)"         # -> 3i
+calctui "(3+2i) * (1 - i)"
+calctui "sqrt(-9)"                # -> 3i
 
 # 三角函数
-./calculator "sin(pi / 6)"      # 弧度
-./calculator "sind(30)"         # 角度
+calctui "sin(pi / 6)"             # 弧度
+calctui "sind(30)"                # 角度
 
-# 方程
-./calculator "equation(x^2-5x+6=0)"
-./calculator "equation2(x+y=5,x-y=1)"
+# 方程求解
+calctui "x^2-5x+6=0"
+calctui "x+y=5, x-y=1"
+
+# 输出格式
+calctui --unicode "sqrt(16)"
+calctui --latex "pi"
+calctui --ascii "3 + 4"
+calctui --decimal "1/3"
+
+# 交互模式
+calctui
+calctui --v1
 ```
 
-`--help`/`--version` 可查看帮助和版本信息。若未提供参数，程序会提示正确用法。
+可使用 `--help` 或 `--version` 查看命令行帮助信息。
 
 ## 构建
 
-推荐使用 CMake（≥3.10）及支持 C++20 的编译器：
-
 ```bash
-cmake -B build -S . -DCMAKE_BUILD_TYPE=Release
-cmake --build build --parallel
-ctest --output-on-failure --test-dir build   # 可选，运行 calculator_tests
+# 构建 Release
+cargo build --release
+
+# 运行测试
+cargo test
+
+# clippy 检查
+cargo clippy
 ```
 
-- Windows：可使用 MSVC/clang-cl，必要时添加 `-A x64` 选择架构。
-- macOS / Linux：同样的命令即可，确保安装 `cmake` 与 `g++` 或 `clang++`。
-- 仍保留 `build_*.sh/.bat` 脚本，但以上 CMake 流程为主。
+- 需要 Rust 1.70.0 或更高版本
+- Cargo 会自动处理依赖
+- Release 二进制路径：`target/release/calctui`
 
-## 测试
+## 项目结构
 
-`ctest` 会运行 `calculator_tests.cpp` 中的全部回归用例。构建完成后执行 `ctest --output-on-failure --test-dir build` 即可覆盖实数、复数以及符号路径；调试特定用例时可以使用 `ctest -R <name>`。
-
-## macOS Gatekeeper
-
-CI 产出的未签名二进制在 macOS 可能触发安全警告，可执行：
-
-```bash
-xattr -d com.apple.quarantine /path/to/calculator
-```
-
-或在 Finder 中右键 “打开” 并确认。
-
-## 目录结构
-
-- `complex_number.hpp`、`fractions.hpp`、`string_processing.*`：核心计算逻辑
-- `main_cli.cpp`：命令行入口
-- `calculator_tests.cpp`：测试用例（通过 CTest 运行）
-- `.github/workflows/c-cpp.yml`：GitHub Actions 持续集成/发布流程
+- `src/core/` - 核心数据类型（`ComplexNumber`、`Fraction`、`Expression`）
+- `src/parser/` - 表达式解析与分词
+- `src/solver/` - 方程求解器（一次到五次/方程组）
+- `src/output/` - 输出格式化器（ASCII、Unicode、LaTeX）
+- `src/tui/` - TUI 界面
+- `src/main.rs` - CLI 入口
 
 ## 常见问题
 
-- **CMake 找不到编译器**：在 Windows 安装最新 Visual Studio Build Tools，在 Linux/macOS 安装 `build-essential` 或 Xcode Command Line Tools。
-- **首次构建时间较长**：SymEngine 需首次从源码编译，请耐心等待；之后构建会增量进行。
-- **运行时报缺少 DLL**：在 Developer Command Prompt 中运行，或安装与所用编译器匹配的 MSVC 运行库。
-- **小数点解析异常**：若系统使用逗号小数，请在运行前设置 `LC_ALL=C`。
+- **找不到 Cargo**：请从 https://rustup.rs/ 安装 Rust
+- **构建失败**：请确认 Rust 版本不低于 1.70.0
 
 ## 许可
 
-MIT
+MIT 许可证，详见 `LICENSE` 文件。
