@@ -1,41 +1,41 @@
 # Calculator CLI
 
-A lightweight Rust command-line calculator capable of evaluating real/complex expressions, solving equations (with exact symbolic output up to quintics), and processing small systems of linear equations.
+A lightweight Rust command-line calculator for evaluating real/complex expressions, solving equations, and handling small linear systems.
 
 ## Quick Start
 
-1. Clone the project: `git clone https://github.com/allen/calculator-cli && cd calculator-cli`.
-2. Build a Release binary: `cargo build --release`.
-3. Run an expression straight from your shell: `./target/release/calculator "x^2-5x+6=0"`.
+1. Clone the project:
+   `git clone https://github.com/Mcas-996/calculator-cli && cd calculator-cli`
+2. Run a calculation directly:
+   `cargo run -- "x^2-5x+6=0"`
+3. Build a release binary:
+   `cargo build --release`
+4. Run the release binary:
+   `./target/release/calctui "2 + 2"`
 
-## 安装和使用
+## Installation
 
-### cargo install (推荐)
+### Install from crates.io (recommended)
+
 ```bash
 cargo install calculator-tui
-calculator "2 + 2"
-calculator "x^2-5x+6=0"
+calctui "2 + 2"
+calctui "x^2-5x+6=0"
 ```
 
-### 从 GitHub Release 下载
-从以下地址下载对应平台的预编译二进制:
-https://github.com/anomalyco/calculator-cli/releases
+### Download from GitHub Releases
+
+Download the prebuilt binary for your platform from:
+https://github.com/Mcas-996/calculator-cli/releases
+
+After downloading, run the executable with an expression.
+
+### Build from source
 
 ```bash
-# Linux
-curl -L https://github.com/anomalyco/calculator-cli/releases/latest/download/calculator-linux-x64 -o calculator
-chmod +x calculator
-./calculator "2 + 2"
-
-# Windows
-# 从 Releases 页面下载 calculator_windows-x86-64.exe
-```
-
-### 从源码构建
-```bash
-git clone https://github.com/anomalyco/calculator-cli && cd calculator-cli
+git clone https://github.com/Mcas-996/calculator-cli && cd calculator-cli
 cargo build --release
-./target/release/calculator "2 + 2"
+./target/release/calctui "2 + 2"
 ```
 
 ### Platform Support
@@ -51,65 +51,65 @@ cargo build --release
 ## Features
 
 ### Expression Engine
+
 - Addition, subtraction, multiplication, division, exponentiation.
 - Percentages (`50% * 200`), parentheses, unary minus.
-- Constants `pi`, `e`, imaginary unit `i`, and decimal or fractional inputs (fractions auto-simplify in output).
-- Square root `sqrt()`, absolute value `abs()`, trigonometric functions in radians `sin()/cos()` and degree variants `sind()/cosd()`.
-- Full complex-number arithmetic, e.g. `sqrt(-4)`, `(3+2i)*(1-i)`, `cosd(60+i)`.
+- Constants `pi`, `e`, imaginary unit `i`, and decimal or fractional inputs.
+- Functions: `sqrt()`, `abs()`, `sin()`, `cos()`, `sind()`, `cosd()`.
+- Complex-number arithmetic, for example `sqrt(-4)` and `(3+2i)*(1-i)`.
 
 ### Equation Solving
+
 - Linear equations: `2x+5=0`
-- Quadratic equations: `x^2-5x+6=0` (real or complex roots)
+- Quadratic equations: `x^2-5x+6=0`
 - Cubic equations: `x^3-6x^2+11x-6=0`
-- Quartic equations: `x^4-2=0` (symbolic roots via `sqrt`/`cbrt`, numeric Durand–Kerner fallback)
-- Quintic equations: `x^5+2x^4+...=0` → numeric approximation via Durand-Kerner method
+- Quartic equations: `x^4-2=0`
+- Quintic and higher: numeric approximation via Durand-Kerner
 - Systems of linear equations (up to 3 variables): `x+y=5, x-y=1`
 
-### Output Formatting
-- Results favor exact fractions when possible (e.g. `1/3` stays rational) and fall back to decimals only when necessary.
-- Complex numbers print as `a + bi`, with simplified `i`/`-i`.
-- Multiple output formats: ASCII, Unicode, and LaTeX.
+### Output Modes
 
-### TUI Mode (Interactive)
-Run without arguments to enter TUI mode:
-```bash
-./target/release/calculator
-```
+- Exact-style output with fractions when possible
+- Decimal output with `--decimal`
+- Multiple output formats: ASCII, Unicode, LaTeX (`--ascii`, `--unicode`, `--latex`)
 
-Use `--v1` flag for legacy CLI interactive mode:
-```bash
-./target/release/calculator --v1
-```
+### Interactive Modes
+
+- Default: TUI mode (run without an expression)
+- Legacy interactive CLI mode: `--v1`
 
 ## Usage
 
 ```bash
-# Basic usage (expression as CLI argument)
-./target/release/calculator "3 + 5 * (2 - 8)^2"
+# Basic expression
+calctui "3 + 5 * (2 - 8)^2"
 
 # Complex numbers
-./target/release/calculator "(3+2i) * (1 - i)"
-./target/release/calculator "sqrt(-9)"        # -> 3i
+calctui "(3+2i) * (1 - i)"
+calctui "sqrt(-9)"                # -> 3i
 
 # Trigonometry
-./target/release/calculator "sin(pi / 6)"     # radians
-./target/release/calculator "sind(30)"        # degrees
+calctui "sin(pi / 6)"             # radians
+calctui "sind(30)"                # degrees
 
 # Equation solving
-./target/release/calculator "x^2-5x+6=0"
-./target/release/calculator "x+y=5, x-y=1"
+calctui "x^2-5x+6=0"
+calctui "x+y=5, x-y=1"
 
 # Output formatting
-./target/release/calculator --unicode "sqrt(16)"
-./target/release/calculator --latex "pi"
-./target/release/calculator --ascii "3 + 4"
+calctui --unicode "sqrt(16)"
+calctui --latex "pi"
+calctui --ascii "3 + 4"
+calctui --decimal "1/3"
+
+# Interactive modes
+calctui
+calctui --v1
 ```
 
-Passing `--help` or `--version` prints CLI info. Without an argument, the program enters TUI mode. Use `--v1` for legacy CLI interactive mode.
+Use `--help` or `--version` to print CLI information.
 
 ## Building
-
-The project uses Rust and Cargo.
 
 ```bash
 # Build in release mode
@@ -118,28 +118,28 @@ cargo build --release
 # Run tests
 cargo test
 
-# Run with clippy for additional checks
+# Run clippy checks
 cargo clippy
 ```
 
 - Rust 1.70.0 or later is required
-- Cargo handles all dependencies automatically
-- The binary will be available at `target/release/calculator`
+- Cargo handles dependencies automatically
+- Release binary path: `target/release/calctui`
 
 ## Project Structure
 
-- `src/core/` - Core data types (ComplexNumber, Fraction, Expression)
+- `src/core/` - Core data types (`ComplexNumber`, `Fraction`, `Expression`)
 - `src/parser/` - Expression parser and tokenizer
-- `src/solver/` - Equation solvers (linear, quadratic, cubic, quartic, quintic)
+- `src/solver/` - Equation solvers (linear through quintic/system)
 - `src/output/` - Output formatters (ASCII, Unicode, LaTeX)
-- `src/tui/` - Terminal UI components
+- `src/tui/` - Terminal UI
 - `src/main.rs` - CLI entry point
 
 ## Troubleshooting
 
 - **Cargo not found**: Install Rust from https://rustup.rs/
-- **Build fails**: Ensure you have Rust 1.70.0 or later
+- **Build fails**: Verify Rust is 1.70.0 or newer
 
 ## License
 
-MIT License - See LICENSE file for details
+MIT License. See `LICENSE` for details.
