@@ -103,35 +103,27 @@ The system SHALL provide an interactive REPL for evaluating expressions.
 
 #### Scenario: Enter interactive mode
 - **WHEN** no expression argument is provided
-- **THEN** prompt is displayed and user can input expressions
+- **THEN** TUI application starts and displays the main interface
 
 #### Scenario: Display prompt
 - **WHEN** in interactive mode
-- **THEN** prompt (`>>> ` or pretty variant) is displayed before each input
+- **THEN** input box is displayed at the bottom of the screen
 
 #### Scenario: Evaluate expression
-- **WHEN** user enters expression in interactive mode
-- **THEN** expression is evaluated and result is displayed
+- **WHEN** user enters expression in input box and presses Ctrl+Enter
+- **THEN** expression is evaluated and result is displayed as a result card
 
 #### Scenario: Empty input handling
-- **WHEN** user enters empty line in interactive mode
-- **THEN** prompt is displayed again without evaluation
+- **WHEN** user presses Ctrl+Enter with empty input
+- **THEN** nothing happens, input remains empty
 
 #### Scenario: Continue after evaluation
 - **WHEN** expression is evaluated in interactive mode
-- **THEN** prompt is displayed again for next input
+- **THEN** input box is cleared and ready for next input
 
 #### Scenario: Exit interactive mode
-- **WHEN** user sends EOF (Ctrl+D)
+- **WHEN** user presses Ctrl+C
 - **THEN** interactive mode exits and program terminates
-
-#### Scenario: Pretty prompt in Unicode mode
-- **WHEN** in Unicode interactive mode
-- **THEN** prompt uses Unicode symbol
-
-#### Scenario: Standard prompt in ASCII mode
-- **WHEN** in ASCII interactive mode
-- **THEN** prompt is `">>> "`
 
 ### Requirement: Exit Codes
 The system SHALL return appropriate exit codes to indicate success or failure.

@@ -442,4 +442,28 @@ mod tests {
     fn test_last_result_summary_none() {
         assert_eq!(TuiApp::format_last_result_text(None), " ans = (none)");
     }
+
+    #[test]
+    fn test_last_result_summary_formats_symbolic_sqrt() {
+        let value = ComplexNumber::from_double(2.0_f64.sqrt());
+        assert_eq!(
+            TuiApp::format_last_result_text(Some(&value)),
+            " ans = sqrt(2)"
+        );
+    }
+
+    #[test]
+    fn test_last_result_summary_formats_imaginary_radical() {
+        let value = ComplexNumber::new(Fraction::new(0, 1), Fraction::from_double(2.0_f64.sqrt()));
+        assert_eq!(
+            TuiApp::format_last_result_text(Some(&value)),
+            " ans = i*sqrt(2)"
+        );
+    }
+
+    #[test]
+    fn test_last_result_summary_keeps_integer_output_stable() {
+        let value = ComplexNumber::from_real(Fraction::new(2, 1));
+        assert_eq!(TuiApp::format_last_result_text(Some(&value)), " ans = 2");
+    }
 }

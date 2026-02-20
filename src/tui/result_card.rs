@@ -1,8 +1,120 @@
-use crate::core::ComplexNumber;
+use crate::core::{ComplexNumber, Fraction};
+use crate::output::UnicodeFormatter;
 use crate::tui::latex::TuiLatexRenderer;
 
 pub(crate) fn format_complex_root(num: &ComplexNumber) -> String {
-    num.to_string()
+    let zero = Fraction::new(0, 1);
+    let one = Fraction::new(1, 1);
+    let formatter = UnicodeFormatter;
+
+    if num.imag == zero {
+        return format_fraction_component(&formatter, &num.real);
+    }
+
+    if num.real == zero {
+        if num.imag == one {
+            return "i".to_string();
+        }
+        if num.imag == -one {
+            return "-i".to_string();
+        }
+
+        let imag_abs = if num.imag > zero { num.imag } else { -num.imag };
+        let imag_coeff = format_fraction_component(&formatter, &imag_abs);
+
+        if imag_coeff.contains("sqrt(") {
+            if num.imag > zero {
+                format!("i*{}", imag_coeff)
+            } else {
+                format!("-i*{}", imag_coeff)
+            }
+        } else if num.imag > zero {
+            format!("{}i", imag_coeff)
+        } else {
+            format!("-{}i", imag_coeff)
+        }
+    } else {
+        let real_str = format_fraction_component(&formatter, &num.real);
+
+        if num.imag == one {
+            return format!("{} + i", real_str);
+        }
+        if num.imag == -one {
+            return format!("{} - i", real_str);
+        }
+
+        let imag_abs = if num.imag > zero { num.imag } else { -num.imag };
+        let mut imag_coeff = format_fraction_component(&formatter, &imag_abs);
+        if needs_imaginary_parentheses(&imag_coeff) {
+            imag_coeff = format!("({})", imag_coeff);
+        }
+
+        if num.imag > zero {
+            format!("{} + {}i", real_str, imag_coeff)
+        } else {
+            format!("{} - {}i", real_str, imag_coeff)
+        }
+    }
+}
+
+fn format_fraction_component(formatter: &UnicodeFormatter, frac: &Fraction) -> String {
+    if frac.denom() == 1 || frac.denom().abs() <= 128 {
+        return frac.to_string();
+    }
+
+    let rendered = formatter.format_complex(&ComplexNumber::from_real(*frac));
+    normalize_unicode_math(&rendered)
+}
+
+fn needs_imaginary_parentheses(value: &str) -> bool {
+    value.contains('+') || value.contains('-') || (value.contains('/') && value.contains("sqrt("))
+}
+
+fn normalize_unicode_math(value: &str) -> String {
+    let chars: Vec<char> = value.chars().collect();
+    let mut out = String::new();
+    let mut i = 0;
+
+    while i < chars.len() {
+        let ch = chars[i];
+
+        if ch == '−' {
+            out.push('-');
+            i += 1;
+            continue;
+        }
+
+        if ch == '√' {
+            if out
+                .chars()
+                .last()
+                .is_some_and(|last| last.is_ascii_digit() || last == ')')
+            {
+                out.push('*');
+            }
+
+            i += 1;
+            let mut radicand = String::new();
+            while i < chars.len() && chars[i].is_ascii_alphanumeric() {
+                radicand.push(chars[i]);
+                i += 1;
+            }
+
+            if radicand.is_empty() {
+                out.push_str("sqrt(?)");
+            } else {
+                out.push_str("sqrt(");
+                out.push_str(&radicand);
+                out.push(')');
+            }
+            continue;
+        }
+
+        out.push(ch);
+        i += 1;
+    }
+
+    out
 }
 
 #[derive(Clone, Debug)]
@@ -131,7 +243,7 @@ impl Default for ResultCard {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::Fraction;
+    use crate::solver::solve_quadratic_equation;
 
     #[test]
     fn test_from_equation_solution_uses_single_line_complex_roots() {
@@ -151,5 +263,51 @@ mod tests {
         let value = ComplexNumber::new(Fraction::new(0, 1), Fraction::new(-1, 1));
         let card = ResultCard::from_complex(Some("ans".to_string()), &value);
         assert_eq!(card.result_lines, vec!["-i".to_string()]);
+    }
+
+    #[test]
+    fn test_from_complex_formats_symbolic_sqrt() {
+        let value = ComplexNumber::from_double(2.0_f64.sqrt());
+        let card = ResultCard::from_complex(Some("sqrt(2)".to_string()), &value);
+        assert_eq!(card.result_lines, vec!["sqrt(2)".to_string()]);
+    }
+
+    #[test]
+    fn test_from_complex_simplifies_sqrt8_to_coefficient_times_sqrt2() {
+        let value = ComplexNumber::from_double(8.0_f64.sqrt());
+        let card = ResultCard::from_complex(Some("sqrt(8)".to_string()), &value);
+        assert_eq!(card.result_lines, vec!["2*sqrt(2)".to_string()]);
+    }
+
+    #[test]
+    fn test_from_equation_solution_formats_pure_imaginary_radicals() {
+        let solutions = solve_quadratic_equation("x^2 = -2").unwrap();
+        let card = ResultCard::from_equation_solution(None, "x", &solutions);
+
+        assert_eq!(card.result_lines.len(), 2);
+        assert!(card
+            .result_lines
+            .iter()
+            .any(|line| line.contains("i*sqrt(2)")));
+        assert!(card
+            .result_lines
+            .iter()
+            .any(|line| line.contains("-i*sqrt(2)")));
+    }
+
+    #[test]
+    fn test_from_equation_solution_formats_mixed_complex_conjugates() {
+        let solutions = solve_quadratic_equation("x^2 + 2x + 10 = 0").unwrap();
+        let card = ResultCard::from_equation_solution(None, "x", &solutions);
+
+        assert_eq!(card.result_lines.len(), 2);
+        assert!(card
+            .result_lines
+            .iter()
+            .any(|line| line.contains("-1 + 3i")));
+        assert!(card
+            .result_lines
+            .iter()
+            .any(|line| line.contains("-1 - 3i")));
     }
 }
