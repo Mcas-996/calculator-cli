@@ -4,7 +4,7 @@
 TBD - created by archiving change refactor-to-rust. Update Purpose after archive.
 ## Requirements
 ### Requirement: Expression Parsing
-The system SHALL parse mathematical expressions from strings into an abstract syntax tree.
+The system SHALL parse mathematical expressions from strings into an abstract syntax tree, including binary subtraction when the `-` operator is contiguous with adjacent operands.
 
 #### Scenario: Simple arithmetic expression
 - **WHEN** parsing `"3 + 5 * 2"`
@@ -41,6 +41,14 @@ The system SHALL parse mathematical expressions from strings into an abstract sy
 #### Scenario: Modulo operation
 - **WHEN** parsing `"10 % 3"`
 - **THEN** it is evaluated as `1`
+
+#### Scenario: Contiguous subtraction without spaces
+- **WHEN** parsing `"44-55"`
+- **THEN** `-` is parsed as a binary subtraction operator between two numeric operands
+
+#### Scenario: Contiguous subtraction in grouped expression
+- **WHEN** parsing `"2*(8-3)"`
+- **THEN** subtraction inside parentheses is parsed correctly without requiring surrounding whitespace
 
 ### Requirement: Expression Evaluation
 The system SHALL evaluate parsed expressions and return results as strings.
@@ -180,4 +188,3 @@ The system SHALL prefer exact fraction representation over decimals when possibl
 #### Scenario: Complex number with fractions
 - **WHEN** evaluating `"1/3 + (1/2)i"`
 - **THEN** the result is `"1/3 + 1/2i"`
-
