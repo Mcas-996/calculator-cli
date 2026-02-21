@@ -2,8 +2,8 @@ use crossterm::event::{KeyCode, KeyEvent, KeyModifiers};
 use ratatui::{
     buffer::Buffer,
     layout::Rect,
-    style::{Color, Style, Stylize},
-    widgets::{Block, Widget},
+    style::{Style, Stylize},
+    widgets::{Block, BorderType, Borders, Widget},
 };
 use std::collections::VecDeque;
 
@@ -440,11 +440,12 @@ impl Widget for InputArea {
 
         let block = Block::default()
             .title(" Input ")
-            .borders(ratatui::widgets::Borders::ALL)
+            .borders(Borders::ALL)
+            .border_type(BorderType::Rounded)
             .border_style(if self.get_text().is_empty() {
-                Style::default()
+                Style::default().dim()
             } else {
-                Color::Green.into()
+                Style::default().green().dim()
             });
 
         let inner = block.inner(area);

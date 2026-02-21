@@ -1,5 +1,6 @@
 use crate::core::{ComplexNumber, Fraction};
 use crate::output::UnicodeFormatter;
+use crate::tui::border_style::BorderStyle;
 use crate::tui::latex::TuiLatexRenderer;
 use crate::tui::math_renderer::render_math_text;
 
@@ -242,8 +243,14 @@ impl ResultCard {
     pub fn render(&self, width: usize) -> Vec<String> {
         let mut lines = Vec::new();
 
-        let border = "┌".to_string() + &"─".repeat(width.saturating_sub(2)) + "┐";
-        lines.push(border);
+        let border_style = BorderStyle::rounded();
+        let top_border = border_style.top_left.to_string()
+            + &border_style
+                .horizontal
+                .to_string()
+                .repeat(width.saturating_sub(2))
+            + &border_style.top_right.to_string();
+        lines.push(top_border);
 
         if let Some(expr) = &self.expression {
             for expr_line in expr.lines() {
@@ -272,8 +279,13 @@ impl ResultCard {
             lines.push(format!("{}{}", &padded[..width.saturating_sub(1)], "│"));
         }
 
-        let border = "└".to_string() + &"─".repeat(width.saturating_sub(2)) + "┘";
-        lines.push(border);
+        let bottom_border = border_style.bottom_left.to_string()
+            + &border_style
+                .horizontal
+                .to_string()
+                .repeat(width.saturating_sub(2))
+            + &border_style.bottom_right.to_string();
+        lines.push(bottom_border);
 
         lines
     }

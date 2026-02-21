@@ -5,7 +5,7 @@ use crate::solver::{
     solve_quadratic_equation, solve_quartic_equation, solve_quintic_equation,
 };
 use crate::tui::input::{InputAction, InputArea};
-use crate::tui::result_card::{format_complex_root, ResultCard};
+use crate::tui::result_card::ResultCard;
 use crossterm::{
     event::{self, DisableMouseCapture, EnableMouseCapture, Event, KeyEventKind},
     execute,
@@ -88,24 +88,7 @@ impl TuiApp {
     }
 
     fn show_welcome(&mut self) {
-        let welcome = vec![
-            " Calculator CLI v2.0.0 (TUI Mode) ",
-            "==================================",
-            "Commands:",
-            "  Enter       - Calculate expression",
-            "  Shift+Enter - New line",
-            "  Ctrl+C      - Exit the calculator",
-            "  exit/quit   - Exit the calculator",
-            "  clear       - Clear results",
-            "  help        - Show this help",
-            "  ans / ans() - Show last result",
-            "",
-            "Examples:",
-            "  2 + 2           - Basic arithmetic",
-            "  sqrt(2)         - Square root",
-            "  x^2 + 2x + 1=0  - Solve quadratic",
-            "",
-        ];
+        let welcome = vec!["Calculator CLI v2.0.0", "Type 'help' for commands"];
 
         for line in welcome {
             self.results
@@ -335,16 +318,11 @@ impl TuiApp {
     fn render(&self, f: &mut Frame) {
         let chunks = Layout::default()
             .direction(Direction::Vertical)
-            .constraints([
-                Constraint::Min(3),
-                Constraint::Length(3),
-                Constraint::Length(6),
-            ])
+            .constraints([Constraint::Min(3), Constraint::Length(3)])
             .split(f.size());
 
         let results_area = chunks[0];
-        let ans_area = chunks[1];
-        let input_area = chunks[2];
+        let input_area = chunks[1];
 
         if self.results.is_empty() {
             let empty = Paragraph::new("No results yet. Enter an expression to calculate.")
@@ -352,28 +330,24 @@ impl TuiApp {
                 .style(Style::default().fg(Color::DarkGray));
             f.render_widget(empty, results_area);
         } else {
-            let mut all_lines_rev: Vec<String> = Vec::new();
             let max_lines = results_area.height as usize;
+            let mut all_lines: Vec<String> = Vec::new();
 
-            'outer: for result in self.results.iter().rev() {
-                let card_lines = result.render(results_area.width as usize);
-
-                for line in card_lines.iter().rev() {
-                    if all_lines_rev.len() >= max_lines {
-                        break 'outer;
-                    }
-                    all_lines_rev.push(line.clone());
+            for result in self.results.iter().rev() {
+                if all_lines.len() >= max_lines {
+                    break;
                 }
-
-                if all_lines_rev.len() < max_lines
-                    && !all_lines_rev.last().map_or(false, |s| s.is_empty())
-                {
-                    all_lines_rev.push(String::new());
+                let card_lines = result.render(results_area.width as usize);
+                for line in card_lines {
+                    if all_lines.len() >= max_lines {
+                        break;
+                    }
+                    all_lines.push(line);
+                }
+                if all_lines.len() < max_lines {
+                    all_lines.push(String::new());
                 }
             }
-
-            all_lines_rev.reverse();
-            let all_lines = all_lines_rev;
 
             let content: Vec<ListItem> = all_lines
                 .iter()
@@ -387,18 +361,6 @@ impl TuiApp {
             f.render_widget(list, results_area);
         }
 
-        let ans_text = Self::format_last_result_text(self.ans.as_ref());
-
-        let ans_widget = Paragraph::new(ans_text)
-            .block(
-                Block::default()
-                    .title(" Last Result ")
-                    .borders(Borders::ALL),
-            )
-            .style(Style::default().fg(Color::Yellow));
-
-        f.render_widget(ans_widget, ans_area);
-
         let _input_widget = InputArea::new("> ".to_string(), input_area.width as usize);
         let mut input_clone = InputArea::new("> ".to_string(), input_area.width as usize);
         input_clone.lines = self.input.lines.clone();
@@ -407,14 +369,6 @@ impl TuiApp {
         input_clone.history_index = self.input.history_index;
 
         f.render_widget(input_clone, input_area);
-    }
-
-    fn format_last_result_text(ans: Option<&ComplexNumber>) -> String {
-        if let Some(value) = ans {
-            format!(" ans = {}", format_complex_root(value))
-        } else {
-            " ans = (none)".to_string()
-        }
     }
 }
 
@@ -427,43 +381,4 @@ impl Default for TuiApp {
 #[cfg(test)]
 mod tests {
     use super::*;
-    use crate::core::Fraction;
-
-    #[test]
-    fn test_last_result_summary_uses_complex_root_formatter() {
-        let value = ComplexNumber::new(Fraction::new(-1, 2), Fraction::new(3, 2));
-        assert_eq!(
-            TuiApp::format_last_result_text(Some(&value)),
-            " ans = -1/2 + 3/2i"
-        );
-    }
-
-    #[test]
-    fn test_last_result_summary_none() {
-        assert_eq!(TuiApp::format_last_result_text(None), " ans = (none)");
-    }
-
-    #[test]
-    fn test_last_result_summary_formats_symbolic_sqrt() {
-        let value = ComplexNumber::from_double(2.0_f64.sqrt());
-        assert_eq!(
-            TuiApp::format_last_result_text(Some(&value)),
-            " ans = sqrt(2)"
-        );
-    }
-
-    #[test]
-    fn test_last_result_summary_formats_imaginary_radical() {
-        let value = ComplexNumber::new(Fraction::new(0, 1), Fraction::from_double(2.0_f64.sqrt()));
-        assert_eq!(
-            TuiApp::format_last_result_text(Some(&value)),
-            " ans = i*sqrt(2)"
-        );
-    }
-
-    #[test]
-    fn test_last_result_summary_keeps_integer_output_stable() {
-        let value = ComplexNumber::from_real(Fraction::new(2, 1));
-        assert_eq!(TuiApp::format_last_result_text(Some(&value)), " ans = 2");
-    }
 }
