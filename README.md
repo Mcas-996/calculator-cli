@@ -4,14 +4,33 @@ A lightweight Rust command-line calculator for evaluating real/complex expressio
 
 ## Quick Start
 
-1. Clone the project:
-   `git clone https://github.com/Mcas-996/calculator-cli && cd calculator-cli`
-2. Run a calculation directly:
-   `cargo run -- "x^2-5x+6=0"`
-3. Build a release binary:
-   `cargo build --release`
-4. Run the release binary:
-   `./target/release/calctui "2 + 2"`
+Install `calctui` first (pick one):
+
+```bash
+# macOS/Linux (curl installer)
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-installer.sh | sh
+
+# Windows PowerShell (irm installer)
+powershell -ExecutionPolicy Bypass -c "irm https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-installer.ps1 | iex"
+
+# Homebrew
+brew install Mcas-996/tap/calculator-tui
+```
+
+Then run:
+
+```bash
+calctui "2 + 2"
+calctui "x^2-5x+6=0"
+```
+
+From source (optional):
+
+```bash
+git clone https://github.com/Mcas-996/calculator-cli && cd calculator-cli
+cargo build --release
+./target/release/calctui "2 + 2"
+```
 
 ## Installation
 
@@ -23,10 +42,38 @@ calctui "2 + 2"
 calctui "x^2-5x+6=0"
 ```
 
-### Download from GitHub Releases
+### Install prebuilt binaries (v2.1.2)
 
-Download the prebuilt binary for your platform from:
-https://github.com/Mcas-996/calculator-cli/releases
+Install prebuilt binaries via shell script:
+
+```bash
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-installer.sh | sh
+```
+
+Install prebuilt binaries via PowerShell script:
+
+```powershell
+powershell -ExecutionPolicy Bypass -c "irm https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-installer.ps1 | iex"
+```
+
+Install prebuilt binaries via Homebrew:
+
+```bash
+brew install Mcas-996/tap/calculator-tui
+```
+
+Download prebuilt archives directly:
+
+| File | Platform | Checksum |
+|----------|----------|----------|
+| [calculator-tui-aarch64-apple-darwin.tar.xz](https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-aarch64-apple-darwin.tar.xz) | Apple Silicon macOS | [checksum](https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-aarch64-apple-darwin.tar.xz.sha256) |
+| [calculator-tui-x86_64-apple-darwin.tar.xz](https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-x86_64-apple-darwin.tar.xz) | Intel macOS | [checksum](https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-x86_64-apple-darwin.tar.xz.sha256) |
+| [calculator-tui-x86_64-pc-windows-msvc.zip](https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-x86_64-pc-windows-msvc.zip) | x64 Windows | [checksum](https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-x86_64-pc-windows-msvc.zip.sha256) |
+| [calculator-tui-aarch64-unknown-linux-gnu.tar.xz](https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-aarch64-unknown-linux-gnu.tar.xz) | ARM64 Linux | [checksum](https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-aarch64-unknown-linux-gnu.tar.xz.sha256) |
+| [calculator-tui-x86_64-unknown-linux-gnu.tar.xz](https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-x86_64-unknown-linux-gnu.tar.xz) | x64 Linux | [checksum](https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-x86_64-unknown-linux-gnu.tar.xz.sha256) |
+
+All release files are available at:
+https://github.com/Mcas-996/calculator-cli/releases/tag/v2.1.2
 
 After downloading, run the executable with an expression.
 
@@ -37,16 +84,6 @@ git clone https://github.com/Mcas-996/calculator-cli && cd calculator-cli
 cargo build --release
 ./target/release/calctui "2 + 2"
 ```
-
-### Platform Support
-
-| Platform | Architecture | Installation Method |
-|----------|-------------|--------------------|
-| Windows | x64 | cargo install / GitHub Releases |
-| macOS | x64 (Intel) | cargo install / GitHub Releases |
-| macOS | ARM (Apple Silicon) | cargo install / GitHub Releases |
-| Linux | x64 | cargo install / GitHub Releases |
-| Linux | ARM64 | cargo install / GitHub Releases |
 
 ## Features
 
