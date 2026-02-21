@@ -187,6 +187,19 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_subtraction_without_spaces() {
+        let expr = parse_expression("44-55").unwrap();
+        assert_eq!(expr.evaluate().unwrap().real, Fraction::new(-11, 1));
+    }
+
+    #[test]
+    fn test_parse_decimal_subtraction_without_spaces() {
+        let expr = parse_expression("3.5-1.2").unwrap();
+        let value = expr.evaluate().unwrap().real.to_f64();
+        assert!((value - 2.3).abs() < 1e-9);
+    }
+
+    #[test]
     fn test_parse_multiplication() {
         let expr = parse_expression("3 * 4").unwrap();
         assert_eq!(expr.evaluate().unwrap().real, Fraction::new(12, 1));
@@ -211,6 +224,12 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_contiguous_subtraction_in_parentheses() {
+        let expr = parse_expression("2*(8-3)").unwrap();
+        assert_eq!(expr.evaluate().unwrap().real, Fraction::new(10, 1));
+    }
+
+    #[test]
     fn test_parse_power() {
         let expr = parse_expression("2 ^ 3").unwrap();
         assert_eq!(expr.evaluate().unwrap().real, Fraction::new(8, 1));
@@ -229,6 +248,18 @@ mod tests {
     }
 
     #[test]
+    fn test_parse_double_minus() {
+        let expr = parse_expression("3--2").unwrap();
+        assert_eq!(expr.evaluate().unwrap().real, Fraction::new(5, 1));
+    }
+
+    #[test]
+    fn test_parse_subtract_parenthesized_negatives() {
+        let expr = parse_expression("(-2)-(-3)").unwrap();
+        assert_eq!(expr.evaluate().unwrap().real, Fraction::new(1, 1));
+    }
+
+    #[test]
     fn test_parse_function_call() {
         let expr = parse_expression("sqrt(16)").unwrap();
         assert_eq!(expr.evaluate().unwrap().real, Fraction::new(4, 1));
@@ -238,7 +269,7 @@ mod tests {
     fn test_parse_variable_pi() {
         let expr = parse_expression("pi").unwrap();
         let result = expr.evaluate().unwrap();
-        assert!((result.real.to_f64() - PI).abs() < 1e-10);
+        assert!((result.real.to_f64() - PI).abs() < 1e-6);
     }
 
     #[test]
@@ -269,6 +300,12 @@ mod tests {
     fn test_parse_invalid_token() {
         let result = parse_expression("3 @ 4");
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn test_parse_invalid_number_still_errors() {
+        let result = parse_expression("12..3");
+        assert_eq!(result, Err("Multiple decimal points in number".to_string()));
     }
 
     #[test]

@@ -23,6 +23,7 @@ pub enum Token {
 pub struct Tokenizer<'a> {
     chars: Peekable<Chars<'a>>,
     position: usize,
+    last_token: Option<Token>,
 }
 
 impl<'a> Tokenizer<'a> {
@@ -30,6 +31,7 @@ impl<'a> Tokenizer<'a> {
         Tokenizer {
             chars: input.chars().peekable(),
             position: 0,
+            last_token: None,
         }
     }
 
@@ -65,9 +67,14 @@ impl<'a> Tokenizer<'a> {
         let mut num_str = String::new();
         let mut has_decimal = false;
 
+        if let Some(&'-') = self.peek() {
+            num_str.push('-');
+            self.next();
+        }
+
         // Parse integer part
         while let Some(&c) = self.peek() {
-            if c.is_ascii_digit() || c == '-' {
+            if c.is_ascii_digit() {
                 num_str.push(c);
                 self.next();
             } else if c == '.' {
@@ -125,6 +132,18 @@ impl<'a> Tokenizer<'a> {
         Ok(Token::Number(value))
     }
 
+    fn minus_is_unary_context(&self) -> bool {
+        matches!(
+            self.last_token,
+            None
+                | Some(Token::BinaryOp(_))
+                | Some(Token::UnaryOp(_))
+                | Some(Token::LeftParen)
+                | Some(Token::Comma)
+                | Some(Token::Equal)
+        )
+    }
+
     /// Tokenize a variable or function name
     fn tokenize_identifier(&mut self) -> Result<Token, String> {
         let mut name = String::new();
@@ -154,69 +173,72 @@ impl<'a> Tokenizer<'a> {
     pub fn next_token(&mut self) -> Result<Token, String> {
         self.skip_whitespace();
 
-        match self.peek() {
-            None => Ok(Token::EOF),
-            Some(&c) => {
-                match c {
-                    '0'..='9' | '-' => {
-                        // Check if '-' is a unary operator or part of a number
-                        if c == '-' {
-                            // Look ahead to see if this is a negative number
-                            let next_char = self.chars.clone().nth(1);
-                            if next_char
-                                .map(|n| n.is_ascii_digit() || n == '.')
-                                .unwrap_or(false)
-                            {
-                                self.tokenize_number()
-                            } else {
-                                self.next();
-                                Ok(Token::UnaryOp(UnaryOperator::Negate))
-                            }
+        let token = match self.peek() {
+            None => Token::EOF,
+            Some(&c) => match c {
+                '0'..='9' => self.tokenize_number()?,
+                '-' => {
+                    if self.minus_is_unary_context() {
+                        let next_char = self.chars.clone().nth(1);
+                        if next_char
+                            .map(|n| n.is_ascii_digit() || n == '.')
+                            .unwrap_or(false)
+                        {
+                            self.tokenize_number()?
                         } else {
-                            self.tokenize_number()
+                            self.next();
+                            Token::UnaryOp(UnaryOperator::Negate)
                         }
-                    }
-                    '+' => {
+                    } else {
                         self.next();
-                        Ok(Token::BinaryOp(BinaryOperator::Add))
+                        Token::BinaryOp(BinaryOperator::Subtract)
                     }
-                    '*' => {
-                        self.next();
-                        Ok(Token::BinaryOp(BinaryOperator::Multiply))
-                    }
-                    '/' => {
-                        self.next();
-                        Ok(Token::BinaryOp(BinaryOperator::Divide))
-                    }
-                    '^' => {
-                        self.next();
-                        Ok(Token::BinaryOp(BinaryOperator::Power))
-                    }
-                    '%' => {
-                        self.next();
-                        Ok(Token::Percent)
-                    }
-                    '(' => {
-                        self.next();
-                        Ok(Token::LeftParen)
-                    }
-                    ')' => {
-                        self.next();
-                        Ok(Token::RightParen)
-                    }
-                    ',' => {
-                        self.next();
-                        Ok(Token::Comma)
-                    }
-                    '=' => {
-                        self.next();
-                        Ok(Token::Equal)
-                    }
-                    'a'..='z' | 'A'..='Z' | '_' => self.tokenize_identifier(),
-                    _ => Err(format!("Unexpected character: '{}'", c)),
                 }
-            }
+                '+' => {
+                    self.next();
+                    Token::BinaryOp(BinaryOperator::Add)
+                }
+                '*' => {
+                    self.next();
+                    Token::BinaryOp(BinaryOperator::Multiply)
+                }
+                '/' => {
+                    self.next();
+                    Token::BinaryOp(BinaryOperator::Divide)
+                }
+                '^' => {
+                    self.next();
+                    Token::BinaryOp(BinaryOperator::Power)
+                }
+                '%' => {
+                    self.next();
+                    Token::Percent
+                }
+                '(' => {
+                    self.next();
+                    Token::LeftParen
+                }
+                ')' => {
+                    self.next();
+                    Token::RightParen
+                }
+                ',' => {
+                    self.next();
+                    Token::Comma
+                }
+                '=' => {
+                    self.next();
+                    Token::Equal
+                }
+                'a'..='z' | 'A'..='Z' | '_' => self.tokenize_identifier()?,
+                _ => return Err(format!("Unexpected character: '{}'", c)),
+            },
+        };
+
+        if token != Token::EOF {
+            self.last_token = Some(token.clone());
         }
+        Ok(token)
     }
 
     /// Tokenize entire input into a vector of tokens
@@ -283,27 +305,14 @@ mod tests {
 
     #[test]
     fn test_tokenize_operators() {
-        let mut tokenizer = Tokenizer::new("+ - * / ^");
-        assert_eq!(
-            tokenizer.next_token().unwrap(),
-            Token::BinaryOp(BinaryOperator::Add)
-        );
-        assert_eq!(
-            tokenizer.next_token().unwrap(),
-            Token::BinaryOp(BinaryOperator::Subtract)
-        );
-        assert_eq!(
-            tokenizer.next_token().unwrap(),
-            Token::BinaryOp(BinaryOperator::Multiply)
-        );
-        assert_eq!(
-            tokenizer.next_token().unwrap(),
-            Token::BinaryOp(BinaryOperator::Divide)
-        );
-        assert_eq!(
-            tokenizer.next_token().unwrap(),
-            Token::BinaryOp(BinaryOperator::Power)
-        );
+        let mut tokenizer = Tokenizer::new("1 - 2 + 3 * 4 / 5 ^ 6");
+        let tokens = tokenizer.tokenize().unwrap();
+        assert_eq!(tokens.len(), 11);
+        assert_eq!(tokens[1], Token::BinaryOp(BinaryOperator::Subtract));
+        assert_eq!(tokens[3], Token::BinaryOp(BinaryOperator::Add));
+        assert_eq!(tokens[5], Token::BinaryOp(BinaryOperator::Multiply));
+        assert_eq!(tokens[7], Token::BinaryOp(BinaryOperator::Divide));
+        assert_eq!(tokens[9], Token::BinaryOp(BinaryOperator::Power));
     }
 
     #[test]
@@ -329,10 +338,11 @@ mod tests {
     fn test_tokenize_function_call() {
         let mut tokenizer = Tokenizer::new("sqrt(16)");
         let tokens = tokenizer.tokenize().unwrap();
-        assert_eq!(tokens.len(), 3);
+        assert_eq!(tokens.len(), 4);
         assert_eq!(tokens[0], Token::Function(FunctionName::Sqrt));
         assert_eq!(tokens[1], Token::LeftParen);
         assert_eq!(tokens[2], Token::Number(16.0));
+        assert_eq!(tokens[3], Token::RightParen);
     }
 
     #[test]
@@ -343,5 +353,25 @@ mod tests {
         assert_eq!(tokens[0], Token::Number(1.0));
         assert_eq!(tokens[1], Token::BinaryOp(BinaryOperator::Divide));
         assert_eq!(tokens[2], Token::Number(0.0));
+    }
+
+    #[test]
+    fn test_tokenize_subtraction_without_spaces() {
+        let mut tokenizer = Tokenizer::new("44-55");
+        let tokens = tokenizer.tokenize().unwrap();
+        assert_eq!(tokens.len(), 3);
+        assert_eq!(tokens[0], Token::Number(44.0));
+        assert_eq!(tokens[1], Token::BinaryOp(BinaryOperator::Subtract));
+        assert_eq!(tokens[2], Token::Number(55.0));
+    }
+
+    #[test]
+    fn test_tokenize_unary_minus_after_operator() {
+        let mut tokenizer = Tokenizer::new("3*-2");
+        let tokens = tokenizer.tokenize().unwrap();
+        assert_eq!(tokens.len(), 3);
+        assert_eq!(tokens[0], Token::Number(3.0));
+        assert_eq!(tokens[1], Token::BinaryOp(BinaryOperator::Multiply));
+        assert_eq!(tokens[2], Token::Number(-2.0));
     }
 }
