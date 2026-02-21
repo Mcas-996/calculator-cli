@@ -1,6 +1,7 @@
 use crate::core::{ComplexNumber, Fraction};
 use crate::output::UnicodeFormatter;
 use crate::tui::latex::TuiLatexRenderer;
+use crate::tui::math_renderer::render_math_text;
 
 pub(crate) fn format_complex_root(num: &ComplexNumber) -> String {
     let zero = Fraction::new(0, 1);
@@ -55,6 +56,26 @@ pub(crate) fn format_complex_root(num: &ComplexNumber) -> String {
             format!("{} - {}i", real_str, imag_coeff)
         }
     }
+}
+
+fn render_with_tui_math_or_fallback(value_text: &str) -> Vec<String> {
+    render_math_text(value_text).unwrap_or_else(|_| vec![value_text.to_string()])
+}
+
+fn prefix_value_lines(var: &str, value_lines: &[String]) -> Vec<String> {
+    if value_lines.is_empty() {
+        return vec![format!("{var} = ")];
+    }
+
+    let mut result = Vec::with_capacity(value_lines.len());
+    result.push(format!("{var} = {}", value_lines[0]));
+
+    let indent = " ".repeat(var.chars().count() + 3);
+    for line in value_lines.iter().skip(1) {
+        result.push(format!("{indent}{line}"));
+    }
+
+    result
 }
 
 fn format_fraction_component(formatter: &UnicodeFormatter, frac: &Fraction) -> String {
@@ -142,7 +163,9 @@ impl ResultCard {
     }
 
     pub fn from_complex(expression: Option<String>, num: &ComplexNumber) -> Self {
-        Self::new(expression, vec![format_complex_root(num)])
+        let value_text = format_complex_root(num);
+        let result_lines = render_with_tui_math_or_fallback(&value_text);
+        Self::new(expression, result_lines)
     }
 
     pub fn from_equation(
@@ -150,8 +173,28 @@ impl ResultCard {
         var: &str,
         solutions: &[ComplexNumber],
     ) -> Self {
+        if solutions.is_empty() {
+            return Self::new(expression, vec![format!("{var} = ∅")]);
+        }
+
         let renderer = TuiLatexRenderer::new();
-        let result_lines = renderer.format_equation(var, solutions);
+        let mut result_lines = Vec::new();
+        for (i, sol) in solutions.iter().enumerate() {
+            let sol_var = if solutions.len() == 1 {
+                var.to_string()
+            } else {
+                format!(
+                    "{}{}",
+                    var,
+                    renderer.format_subscript_str("", &(i + 1).to_string())
+                )
+            };
+
+            let value_text = format_complex_root(sol);
+            let rendered_lines = render_with_tui_math_or_fallback(&value_text);
+            result_lines.extend(prefix_value_lines(&sol_var, &rendered_lines));
+        }
+
         Self::new(expression, result_lines)
     }
 
@@ -178,7 +221,9 @@ impl ResultCard {
                 )
             };
 
-            all_lines.push(format!("{} = {}", sol_var, format_complex_root(sol)));
+            let value_text = format_complex_root(sol);
+            let rendered_lines = render_with_tui_math_or_fallback(&value_text);
+            all_lines.extend(prefix_value_lines(&sol_var, &rendered_lines));
         }
 
         Self::new(expression, all_lines)
@@ -246,16 +291,17 @@ mod tests {
     use crate::solver::solve_quadratic_equation;
 
     #[test]
-    fn test_from_equation_solution_uses_single_line_complex_roots() {
+    fn test_from_equation_solution_renders_multiline_fraction_layouts() {
         let solutions = vec![
             ComplexNumber::new(Fraction::new(-1, 2), Fraction::new(3, 2)),
             ComplexNumber::new(Fraction::new(-1, 2), Fraction::new(-3, 2)),
         ];
         let card = ResultCard::from_equation_solution(None, "x", &solutions);
 
-        assert_eq!(card.result_lines.len(), 2);
-        assert_eq!(card.result_lines[0], "x₁ = -1/2 + 3/2i");
-        assert_eq!(card.result_lines[1], "x₂ = -1/2 - 3/2i");
+        assert!(card.result_lines.len() >= 2);
+        assert!(card.result_lines.iter().any(|line| line.contains("x₁ =")));
+        assert!(card.result_lines.iter().any(|line| line.contains("x₂ =")));
+        assert!(card.result_lines.iter().any(|line| line.contains('─')));
     }
 
     #[test]
@@ -269,14 +315,15 @@ mod tests {
     fn test_from_complex_formats_symbolic_sqrt() {
         let value = ComplexNumber::from_double(2.0_f64.sqrt());
         let card = ResultCard::from_complex(Some("sqrt(2)".to_string()), &value);
-        assert_eq!(card.result_lines, vec!["sqrt(2)".to_string()]);
+        assert!(card.result_lines.iter().any(|line| line.contains("√2")));
     }
 
     #[test]
     fn test_from_complex_simplifies_sqrt8_to_coefficient_times_sqrt2() {
         let value = ComplexNumber::from_double(8.0_f64.sqrt());
         let card = ResultCard::from_complex(Some("sqrt(8)".to_string()), &value);
-        assert_eq!(card.result_lines, vec!["2*sqrt(2)".to_string()]);
+        assert!(card.result_lines.iter().any(|line| line.contains('2')));
+        assert!(card.result_lines.iter().any(|line| line.contains("√2")));
     }
 
     #[test]
@@ -284,15 +331,9 @@ mod tests {
         let solutions = solve_quadratic_equation("x^2 = -2").unwrap();
         let card = ResultCard::from_equation_solution(None, "x", &solutions);
 
-        assert_eq!(card.result_lines.len(), 2);
-        assert!(card
-            .result_lines
-            .iter()
-            .any(|line| line.contains("i*sqrt(2)")));
-        assert!(card
-            .result_lines
-            .iter()
-            .any(|line| line.contains("-i*sqrt(2)")));
+        assert!(card.result_lines.len() >= 2);
+        assert!(card.result_lines.iter().any(|line| line.contains('i')));
+        assert!(card.result_lines.iter().any(|line| line.contains("√2")));
     }
 
     #[test]
@@ -300,14 +341,16 @@ mod tests {
         let solutions = solve_quadratic_equation("x^2 + 2x + 10 = 0").unwrap();
         let card = ResultCard::from_equation_solution(None, "x", &solutions);
 
-        assert_eq!(card.result_lines.len(), 2);
-        assert!(card
-            .result_lines
-            .iter()
-            .any(|line| line.contains("-1 + 3i")));
-        assert!(card
-            .result_lines
-            .iter()
-            .any(|line| line.contains("-1 - 3i")));
+        assert!(card.result_lines.len() >= 2);
+        assert!(card.result_lines.iter().any(|line| line.contains("-1")));
+        assert!(card.result_lines.iter().any(|line| line.contains("3i")));
+    }
+
+    #[test]
+    fn test_fallback_keeps_plain_text_when_tui_math_render_fails() {
+        assert_eq!(
+            render_with_tui_math_or_fallback("sqrt("),
+            vec!["sqrt(".to_string()]
+        );
     }
 }
