@@ -498,10 +498,8 @@ mod tests {
     #[test]
     fn test_ctrl_c_quits() {
         let mut input = InputArea::new("> ".to_string(), 80);
-        let action = input.handle_key_event(KeyEvent::new(
-            KeyCode::Char('c'),
-            KeyModifiers::CONTROL,
-        ));
+        let action =
+            input.handle_key_event(KeyEvent::new(KeyCode::Char('c'), KeyModifiers::CONTROL));
         assert_eq!(action, InputAction::Quit);
     }
 }
