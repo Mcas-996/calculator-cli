@@ -88,24 +88,7 @@ impl TuiApp {
     }
 
     fn show_welcome(&mut self) {
-        let welcome = vec![
-            " Calculator CLI v2.0.0 (TUI Mode) ",
-            "==================================",
-            "Commands:",
-            "  Enter       - Calculate expression",
-            "  Shift+Enter - New line",
-            "  Ctrl+C      - Exit the calculator",
-            "  exit/quit   - Exit the calculator",
-            "  clear       - Clear results",
-            "  help        - Show this help",
-            "  ans / ans() - Show last result",
-            "",
-            "Examples:",
-            "  2 + 2           - Basic arithmetic",
-            "  sqrt(2)         - Square root",
-            "  x^2 + 2x + 1=0  - Solve quadratic",
-            "",
-        ];
+        let welcome = vec!["Calculator CLI v2.0.0", "Type 'help' for commands"];
 
         for line in welcome {
             self.results
@@ -347,28 +330,24 @@ impl TuiApp {
                 .style(Style::default().fg(Color::DarkGray));
             f.render_widget(empty, results_area);
         } else {
-            let mut all_lines_rev: Vec<String> = Vec::new();
             let max_lines = results_area.height as usize;
+            let mut all_lines: Vec<String> = Vec::new();
 
-            'outer: for result in self.results.iter().rev() {
-                let card_lines = result.render(results_area.width as usize);
-
-                for line in card_lines.iter().rev() {
-                    if all_lines_rev.len() >= max_lines {
-                        break 'outer;
-                    }
-                    all_lines_rev.push(line.clone());
+            for result in self.results.iter().rev() {
+                if all_lines.len() >= max_lines {
+                    break;
                 }
-
-                if all_lines_rev.len() < max_lines
-                    && !all_lines_rev.last().map_or(false, |s| s.is_empty())
-                {
-                    all_lines_rev.push(String::new());
+                let card_lines = result.render(results_area.width as usize);
+                for line in card_lines {
+                    if all_lines.len() >= max_lines {
+                        break;
+                    }
+                    all_lines.push(line);
+                }
+                if all_lines.len() < max_lines {
+                    all_lines.push(String::new());
                 }
             }
-
-            all_lines_rev.reverse();
-            let all_lines = all_lines_rev;
 
             let content: Vec<ListItem> = all_lines
                 .iter()
