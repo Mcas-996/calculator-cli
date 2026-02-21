@@ -8,10 +8,10 @@ Install `calctui` first (pick one):
 
 ```bash
 # macOS/Linux (curl installer)
-curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-installer.sh | sh
+curl --proto '=https' --tlsv1.2 -LsSf https://github.com/Mcas-996/calculator-cli/releases/download/latest/calculator-tui-installer.sh | sh
 
 # Windows PowerShell (irm installer)
-powershell -ExecutionPolicy Bypass -c "irm https://github.com/Mcas-996/calculator-cli/releases/download/v2.1.2/calculator-tui-installer.ps1 | iex"
+powershell -ExecutionPolicy Bypass -c "irm https://github.com/Mcas-996/calculator-cli/releases/download/latest/calculator-tui-installer.ps1 | iex"
 
 # Homebrew
 brew install Mcas-996/tap/calculator-tui
